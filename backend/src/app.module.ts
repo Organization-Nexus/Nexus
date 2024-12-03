@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
+import { PingModule } from './modules/ping/ping.module';
 
 @Module({
-  imports: [DatabaseModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [DatabaseModule, PingModule],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log(
+      `🚀 Running Database Login as PostGres User : ${process.env.POSTGRES_USER}`,
+    );
+  }
+}
