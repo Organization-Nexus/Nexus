@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters/exception.filter';
+import { AllExceptionsFilter } from './common/filters/all.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +20,8 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(API_PREFIX);
+
+  app.useGlobalFilters(new HttpExceptionFilter(), new AllExceptionsFilter());
 
   app.enableCors({
     origin: process.env.CLIENT_URL,
