@@ -12,6 +12,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/src:/usr/src/app/src
+      # - /usr/src/app/node_modules
     depends_on:
       database:
         condition: service_healthy
@@ -24,6 +25,8 @@ services:
       - ./backend/.env.development
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
@@ -45,3 +48,5 @@ services:
       - ./frontend/src:/usr/src/app/src
     depends_on:
       - backend
+volumes:
+  pgdata:
