@@ -20,7 +20,6 @@ import { RateLimitingModule } from './modules/rate-limiting/rate-limiting.module
     AuthModule,
     UserModule,
     MulterModule,
-    RateLimitingModule,
   ],
 })
 export class AppModule {
