@@ -1,15 +1,12 @@
-// src/modules/multer/exception/multer.exception.ts
 import { HttpStatus } from '@nestjs/common';
 import { CustomHttpException } from 'src/common/exceptions/custum.http.exception';
 
-// 파일이 업로드되지 않음
 export class NoFilesUploadedException extends CustomHttpException {
   constructor() {
     super('파일이 존재하지 않습니다', HttpStatus.BAD_REQUEST);
   }
 }
 
-// 파일 크기가 너무 큼
 export class FileTooLargeException extends CustomHttpException {
   constructor() {
     super(
@@ -19,7 +16,6 @@ export class FileTooLargeException extends CustomHttpException {
   }
 }
 
-// 잘못된 파일 타입
 export class InvalidFileTypeException extends CustomHttpException {
   constructor() {
     super(
