@@ -4,28 +4,45 @@ import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterDto } from './dto/register.dto';
+import {
+  EmailAlreadyExistsException,
+  LoginFailedException,
+} from './exception/auth.exception';
+import { UserLog } from '../user/entities/user-log.entity';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserLog)
+    private readonly userLogRepository: Repository<UserLog>,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userRepository.findOneBy({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
-      return result;
+    // 이메일 or 비밀번호 불일치
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new LoginFailedException();
     }
-    return null;
+
+    const { password: _, ...result } = user;
+    return result;
   }
 
   // 로그인
-  async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+  async login(user: User) {
+    const payload = { id: user.id, email: user.email, role: user.role };
+
+    // 로그인 후, 유저로그의 마지막 로그인 컬럼 업데이트
+    await this.userLogRepository.update(
+      { user: { id: user.id } },
+      { lastLoggedIn: new Date() },
+    );
 
     return {
       access_token: this.jwtService.sign(payload, {
@@ -36,31 +53,35 @@ export class AuthService {
   }
 
   // 회원가입
-  async register(
-    email: string,
-    password: string,
-    name: string,
-    phoneNumber: string,
-    mainPosition: string,
-    githubUrl: string,
-    role: string,
-  ): Promise<User> {
-    const existingUser = await this.userRepository.findOneBy({ email });
-
-    if (existingUser) {
-      throw new BadRequestException('이미 가입된 이메일입니다.');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    return this.userRepository.save({
+  async register(dto: RegisterDto): Promise<User> {
+    const {
       email,
-      password: hashedPassword,
+      password,
       name,
       phoneNumber,
       mainPosition,
       githubUrl,
-      role,
-    });
+      role = 'USER', // 기본값 설정
+    } = dto;
+    const existingUser = await this.userRepository.findOneBy({ email });
+
+    if (existingUser) {
+      throw new EmailAlreadyExistsException(email);
+    }
+
+    dto.password = await bcrypt.hash(password, 10);
+    dto.role = role; // 기본값 설정
+
+    const user = this.userRepository.create(dto);
+
+    const userLog = new UserLog();
+    userLog.user = user;
+
+    user.log = userLog;
+
+    const savedUser = await this.userRepository.save(user);
+
+    // 순환 참조 방지를 위해 반환할 때 class-transformer 사용
+    return plainToClass(User, savedUser);
   }
 }

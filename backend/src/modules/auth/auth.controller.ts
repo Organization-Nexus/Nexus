@@ -14,17 +14,14 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  // @Post('logout')
+  // async logout() {
+  //   return this.authService.logout();
+  // }
+
   // api/auth/register
   @Post('register')
   async register(@Body() dto: RegisterDto) {
-    return this.authService.register(
-      dto.email,
-      dto.password,
-      dto.name,
-      dto.phoneNumber,
-      dto.mainPosition,
-      dto.githubUrl,
-      dto.role,
-    );
+    return this.authService.register(dto);
   }
 }
