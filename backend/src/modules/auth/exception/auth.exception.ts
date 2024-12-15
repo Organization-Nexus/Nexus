@@ -4,10 +4,7 @@ import { CustomHttpException } from 'src/common/exceptions/custum.http.exception
 // 로그인 실패 (이메일 또는 비밀번호 오류)
 export class LoginFailedException extends CustomHttpException {
   constructor() {
-    super(
-      '로그인에 실패했습니다. 이메일 또는 비밀번호를 확인하세요.',
-      HttpStatus.BAD_REQUEST,
-    );
+    super('이메일과 비밀번호를 다시 확인해주세요.', HttpStatus.BAD_REQUEST);
   }
 }
 
@@ -42,5 +39,12 @@ export class EmailAlreadyExistsException extends CustomHttpException {
 export class UnauthorizedAccessException extends CustomHttpException {
   constructor() {
     super('유효하지 않은 접근입니다.', HttpStatus.UNAUTHORIZED);
+  }
+}
+
+// 접근 권한 없음
+export class ForbiddenAccessException extends CustomHttpException {
+  constructor() {
+    super('접근 권한이 없습니다.', HttpStatus.FORBIDDEN);
   }
 }

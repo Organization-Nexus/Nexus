@@ -18,6 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload) {
       throw new UnauthorizedAccessException(); // 유효하지 않은 토큰일 경우 예외 처리
     }
-    return { id: payload.sub, email: payload.email, role: payload.role };
+    return { id: payload.id, email: payload.email, role: payload.role };
   }
 }

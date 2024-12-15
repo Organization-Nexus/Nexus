@@ -36,7 +36,7 @@ export class AuthService {
 
   // 로그인
   async login(user: User) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = { id: user.id, email: user.email, role: user.role };
 
     // 로그인 후, 유저로그의 마지막 로그인 컬럼 업데이트
     await this.userLogRepository.update(
@@ -66,7 +66,7 @@ export class AuthService {
     const existingUser = await this.userRepository.findOneBy({ email });
 
     if (existingUser) {
-      throw new EmailAlreadyExistsException(email); // 이메일 중복 처리
+      throw new EmailAlreadyExistsException(email);
     }
 
     dto.password = await bcrypt.hash(password, 10);
@@ -75,9 +75,9 @@ export class AuthService {
     const user = this.userRepository.create(dto);
 
     const userLog = new UserLog();
-    userLog.user = user; // UserLog의 user 필드에 User 객체 할당
+    userLog.user = user;
 
-    user.log = userLog; // User의 log 필드에 UserLog 객체 할당
+    user.log = userLog;
 
     const savedUser = await this.userRepository.save(user);
 
