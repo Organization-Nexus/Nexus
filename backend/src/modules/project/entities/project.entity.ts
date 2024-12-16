@@ -11,6 +11,9 @@ export class Project {
   id: string;
 
   @Column()
+  userId: string;
+
+  @Column()
   title: string;
 
   @Column()

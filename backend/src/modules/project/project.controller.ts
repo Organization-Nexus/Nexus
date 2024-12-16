@@ -9,6 +9,7 @@ import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileConfigService } from '../file/file-config.service';
+import { InvalidImageFormatException } from './exception/project-exception';
 
 @Controller('project')
 export class ProjectController {
@@ -23,24 +24,21 @@ export class ProjectController {
     @Body() createProjectDto: CreateProjectDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const project = await this.projectService.createProject(createProjectDto);
-    let fileUrl: string = null;
-
-    if (file) {
-      try {
-        fileUrl = await this.fileConfigService.uploadFile(file, project.id);
-        await this.projectService.updateProjectImage(project.id, fileUrl);
-      } catch (error) {
-        return { message: 'Error uploading file to S3', error: error.message };
-      }
-    } else {
-      fileUrl =
-        'https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/image/NoImage.jpg';
-      await this.projectService.updateProjectImage(project.id, fileUrl);
+    if (file && !file.mimetype.startsWith('image/')) {
+      throw new InvalidImageFormatException();
     }
-
+    const project = await this.projectService.createProject(createProjectDto);
+    const fileUrl = file
+      ? await this.fileConfigService.projectImageUpload(
+          file,
+          project.id,
+          createProjectDto.userId,
+        )
+      : 'https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/image/grass.png';
+    await this.projectService.updateProjectImage(project.id, fileUrl);
     return {
       message: 'Project created successfully',
+      project: await this.projectService.findProjectById(project.id),
     };
   }
 }

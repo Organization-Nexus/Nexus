@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { FileValidator } from './validator/file-validator';
@@ -15,21 +15,26 @@ export class FileConfigService {
     });
   }
 
-  async uploadFile(
+  async projectImageUpload(
     file: Express.Multer.File,
     projectId: string,
+    userId: string,
   ): Promise<string> {
     FileValidator.validate(file);
-    const uploadParams = {
-      Bucket: this.configService.get('AWS_BUCKET_NAME'),
-      Key: `project/${projectId}/${new Date(Date.now() + 9 * 60 * 60 * 1000)
-        .toLocaleString('ko-KR', { hour12: false })
-        .replace(/[^0-9]/g, '')}-${file.originalname}`,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    };
-
     try {
+      if (!file.mimetype.startsWith('image/')) {
+        throw new BadRequestException('Only image files are allowed.');
+      }
+      const uploadParams = {
+        Bucket: this.configService.get('AWS_BUCKET_NAME'),
+        Key: `user/${userId}/project/${projectId}/${new Date(
+          Date.now() + 9 * 60 * 60 * 1000,
+        )
+          .toLocaleString('ko-KR', { hour12: false })
+          .replace(/[^0-9]/g, '')}-${file.originalname}`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
       const data = await this.s3.upload(uploadParams).promise();
       return data.Location;
     } catch (error) {

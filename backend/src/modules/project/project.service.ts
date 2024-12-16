@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectNotFoundException } from './exception/project-exception';
 
 @Injectable()
 export class ProjectService {
@@ -22,10 +23,20 @@ export class ProjectService {
     const project = await this.projectRepository.findOneBy({
       id: projectId,
     });
-    if (project) {
-      project.project_image = imageUrl;
-      return await this.projectRepository.save(project);
+    if (!project) {
+      throw new ProjectNotFoundException(projectId);
     }
-    throw new Error('Project not found');
+
+    project.project_image = imageUrl;
+    return this.projectRepository.save(project);
+  }
+
+  async findProjectById(projectId: string): Promise<Project> {
+    const project = await this.projectRepository.findOneBy({ id: projectId });
+    if (!project) {
+      throw new ProjectNotFoundException(projectId);
+    }
+
+    return project;
   }
 }
