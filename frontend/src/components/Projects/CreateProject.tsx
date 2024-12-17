@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FiX } from "react-icons/fi";
@@ -25,6 +23,19 @@ export default function Modal({ onClose }: ModalProps) {
     });
     onClose();
   };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile && selectedFile.type.startsWith("image/")) {
+        setLogo(selectedFile);
+      } else {
+        alert("이미지 파일만 선택 가능합니다.");
+      }
+    }
+  };
+
+  const logoPreview = logo ? URL.createObjectURL(logo) : null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -79,7 +90,7 @@ export default function Modal({ onClose }: ModalProps) {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full p-2 border border-gray-300 text-sm rounded mt-2"
               placeholder="설명을 입력하세요."
-              style={{ height: "150px", resize: "none" }} // height 고정, 크기 조절 비활성화
+              style={{ height: "150px", resize: "none" }}
             />
           </div>
 
@@ -129,11 +140,20 @@ export default function Modal({ onClose }: ModalProps) {
             <input
               id="logo"
               type="file"
+              accept="image/*"
               className="w-full p-2 border border-gray-300 rounded mt-2"
-              onChange={(e) =>
-                setLogo(e.target.files ? e.target.files[0] : null)
-              }
+              onChange={handleLogoChange}
             />
+
+            {logoPreview && (
+              <div className="mt-4">
+                <img
+                  src={logoPreview}
+                  alt="Logo Preview"
+                  className="w-32 h-32 object-cover rounded-md"
+                />
+              </div>
+            )}
           </div>
         </div>
 
