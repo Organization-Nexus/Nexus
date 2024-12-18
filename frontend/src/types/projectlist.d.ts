@@ -1,11 +1,12 @@
-interface Project {
-  title: string;
+export interface Project {
+  id: number;
+  name: string;
   description: string;
   start_date: string;
   end_date: string;
-  members: string[];
+  image_url?: string;
 }
 
-interface ProjectListProps {
+export interface ProjectListProps {
   projects: Project[];
 }

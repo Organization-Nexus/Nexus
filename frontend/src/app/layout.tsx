@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
 import "../styles/globals.css";
 
-export default function Layout({ children }: { children: ReactNode }) {
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head />
-      <body className="bg-[#E2EAFC]">{children}</body>
+      <body>{children}</body>
     </html>
   );
-}
+};
+
+export default Layout;
