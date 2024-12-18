@@ -25,7 +25,7 @@ export class Project {
   @Column()
   end_date: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createAt: Date;
 
   @Column({ nullable: true })
