@@ -4,15 +4,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserLog } from './entities/user-log.entity';
+import {
+  NotAllowedStatusException,
+  UserNotFoundException,
+} from './exception/user.exception';
 
 @Injectable()
 export class UserService {
+  private readonly ALLOWED_STATUS = ['ONLINE', 'OFFLINE', 'AWAY', 'BUSY'];
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
     @InjectRepository(UserLog)
-    private readonly userLogRepository: Repository<UserLog>, // UserLog repository 추가
+    private readonly userLogRepository: Repository<UserLog>,
   ) {}
 
   // 특정 유저 조회
@@ -22,7 +28,7 @@ export class UserService {
       relations: ['log'], // UserLog 관계 로드
     });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found.`);
+      throw new UserNotFoundException();
     }
     return user;
   }
@@ -37,22 +43,42 @@ export class UserService {
   // 유저 정보 수정
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
+    const { profileImage, status, rank, ...userFields } = updateUserDto;
 
-    if (updateUserDto.profileImage) {
-      user.log.profileImage = updateUserDto.profileImage;
+    // UserLog 필드 업데이트
+    if (profileImage !== undefined) user.log.profileImage = profileImage;
+    if (status !== undefined) {
+      if (!this.ALLOWED_STATUS.includes(status)) {
+        throw new NotAllowedStatusException();
+      }
+      user.log.status = status;
     }
+    if (rank !== undefined) user.log.rank = rank;
 
-    // User 엔티티 수정
-    Object.assign(user, updateUserDto);
-    // User, UserLog 저장
+    Object.assign(user, userFields);
     return this.userRepository.save(user);
   }
 
+  // 본인 상태 변경
+  async updateStatus(userId: number, status: string): Promise<UserLog> {
+    if (!this.ALLOWED_STATUS.includes(status)) {
+      throw new NotAllowedStatusException();
+    }
+    await this.userLogRepository.update({ user_id: userId }, { status });
+
+    const updatedUserLog = await this.userLogRepository.findOne({
+      where: { user_id: userId },
+    });
+    return updatedUserLog;
+  }
+
   // 유저 삭제
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<{ message: string }> {
     const result = await this.userRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(`User with ID ${id} not found.`);
+      throw new UserNotFoundException();
     }
+
+    return { message: '사용자가 성공적으로 삭제되었습니다.' };
   }
 }

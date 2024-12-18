@@ -3,8 +3,8 @@ import { CustomHttpException } from 'src/common/exceptions/custum.http.exception
 
 // 존재하지 않는 사용자
 export class UserNotFoundException extends CustomHttpException {
-  constructor(userId: string) {
-    super(`ID가 ${userId}인 사용자를 찾을 수 없습니다.`, HttpStatus.NOT_FOUND);
+  constructor() {
+    super(`해당 사용자를 찾을 수 없습니다.`, HttpStatus.NOT_FOUND);
   }
 }
 
@@ -25,5 +25,12 @@ export class InvalidUserDataException extends CustomHttpException {
       '사용자 데이터가 잘못되었습니다. 다시 시도하십시오.',
       HttpStatus.BAD_REQUEST,
     );
+  }
+}
+
+// 허용되지 않은 상태 항목
+export class NotAllowedStatusException extends CustomHttpException {
+  constructor() {
+    super('허용되지 않은 상태 항목입니다.', HttpStatus.BAD_REQUEST);
   }
 }

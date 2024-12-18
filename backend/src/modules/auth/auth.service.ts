@@ -11,6 +11,7 @@ import {
 } from './exception/auth.exception';
 import { UserLog } from '../user/entities/user-log.entity';
 import { plainToClass } from 'class-transformer';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,14 +36,15 @@ export class AuthService {
   }
 
   // 로그인
-  async login(user: User) {
-    const payload = { id: user.id, email: user.email, role: user.role };
+  async login(LoginDto: LoginDto) {
+    const user = await this.userRepository.findOneBy({ email: LoginDto.email });
 
-    // 로그인 후, 유저로그의 마지막 로그인 컬럼 업데이트
+    // 로그인 후, 유저 로그의 마지막 로그인 컬럼 업데이트
     await this.userLogRepository.update(
       { user: { id: user.id } },
       { lastLoggedIn: new Date() },
     );
+    const payload = { id: user.id, email: user.email, role: user.role };
 
     return {
       access_token: this.jwtService.sign(payload, {
@@ -51,6 +53,16 @@ export class AuthService {
       }),
     };
   }
+
+  // // 로그아웃
+  // async logout(userId: number) {
+  //   await this.userLogRepository.update(
+  //     { user: { id: userId } },
+  //     { lastLoggedOut: new Date() },
+  //   );
+
+  //   return { message: '로그아웃 되었습니다.' };
+  // }
 
   // 회원가입
   async register(dto: RegisterDto): Promise<User> {

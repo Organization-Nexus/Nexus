@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Put,
   Req,
   UseGuards,
@@ -14,6 +15,7 @@ import { IsOwnerGuard } from '../auth/guard/is-owner.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RoleGuard } from '../auth/guard/role.guard';
 import { Roles } from '../auth/decorator/role.decorator';
+import { UserLog } from './entities/user-log.entity';
 
 @Controller('user')
 export class UserController {
@@ -50,7 +52,7 @@ export class UserController {
 
   // 유저 정보 변경, ADMIN
   @UseGuards(JwtAuthGuard, IsOwnerGuard)
-  @Put(':id')
+  @Put(':id([0-9]+)')
   async updateUserById(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -58,15 +60,22 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  // @UseGuards(JwtAuthGuard, IsOwnerGuard)
-  // @Put(':id/status')
-  // async updateStatus(
-  //   @Param('id') id: number,
-  //   @Body() statusDto: { status: string },
-  // ) {
-  //   return this.userService.updateStatus(id, statusDto.status);
-  // }
+  // 본인 상태 변경
+  @UseGuards(JwtAuthGuard)
+  @Put('status')
+  async updateUserStatus(
+    @Req() req: any,
+    @Body() body: { status: string },
+  ): Promise<UserLog> {
+    const result = await this.userService.updateStatus(
+      req.user.id,
+      body.status,
+    );
 
+    return result;
+  }
+
+  // 유저 삭제
   @UseGuards(JwtAuthGuard, IsOwnerGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: number) {

@@ -31,8 +31,11 @@ export class UserLog {
   @Column({ nullable: true })
   lastLoggedIn: Date;
 
+  @Column({ nullable: true })
+  lastLoggedOut: Date;
+
   // 외래 키 지정
-  @OneToOne(() => User, (user) => user.log) // UserLog에서 User를 참조하는 관계
+  @OneToOne(() => User, (user) => user.log, { onDelete: 'CASCADE' }) // UserLog에서 User를 참조하는 관계
   @JoinColumn({ name: 'user_id' })
   @Exclude()
   user: User;
