@@ -1,48 +1,56 @@
+import React from "react";
+import ProjectList from "@/components/project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
-import MyProjects from "@/components/Projects/MyProjects";
+import { Project } from "@/types/ProjectList";
+import ModalButton from "@/components/common/ModalButton";
 
-const fakeData: Project[] = [
+const projects: Project[] = [
   {
-    title: "Creeper",
-    description: "This is the description for Creeper",
-    start_date: "2023-01-01",
-    end_date: "2023-02-01",
-    members: ["John Doe", "Jane Doe"],
+    id: 1,
+    name: "Project A",
+    description: "This is the description for Project A.",
+    start_date: "2024-01-01",
+    end_date: "2024-12-31",
+    image_url:
+      "https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/image/grass.png",
   },
   {
-    title: "Zombie",
-    description: "This is the description for Zombie",
-    start_date: "2023-01-01",
-    end_date: "2023-02-01",
-    members: ["John Doe", "Jane Doe"],
+    id: 2,
+    name: "Project B",
+    description: "This is the description for Project B.",
+    start_date: "2024-03-01",
+    end_date: "2024-09-30",
+    image_url:
+      "https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/image/cobblestone.png",
   },
   {
-    title: "Skeleton",
-    description: "This is the description for Skeleton",
-    start_date: "2023-01-01",
-    end_date: "2023-02-01",
-    members: ["John Doe", "Jane Doe"],
-  },
-  {
-    title: "Creeper",
-    description: "This is the description for Creeper",
-    start_date: "2023-01-01",
-    end_date: "2023-02-01",
-    members: ["John Doe", "Jane Doe"],
+    id: 3,
+    name: "Project C",
+    description: "This is the description for Project C.",
+    start_date: "2024-09-01",
+    end_date: "2024-12-31",
+    image_url: "https://via.placeholder.com/50",
   },
 ];
 
-export default function MyProjectsPage() {
+const Page = () => {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="flex w-[80%] mx-auto">
-        <div className="w-[75%] shadow-lg bg-white rounded-lg h-[65vh] p-10">
-          <MyProjects fakeData={fakeData} />
+    <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
+      <div className="flex max-w-screen-xl w-full mx-auto py-6 space-x-6">
+        <div className="flex-1 bg-white p-6 rounded-lg shadow-md h-[700px] overflow-y-auto">
+          <div className="flex justify-between">
+            <h2 className="text-2xl font-semibold mb-4">My Projects</h2>
+            <ModalButton label="Create Project" />
+          </div>
+          <hr className="my-4" />
+          <ProjectList projects={projects} />
         </div>
-        <div className="ml-6 w-1/5">
+        <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
           <RightNavBar />
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Page;
