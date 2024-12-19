@@ -12,6 +12,7 @@ import {
 import { UserLog } from '../user/entities/user-log.entity';
 import { plainToClass } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     @InjectRepository(UserLog)
     private readonly userLogRepository: Repository<UserLog>,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -38,31 +40,67 @@ export class AuthService {
   // 로그인
   async login(LoginDto: LoginDto) {
     const user = await this.userRepository.findOneBy({ email: LoginDto.email });
+    const payload = { id: user.id, email: user.email, role: user.role };
 
-    // 로그인 후, 유저 로그의 마지막 로그인 컬럼 업데이트
+    // Access Token 생성
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '1h',
+    });
+
+    // Refresh Token 생성
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '7d',
+    });
+
+    // Redis에 Refresh Token 저장
+    await this.redisService.set(
+      `refresh:${user.id}`,
+      refreshToken,
+      7 * 24 * 60 * 60, // 7일
+    );
+
+    // 마지막 로그인 시간 업데이트
     await this.userLogRepository.update(
       { user: { id: user.id } },
       { lastLoggedIn: new Date() },
     );
-    const payload = { id: user.id, email: user.email, role: user.role };
 
     return {
-      access_token: this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: '1h',
-      }),
+      access_token: accessToken,
+      refresh_token: refreshToken,
     };
   }
 
-  // // 로그아웃
-  // async logout(userId: number) {
-  //   await this.userLogRepository.update(
-  //     { user: { id: userId } },
-  //     { lastLoggedOut: new Date() },
-  //   );
+  // 로그아웃
+  async logout(userId: number) {
+    await this.redisService.del(`refresh:${userId}`);
 
-  //   return { message: '로그아웃 되었습니다.' };
-  // }
+    // 마지막 로그아웃 시간 업데이트
+    await this.userLogRepository.update(
+      { user: { id: userId } },
+      { lastLoggedOut: new Date() },
+    );
+
+    return { message: '로그아웃 되었습니다.' };
+  }
+
+  // Refresh Token 검증 및 새 Access Token 발급
+  async refreshToken(userId: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const payload = { id: user.id, email: user.email, role: user.role };
+
+    // 새로운 access token 발급
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '1h',
+    });
+
+    return {
+      access_token: accessToken,
+    };
+  }
 
   // 회원가입
   async register(dto: RegisterDto): Promise<User> {

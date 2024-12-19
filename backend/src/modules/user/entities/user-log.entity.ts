@@ -34,6 +34,12 @@ export class UserLog {
   @Column({ nullable: true })
   lastLoggedOut: Date;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
+  @Column({ nullable: true })
+  refreshTokenExpiresAt: Date;
+
   // 외래 키 지정
   @OneToOne(() => User, (user) => user.log, { onDelete: 'CASCADE' }) // UserLog에서 User를 참조하는 관계
   @JoinColumn({ name: 'user_id' })
