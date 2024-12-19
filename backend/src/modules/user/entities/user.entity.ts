@@ -59,6 +59,6 @@ export class User {
   updatedAt: Date;
 
   @OneToOne(() => UserLog, (userLog) => userLog.user, { cascade: true })
-  @Exclude() // 직렬화에서 제외
+  @Exclude()
   log: UserLog;
 }
