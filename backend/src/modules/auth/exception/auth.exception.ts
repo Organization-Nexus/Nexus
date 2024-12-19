@@ -42,6 +42,13 @@ export class UnauthorizedAccessException extends CustomHttpException {
   }
 }
 
+// 유효하지 않은 리프레시 토큰
+export class UnauthorizedRefreshToken extends CustomHttpException {
+  constructor() {
+    super('유효하지 않은 리프레시 토큰입니다.', HttpStatus.UNAUTHORIZED);
+  }
+}
+
 // 접근 권한 없음
 export class ForbiddenAccessException extends CustomHttpException {
   constructor() {
