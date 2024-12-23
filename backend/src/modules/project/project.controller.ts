@@ -2,43 +2,58 @@ import {
   Controller,
   Post,
   Body,
-  UseInterceptors,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ProjectService } from './project.service';
-import { CreateProjectDto } from './dto/create-project.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileConfigService } from '../file/file-config.service';
-import { InvalidImageFormatException } from './exception/project-exception';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectService } from './project.service';
+import { FileService } from '../file/file.service';
+import {
+  InvalidImageFormatException,
+  ProjectImageConflictException,
+  ProjectImageRequiredException,
+} from './exception/project-exception';
 
 @Controller('project')
 export class ProjectController {
   constructor(
     private readonly projectService: ProjectService,
-    private readonly fileConfigService: FileConfigService,
+    private readonly fileService: FileService,
   ) {}
 
-  @Post('create')
+  // 프로젝트 생성
+  @Post('create-project')
   @UseInterceptors(FileInterceptor('project_image'))
-  async create(
+  async createProject(
     @Body() createProjectDto: CreateProjectDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
+    if (file && createProjectDto.project_image) {
+      throw new ProjectImageConflictException();
+    }
+    if (!file && !createProjectDto.project_image) {
+      throw new ProjectImageRequiredException();
+    }
     if (file && !file.mimetype.startsWith('image/')) {
       throw new InvalidImageFormatException();
     }
     const project = await this.projectService.createProject(createProjectDto);
-    const fileUrl = file
-      ? await this.fileConfigService.projectImageUpload(
-          file,
-          project.id,
-          createProjectDto.userId,
-        )
-      : 'https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/image/grass.png';
-    await this.projectService.updateProjectImage(project.id, fileUrl);
+    const imageUrl = await this.fileService.handleProjectImageUpload(
+      file,
+      createProjectDto.project_image,
+      project.userId,
+      project.id,
+    );
+
+    const updatedProject = await this.projectService.updateProjectImage(
+      project.id,
+      imageUrl,
+    );
+
     return {
       message: 'Project created successfully',
-      project: await this.projectService.findProjectById(project.id),
+      project: updatedProject,
     };
   }
 }

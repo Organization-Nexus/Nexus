@@ -43,7 +43,9 @@ const Page = () => {
             <ModalButton label="Create Project" />
           </div>
           <hr className="my-4" />
-          <ProjectList projects={projects} />
+          <div className="p-4">
+            <ProjectList projects={projects} />
+          </div>
         </div>
         <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
           <RightNavBar />
