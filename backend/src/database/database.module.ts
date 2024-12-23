@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/user/entities/user.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { UserLog } from 'src/modules/user/entities/user-log.entity';
 
 @Module({
   imports: [

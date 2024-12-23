@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
+import { JwtPayload } from '../interface/jwt-payload.interface';
+import { UnauthorizedAccessException } from '../exception/auth.exception';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -12,9 +14,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // passport strategy들은 전부 다 validate 함수에서 반환하는 값으로 유저객체를 만들게 된다.
-
-  async validate(payload: any) {
-    return payload;
+  async validate(payload: JwtPayload) {
+    if (!payload) {
+      throw new UnauthorizedAccessException(); // 유효하지 않은 토큰일 경우 예외 처리
+    }
+    return { id: payload.id, email: payload.email, role: payload.role };
   }
 }

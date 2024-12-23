@@ -2,9 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserLog } from './user-log.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('user')
 export class User {
@@ -53,4 +57,8 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne(() => UserLog, (userLog) => userLog.user, { cascade: true })
+  @Exclude()
+  log: UserLog;
 }
