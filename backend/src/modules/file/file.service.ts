@@ -2,20 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { S3ConfigService } from './s3-config.service';
 import { ProjectImageDto } from './dto/project-image.dto';
 import { ProjectImageInvalidFormatException } from './exception/file-exception';
-import {
-  S3UploadFailedException,
-  S3ParamsCreationFailedException,
-} from './exception/file-exception';
+import { S3UploadFailedException } from './exception/file-exception';
 
 @Injectable()
 export class FileService {
   constructor(private readonly s3ConfigService: S3ConfigService) {}
 
   async handleProjectImageUpload(
+    userId: number,
+    projectId: number,
     file?: Express.Multer.File,
     predefinedImage?: string,
-    userId?: string,
-    projectId?: string,
   ): Promise<string> {
     if (file) {
       if (!file.mimetype.startsWith('image/')) {

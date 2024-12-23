@@ -1,14 +1,14 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class ProjectImageDto {
   @IsNotEmpty()
   file: Express.Multer.File;
 
   @IsNotEmpty()
-  @IsString()
-  userId: string;
+  @IsNumber()
+  userId: number;
 
   @IsNotEmpty()
-  @IsString()
-  projectId: string;
+  @IsNumber()
+  projectId: number;
 }

@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RateLimitingModule } from './modules/rate-limiting/rate-limiting.module';
 import { ProjectModule } from './modules/project/project.module';
 import { FileModule } from './modules/file/file.module';
+import { ProjectUserModule } from './modules/project-user/project-user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FileModule } from './modules/file/file.module';
     UserModule,
     ProjectModule,
     FileModule,
+    ProjectUserModule,
   ],
 })
 export class AppModule {

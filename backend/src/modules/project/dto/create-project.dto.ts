@@ -2,9 +2,6 @@ import { IsString, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
-  userId: string;
-
-  @IsString()
   title: string;
 
   @IsString()

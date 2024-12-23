@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserLog } from './user-log.entity';
 import { Exclude } from 'class-transformer';
+import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 
 @Entity('user')
 export class User {
@@ -61,4 +63,7 @@ export class User {
   @OneToOne(() => UserLog, (userLog) => userLog.user, { cascade: true })
   @Exclude()
   log: UserLog;
+
+  @OneToMany(() => ProjectUser, (projectUser) => projectUser.user)
+  projectUsers: ProjectUser[];
 }

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from 'src/modules/user/entities/user.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { User } from 'src/modules/user/entities/user.entity';
 import { UserLog } from 'src/modules/user/entities/user-log.entity';
+import { Project } from 'src/modules/project/entities/project.entity';
+import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { UserLog } from 'src/modules/user/entities/user-log.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        entities: [User, UserLog, Project, ProjectUser],
         synchronize: true,
         namingStrategy: new SnakeNamingStrategy(),
       }),
