@@ -1,9 +1,11 @@
-// app/login/page.tsx
-"use client";
-
+import { userAPI } from "@/api/utils/user";
+import LoginFormComponent from "@/components/Auth/LoginForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
   return (
@@ -28,41 +30,7 @@ export default function LoginPage() {
             <div className="mb-6">
               <h2 className="text-3xl text-center font-semibold">로그인</h2>
             </div>
-            <div>
-              <form>
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Input
-                      id="email"
-                      placeholder="이메일"
-                      className="text-lg p-6"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="비밀번호"
-                      className="text-lg p-6"
-                    />
-                  </div>
-                  <div className="text-sm text-right">
-                    <a
-                      href="/register"
-                      className="text-gray-500 hover:text-gray-700 pr-2"
-                    >
-                      회원가입
-                    </a>
-                    <a href="#" className="text-gray-500 hover:text-gray-700">
-                      비밀번호 찾기
-                    </a>
-                  </div>
-                  <Button className="w-full bg-custom-point hover:bg-custom-hover text-lg py-6">
-                    로그인
-                  </Button>
-                </div>
-              </form>
-            </div>
+            <LoginFormComponent />
           </div>
         </div>
       </div>

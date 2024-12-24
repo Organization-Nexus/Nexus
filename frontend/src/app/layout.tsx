@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head />
-      <body className="bg-[#E2EAFC]">{children}</body>
+      <body className="bg-custom-main">{children}</body>
     </html>
   );
 }
