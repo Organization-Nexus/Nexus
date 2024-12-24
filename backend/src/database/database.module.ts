@@ -18,7 +18,7 @@ import { UserLog } from 'src/modules/user/entities/user-log.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, UserLog],
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: true,
         namingStrategy: new SnakeNamingStrategy(),
       }),
