@@ -21,6 +21,7 @@ export class User {
   })
   email: string;
 
+  @Exclude()
   @Column({
     length: 100,
   })
