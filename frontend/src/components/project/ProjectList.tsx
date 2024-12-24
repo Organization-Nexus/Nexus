@@ -17,16 +17,16 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects = [] }) => {
     return (
       <div key={project.id} className="bg-white p-4 shadow-md mb-4">
         <div className="flex items-start">
-          {project.image_url && (
+          {project.project_image && (
             <img
-              src={project.image_url}
-              alt={`${project.name} image`}
+              src={project.project_image}
+              alt={`${project.title} image`}
               className="w-12 h-12 object-cover mr-4"
             />
           )}
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              {project.name}
+              {project.title}
             </h3>
             <p className="text-sm text-gray-500">{project.description}</p>
           </div>

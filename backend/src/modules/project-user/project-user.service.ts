@@ -1,4 +1,3 @@
-// project-user.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +8,7 @@ import { User } from '../user/entities/user.entity';
 import {
   ProjectNotFoundException,
   UserNotFoundException,
+  YourNotProjectMemberException,
 } from './exception/project-user.exception';
 
 @Injectable()
@@ -42,5 +42,18 @@ export class ProjectUserService {
       position,
       is_sub_admin,
     });
+  }
+
+  async validateProjectMember(
+    projectId: number,
+    userId: number,
+  ): Promise<boolean> {
+    const projectUser = await this.projectUserRepository.findOne({
+      where: { project: { id: projectId }, user: { id: userId } },
+    });
+    if (!projectUser) {
+      throw new YourNotProjectMemberException(userId, projectId);
+    }
+    return !!projectUser;
   }
 }

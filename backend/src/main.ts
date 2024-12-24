@@ -33,8 +33,9 @@ async function bootstrap() {
   });
 
   await app.listen(PORT, () => {
-    console.log(`🚀 Running API in Mode: ${process.env.NODE_ENV}`);
-    console.log(`📡 Backend URL: ${PORT}`);
+    console.log(
+      `🚀 Running API in Mode: ${process.env.NODE_ENV} Server Url http://backend:${PORT}/${API_PREFIX}`,
+    );
   });
 }
 bootstrap();

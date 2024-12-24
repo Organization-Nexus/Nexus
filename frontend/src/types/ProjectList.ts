@@ -1,10 +1,10 @@
 export interface Project {
   id: number;
-  name: string;
+  title: string;
   description: string;
   start_date: string;
   end_date: string;
-  image_url?: string;
+  project_image?: string;
 }
 
 export interface ProjectListProps {

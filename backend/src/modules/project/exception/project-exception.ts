@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { CustomHttpException } from 'src/common/exceptions/custum.http.exception';
 
 export class ProjectNotFoundException extends CustomHttpException {
-  constructor(projectId: string) {
+  constructor(projectId: number) {
     super(
       `ID가 ${projectId}인 프로젝트를 찾을 수 없습니다. 🥲`,
       HttpStatus.NOT_FOUND,

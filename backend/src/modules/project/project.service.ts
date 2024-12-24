@@ -5,6 +5,7 @@ import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectImageDto } from './dto/update-project-image.dto';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
+import { ProjectNotFoundException } from './exception/project-exception';
 
 @Injectable()
 export class ProjectService {
@@ -32,12 +33,24 @@ export class ProjectService {
     return await this.projectRepository.save(project);
   }
 
-  // 나의 프로젝트 조회
+  // 나의 프로젝트 목록 조회
   async getMyProjects(userId: number): Promise<Project[]> {
     const projectUsers = await this.projectUserRepository.find({
       where: { user: { id: userId } },
-      relations: ['project'],
+      relations: ['project', 'project.projectUsers'],
     });
     return projectUsers.map((projectUser) => projectUser.project);
+  }
+
+  // 프로젝트 상세 조회
+  async getProjectDetail(projectId: number): Promise<Project> {
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ['projectUsers', 'projectUsers.user'],
+    });
+    if (!project) {
+      throw new ProjectNotFoundException(projectId);
+    }
+    return project;
   }
 }

@@ -1,8 +1,10 @@
 import api from "../axios";
 
-const createProject = async (): Promise<string> => {
-  const response = await api.get<string>("/project/create");
-  return response.data;
+export const getMyProjects = async () => {
+  try {
+    const response = await api.get("/project/my-projects");
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
 };
-
-export default { createProject };
