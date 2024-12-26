@@ -1,64 +1,63 @@
-// Axios 인스턴스 설정
+// src/api/axios.ts
 import axios from "axios";
+import Cookies from "js-cookie";
 
-const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-console.log("Server URL:", serverUrl); // 서버 URL을 로그로 확인
+// 클라이언트 사이드에서는 NEXT_PUBLIC_ 접두사가 붙은 환경변수만 접근 가능
+const CLIENT_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+// 서버 사이드에서는 모든 환경변수 접근 가능
+const SERVER_URL = process.env.NEST_PUBLIC_SERVER_URL;
 
-const api = axios.create({
-  baseURL: serverUrl,
+// 현재 실행 환경이 서버인지 클라이언트인지 확인
+const isServer = typeof window === "undefined";
+
+export const api = axios.create({
+  baseURL: isServer ? SERVER_URL : CLIENT_URL,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 요청 인터셉터
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
+// Request Interceptor
+api.interceptors.request.use((config) => {
+  // 서버 사이드에서는 쿠키 접근 불가
+  if (!isServer) {
+    const token = Cookies.get("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
   }
-);
+  return config;
+});
 
-// 응답 인터셉터
+// Response Interceptor
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
+    // 서버 사이드에서는 리프레시 토큰 로직 실행하지 않음
+    if (isServer) return Promise.reject(error);
+
     const originalRequest = error.config;
 
-    // 401 에러 (토큰 만료) 처리
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        const response = await api.post("/auth/refresh", {
-          refresh_token: refreshToken,
+        const refreshToken = Cookies.get("refresh_token");
+        const { data } = await api.post("/auth/refresh", null, {
+          headers: { Authorization: `Bearer ${refreshToken}` },
         });
 
-        const { access_token } = response.data;
-        localStorage.setItem("accessToken", access_token);
+        Cookies.set("access_token", data.access_token);
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
 
-        // 새로운 토큰으로 헤더 업데이트
-        originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return api(originalRequest);
-      } catch (refreshError) {
-        // refresh token 만료 또는 갱신 실패
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+      } catch (error) {
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
         window.location.href = "/login";
-        return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );

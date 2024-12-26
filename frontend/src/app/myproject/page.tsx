@@ -3,6 +3,7 @@ import ProjectList from "@/components/project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
 import { Project } from "@/types/ProjectList";
 import ModalButton from "@/components/common/ModalButton";
+import { LogoutButton } from "@/components/common/LogoutButton";
 
 const projects: Project[] = [
   {
@@ -41,6 +42,7 @@ const Page = () => {
           <div className="flex justify-between">
             <h2 className="text-2xl font-semibold mb-4">My Projects</h2>
             <ModalButton label="Create Project" />
+            <LogoutButton />
           </div>
           <hr className="my-4" />
           <div className="p-4">
