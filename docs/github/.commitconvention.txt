@@ -21,7 +21,6 @@
 # 📌 Init : 초기 생성
 # 🚑 !BREAKING CHANGE : 큰 API 혹은 로직 변경
 # 🔔 Merge Request : Merge Request 생성
-# ⚙️ Setting : 초기 세팅 및 개발 환경 세팅
 
 # 🚨 CAUTION
 # - 제목 첫 글자는 대문자로 작성합니다.
