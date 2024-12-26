@@ -88,9 +88,9 @@ export class ProjectController {
 
   // 내 프로젝트 목록 조회
   @Get('my-projects')
-  @UseGuards(JwtAuthGuard)
-  async getMyProjects(@Req() req: UserPayload) {
-    const userId = req.user.id;
+  // @UseGuards(JwtAuthGuard)
+  async getMyProjects() {
+    const userId = 4;
     return await this.projectService.getMyProjects(userId);
   }
 

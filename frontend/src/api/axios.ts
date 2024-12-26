@@ -1,7 +1,7 @@
 // Axios 인스턴스 설정
 import axios from "axios";
 
-const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+const serverUrl = process.env.INTERNAL_API_URL;
 console.log("Server URL:", serverUrl); // 서버 URL을 로그로 확인
 
 const api = axios.create({

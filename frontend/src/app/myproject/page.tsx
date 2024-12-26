@@ -1,7 +1,15 @@
-import ProjectList from "@/components/project/ProjectList";
+import ProjectList from "@/components/Project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
 import ModalButton from "@/components/common/ModalButton";
 import { getMyProjects } from "@/api/utils/project";
+
+const contents = [
+  "Project Management",
+  "Task Management",
+  "Team Management",
+  "Calendar",
+  "Chat",
+];
 
 export default async function MyProject() {
   const projects = await getMyProjects();
@@ -19,7 +27,7 @@ export default async function MyProject() {
           </div>
         </div>
         <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
-          <RightNavBar />
+          <RightNavBar contents={contents} />
         </div>
       </div>
     </div>

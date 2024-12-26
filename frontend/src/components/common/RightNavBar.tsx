@@ -2,7 +2,11 @@
 
 import React from "react";
 
-const RightNavBar: React.FC = () => {
+interface RightNavBarProps {
+  contents: string[];
+}
+
+const RightNavBar = ({ contents }: RightNavBarProps) => {
   return (
     <div className="p-4">
       <div className="flex mb-4">
@@ -19,10 +23,9 @@ const RightNavBar: React.FC = () => {
       </div>
       <hr className="my-2" />
       <div className="space-y-2">
-        <h1>Content 1</h1>
-        <h1>Content 2</h1>
-        <h1>Content 3</h1>
-        <h1>Content 4</h1>
+        {contents.map((content, index) => (
+          <h1 key={index}>{content}</h1>
+        ))}
       </div>
     </div>
   );

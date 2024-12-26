@@ -39,7 +39,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-[600px]">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-[600px] h-auto">
         <h2 className="text-2xl font-semibold mb-4">Create New Project</h2>
         <form onSubmit={handleSubmit}>
           <div>

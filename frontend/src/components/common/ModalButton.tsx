@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import CreateProjectModal from "../project/CreateProjectModal";
+import { useState } from "react";
+import CreateProjectModal from "../Project/CreateProjectModal";
 
 interface ModalButtonProps {
   label: string;
 }
 
-const ModalButton: React.FC<ModalButtonProps> = ({ label }) => {
+const ModalButton = ({ label }: ModalButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
