@@ -1,11 +1,11 @@
-// components/Auth/LoginForm.tsx
 "use client";
 
-import { userAPI } from "@/api/utils/user";
+import { authApi } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 export default function LoginFormComponent() {
   const router = useRouter();
@@ -13,6 +13,9 @@ export default function LoginFormComponent() {
     email: "",
     password: "",
   });
+
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -22,21 +25,35 @@ export default function LoginFormComponent() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const response = await userAPI.login(formData);
+      const { data } = await authApi.login(formData);
+
+      // 토큰 저장
+      Cookies.set("access_token", data.access_token);
+      Cookies.set("refresh_token", data.refresh_token);
+
       router.push("/myproject");
       alert("로그인되었습니다.");
     } catch (error: any) {
-      alert(error.message);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
+        {error && (
+          <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
         <div className="space-y-2">
           <Input
             id="email"
