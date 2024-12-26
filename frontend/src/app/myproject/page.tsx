@@ -1,6 +1,7 @@
 import ProjectList from "@/components/Project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
 import ModalButton from "@/components/common/ModalButton";
+import { LogoutButton } from "@/components/common/LogoutButton";
 import { getMyProjects } from "@/api/utils/project";
 
 const contents = [
@@ -20,6 +21,7 @@ export default async function MyProject() {
           <div className="flex justify-between">
             <h2 className="text-2xl font-semibold mb-4">My Projects</h2>
             <ModalButton label="Create Project" />
+            <LogoutButton />
           </div>
           <hr className="my-4" />
           <div className="p-4">
