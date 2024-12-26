@@ -2,7 +2,7 @@ import ProjectList from "@/components/Project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
 import ModalButton from "@/components/common/ModalButton";
 import { LogoutButton } from "@/components/common/LogoutButton";
-import { getMyProjects } from "@/api/utils/project";
+import { getMyProjects } from "@/api/project";
 
 const contents = [
   "Project Management",
@@ -14,6 +14,7 @@ const contents = [
 
 export default async function MyProject() {
   const projects = await getMyProjects();
+
   return (
     <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
       <div className="flex max-w-screen-xl w-full mx-auto py-6 space-x-6">
