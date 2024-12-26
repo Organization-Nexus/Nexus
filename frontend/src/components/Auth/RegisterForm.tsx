@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { UnderlineInput } from "@/components/ui/underlineInput";
 import { PositionSelect } from "@/components/User/PositionSelect";
 import { useState } from "react";
-import { RegisterForm } from "@/types/auth";
-import { userAPI } from "@/api/utils/user";
+import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import { RegisterRequest } from "@/types/auth";
 
 export default function RegisterFormComponent() {
   const router = useRouter();
-  const [formData, setFormData] = useState<Omit<RegisterForm, "mainPosition">>({
+  const [formData, setFormData] = useState<
+    Omit<RegisterRequest, "mainPosition">
+  >({
     name: "",
     email: "",
     password: "",
@@ -36,12 +38,12 @@ export default function RegisterFormComponent() {
     setIsLoading(true);
 
     try {
-      const signupData: RegisterForm = {
+      const signupData: RegisterRequest = {
         ...formData,
         mainPosition: selectedPositions,
       };
 
-      const response = await userAPI.register(signupData);
+      const response = await authApi.register(signupData);
       alert("회원가입이 완료되었습니다.");
       router.push("/login");
     } catch (error) {

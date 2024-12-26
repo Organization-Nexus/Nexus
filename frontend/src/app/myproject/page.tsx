@@ -1,4 +1,4 @@
-import ProjectList from "@/components/Project/ProjectList";
+import ProjectList from "@/components/project/ProjectList";
 import RightNavBar from "@/components/common/RightNavBar";
 import ModalButton from "@/components/common/ModalButton";
 import { LogoutButton } from "@/components/common/LogoutButton";
