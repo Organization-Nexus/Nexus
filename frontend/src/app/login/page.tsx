@@ -22,7 +22,7 @@ export default function LoginPage() {
         <div className="col-span-6 p-8 flex justify-center items-center">
           <div className="w-[500px] bg-white p-8 -mt-32">
             <div className="mb-6">
-              <h2 className="text-3xl text-center font-semibold">로그인</h2>
+              <h2 className="text-3xl text-center font-semibold">로그인 </h2>
             </div>
             <LoginFormComponent />
           </div>
