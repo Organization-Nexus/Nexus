@@ -18,11 +18,11 @@ export class Project {
   @Column()
   description: string;
 
-  @Column()
-  start_date: string;
+  @Column('date')
+  start_date: Date;
 
-  @Column()
-  end_date: string;
+  @Column('date')
+  end_date: Date;
 
   @CreateDateColumn()
   createAt: Date;

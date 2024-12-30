@@ -1,4 +1,4 @@
-import { User } from "@/types/User";
+import { User } from "@/types/user";
 import React from "react";
 
 function MyprojectHeader({ user }: { user: User }) {

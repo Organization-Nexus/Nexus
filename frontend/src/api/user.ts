@@ -1,4 +1,4 @@
-import { User } from "@/types/User";
+import { User } from "@/types/user";
 import { api } from "./config/axios";
 
 export const userApi = {

@@ -1,10 +1,10 @@
 import { projectApi } from "@/api/project";
-import ModalButton from "@/components/project/ModalButton";
-import RightNavBar from "@/components/project/RightNavBar";
-import { LogoutButton } from "@/components/project/LogoutButton";
 import ProjectList from "@/components/project/ProjectList";
 import { userApi } from "@/api/user";
 import MyprojectHeader from "@/components/project/MyprojectHeader";
+import { LogoutButton } from "@/components/button/LogoutButton";
+import ModalButton from "@/components/button/ModalButton";
+import RightNavBar from "@/components/navbar/RightNavBar";
 
 const contents = [
   "Project Management",
