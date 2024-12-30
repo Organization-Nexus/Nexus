@@ -1,61 +1,49 @@
 "use client";
 
-import { Project, ProjectListProps } from "@/types/ProjectList";
-import React from "react";
+import { Project, ProjectListProps } from "@/types/project";
+import { useQuery as useReactQuery } from "@tanstack/react-query";
+import ProjectCard from "./ProjectCard";
+import { projectApi } from "@/api/project";
 
-const currentDate = new Date();
+const ProjectList = ({ projects = [] }: ProjectListProps) => {
+  const { data: project } = useReactQuery({
+    queryKey: ["project"],
+    queryFn: projectApi.getMyProjects,
+    initialData: projects,
+  });
 
-const ProjectList: React.FC<ProjectListProps> = ({ projects = [] }) => {
-  const inProgressProjects = projects.filter(
-    (project) => new Date(project.end_date) >= currentDate
-  );
-  const completedProjects = projects.filter(
-    (project) => new Date(project.end_date) < currentDate
-  );
-
-  const renderProject = (project: Project, isCompleted: boolean) => {
-    return (
-      <div key={project.id} className="bg-white p-4 shadow-md mb-4">
-        <div className="flex items-start">
-          {project.project_image && (
-            <img
-              src={project.project_image}
-              alt={`${project.title} image`}
-              className="w-12 h-12 object-cover mr-4"
-            />
-          )}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800">
-              {project.title}
-            </h3>
-            <p className="text-sm text-gray-500">{project.description}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center mt-2">
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full ${
-                isCompleted ? "bg-green-500" : "bg-blue-500"
-              }`}
-              style={{ width: isCompleted ? "100%" : "50%" }}
-            ></div>
-          </div>
-          <span className="text-xs text-gray-400 ml-2">
-            {isCompleted ? "100%" : "50%"}
-          </span>
-        </div>
-      </div>
-    );
+  const getProjectStatus = (end_date: string) => {
+    return new Date(end_date) >= new Date() ? "in-progress" : "completed";
   };
 
-  return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">In Progress</h2>
-      {inProgressProjects.map((project) => renderProject(project, false))}
+  const inProgressProjects = project?.filter(
+    (project: Project) => getProjectStatus(project.end_date) === "in-progress"
+  );
+  const completedProjects = project?.filter(
+    (project: Project) => getProjectStatus(project.end_date) === "completed"
+  );
 
-      <h2 className="text-xl font-semibold">Completed</h2>
-      {completedProjects.map((project) => renderProject(project, true))}
+  return (
+    <div className="mx-auto p-4">
+      {/* Progress Projects */}
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {inProgressProjects?.map((project: Project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      </div>
+
+      <hr className="my-8" />
+
+      {/* Completed Projects */}
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {completedProjects?.map((project: Project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

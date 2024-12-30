@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import LogoImage from "./LogoImage";
 
 interface CreateProjectModalProps {
   onClose: () => void;
@@ -10,8 +9,8 @@ interface CreateProjectModalProps {
 const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
   const [isCustomLogo, setIsCustomLogo] = useState(false);
@@ -35,6 +34,22 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
   const handleCustomLogoToggle = () => {
     setIsCustomLogo((prev) => !prev);
     setSelectedLogo(null);
+  };
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value ? new Date(e.target.value) : null;
+    if (selectedDate) {
+      selectedDate.setHours(selectedDate.getHours() + 9); // 한국 시간대로 변환
+    }
+    setStartDate(selectedDate);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value ? new Date(e.target.value) : null;
+    if (selectedDate) {
+      selectedDate.setHours(selectedDate.getHours() + 9); // 한국 시간대로 변환
+    }
+    setEndDate(selectedDate);
   };
 
   return (
@@ -65,8 +80,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
               <label>Start Date:</label>
               <input
                 type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={startDate ? startDate.toISOString().split("T")[0] : ""}
+                onChange={handleStartDateChange}
                 className="border p-2 mt-1 mb-3 w-full"
               />
             </div>
@@ -74,8 +89,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
               <label>End Date:</label>
               <input
                 type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                onChange={handleEndDateChange}
                 className="border p-2 mt-1 mb-3 w-full"
               />
             </div>
@@ -93,24 +108,6 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
             >
               {isCustomLogo ? "Use Default Logo" : "Use Custom Logo"}
             </button>
-          </div>
-
-          <div>
-            {isCustomLogo ? (
-              <div>
-                <label>Upload Custom Logo</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    e.target.files && setImage(e.target.files[0])
-                  }
-                  className="border p-2 mt-1 mb-3 w-full"
-                />
-              </div>
-            ) : (
-              <LogoImage onLogoSelect={handleLogoSelect} />
-            )}
           </div>
 
           <div className="flex justify-between mt-4">

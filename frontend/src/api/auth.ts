@@ -1,4 +1,3 @@
-// src/api/auth.ts
 import { api } from "./config/axios";
 import { AuthResponse, LoginRequest, RegisterRequest } from "@/types/auth";
 

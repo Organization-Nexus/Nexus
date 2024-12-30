@@ -1,6 +1,9 @@
-// 인터페이스, 타입 등을 정의
 export interface User {
-  id: string;
-  name: string;
+  id: number;
   email: string;
+  name: string;
+  phoneNumber: string;
+  mainPosition: string;
+  githubUrl: string | null;
+  role: string;
 }

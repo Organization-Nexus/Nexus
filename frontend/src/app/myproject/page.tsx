@@ -1,8 +1,10 @@
+import { projectApi } from "@/api/project";
+import ModalButton from "@/components/project/ModalButton";
+import RightNavBar from "@/components/project/RightNavBar";
+import { LogoutButton } from "@/components/project/LogoutButton";
 import ProjectList from "@/components/project/ProjectList";
-import RightNavBar from "@/components/common/RightNavBar";
-import ModalButton from "@/components/common/ModalButton";
-import { LogoutButton } from "@/components/common/LogoutButton";
-import { getMyProjects } from "@/api/project";
+import { userApi } from "@/api/user";
+import MyprojectHeader from "@/components/project/MyprojectHeader";
 
 const contents = [
   "Project Management",
@@ -13,26 +15,27 @@ const contents = [
 ];
 
 export default async function MyProject() {
-  const projects = await getMyProjects();
+  const projects = await projectApi.getMyProjects();
+  const user = await userApi.getUser();
 
   return (
-    <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
-      <div className="flex max-w-screen-xl w-full mx-auto py-6 space-x-6">
-        <div className="flex-1 bg-white p-6 rounded-lg shadow-md h-[700px] overflow-y-auto">
-          <div className="flex justify-between">
-            <h2 className="text-2xl font-semibold mb-4">My Projects</h2>
-            <ModalButton label="Create Project" />
-            <LogoutButton />
-          </div>
-          <hr className="my-4" />
-          <div className="p-4">
+    <>
+      <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
+        <div className="flex w-full max-w-screen-2xl mx-auto py-6 space-x-2">
+          <div className="flex-1 bg-white p-8 rounded-lg shadow-md h-[1000px] overflow-y-auto">
+            <div className="flex justify-between">
+              <MyprojectHeader user={user} />
+              <ModalButton label="Create Project" />
+            </div>
+            <hr className="my-4" />
             <ProjectList projects={projects} />
           </div>
-        </div>
-        <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
-          <RightNavBar contents={contents} />
+          <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
+            <RightNavBar contents={contents} />
+          </div>
         </div>
       </div>
-    </div>
+      <LogoutButton />
+    </>
   );
 }

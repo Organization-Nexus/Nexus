@@ -1,10 +1,10 @@
+import { Project } from "@/types/project";
 import api from "./config/axios";
 
-export const getMyProjects = async () => {
-  try {
-    const response = await api.get("/project/my-projects");
-    return response.data;
-  } catch (error) {
-    console.error(error);
-  }
+export const projectApi = {
+  getMyProjects: async (): Promise<Project[]> => {
+    return await api
+      .get<Project[]>("/project/my-projects")
+      .then((res) => res.data);
+  },
 };
