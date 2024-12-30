@@ -1,131 +1,134 @@
-"use client";
+import { ModalDetailProps } from "@/types/modal";
+import { formatDate } from "@/utils/dateFormatter";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 
-import React, { useState } from "react";
+const CreateProjectModal = ({ closeModal, label }: ModalDetailProps) => {
+  const formDate = formatDate(new Date().toISOString());
 
-interface CreateProjectModalProps {
-  onClose: () => void;
-}
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    start_date: formDate,
+    end_date: "",
+  });
 
-const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose }) => {
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [image, setImage] = useState<File | null>(null);
-  const [selectedLogo, setSelectedLogo] = useState<string | null>(null);
-  const [isCustomLogo, setIsCustomLogo] = useState(false);
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      projectName,
-      description,
-      startDate,
-      endDate,
-      image,
-      selectedLogo,
+    setFormData((prevState) => {
+      if (name === "start_date" && value !== prevState.start_date) {
+        return {
+          ...prevState,
+          [name]: value,
+          end_date: "",
+        };
+      }
+
+      return {
+        ...prevState,
+        [name]: value,
+      };
     });
   };
 
-  const handleLogoSelect = (logo: string | null) => {
-    setSelectedLogo(logo);
-  };
-
-  const handleCustomLogoToggle = () => {
-    setIsCustomLogo((prev) => !prev);
-    setSelectedLogo(null);
-  };
-
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value ? new Date(e.target.value) : null;
-    if (selectedDate) {
-      selectedDate.setHours(selectedDate.getHours() + 9); // 한국 시간대로 변환
-    }
-    setStartDate(selectedDate);
-  };
-
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = e.target.value ? new Date(e.target.value) : null;
-    if (selectedDate) {
-      selectedDate.setHours(selectedDate.getHours() + 9); // 한국 시간대로 변환
-    }
-    setEndDate(selectedDate);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    closeModal();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-[600px] h-auto">
-        <h2 className="text-2xl font-semibold mb-4">Create New Project</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Project Name:</label>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              className="border p-2 mt-1 mb-3 w-full"
-            />
-          </div>
-          <div>
-            <label>Description:</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="border p-2 mt-1 mb-3 w-full"
-            />
-          </div>
-
-          <div className="flex space-x-4 mb-3">
-            <div className="w-1/2">
-              <label>Start Date:</label>
-              <input
-                type="date"
-                value={startDate ? startDate.toISOString().split("T")[0] : ""}
-                onChange={handleStartDateChange}
-                className="border p-2 mt-1 mb-3 w-full"
-              />
-            </div>
-            <div className="w-1/2">
-              <label>End Date:</label>
-              <input
-                type="date"
-                value={endDate ? endDate.toISOString().split("T")[0] : ""}
-                onChange={handleEndDateChange}
-                className="border p-2 mt-1 mb-3 w-full"
-              />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <button
-              type="button"
-              onClick={handleCustomLogoToggle}
-              className={`px-4 py-2 rounded ${
-                isCustomLogo
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-              {isCustomLogo ? "Use Default Logo" : "Use Custom Logo"}
-            </button>
-          </div>
-
-          <div className="flex justify-between mt-4">
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-            >
-              Create
-            </button>
-            <button
-              onClick={onClose}
-              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-            >
-              Close
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl h-[600px] overflow-auto">
+      <h2 className="text-xl font-semibold mb-4">{label}</h2>
+      <hr className="my-4" />
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
+            제목
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full placeholder:text-sm"
+            placeholder="제목을 입력하세요"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
+            설명
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="start_date"
+            className="block text-sm font-medium text-gray-700"
+          >
+            시작 날짜
+          </label>
+          <input
+            type="date"
+            id="start_date"
+            name="start_date"
+            value={formData.start_date}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            required
+            min={formDate}
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            htmlFor="end_date"
+            className="block text-sm font-medium text-gray-700"
+          >
+            종료 날짜
+          </label>
+          <input
+            type="date"
+            id="end_date"
+            name="end_date"
+            value={formData.end_date}
+            onChange={handleChange}
+            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            required
+            min={formData.start_date}
+          />
+        </div>
+        <div className="mt-4 flex justify-between">
+          <button
+            type="button"
+            onClick={closeModal}
+            className="bg-gray-500 text-white py-2 px-4 rounded-md"
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white py-2 px-4 rounded-md"
+          >
+            생성
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
