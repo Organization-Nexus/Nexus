@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const publicPaths = [
     "/login",
     "/register",
-    "/find-password",
+    "/forgot-password",
     // "/api/auth", // 인증 관련 API 경로
   ];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));

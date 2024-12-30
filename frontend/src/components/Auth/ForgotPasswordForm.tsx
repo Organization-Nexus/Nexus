@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-export default function FindPasswordForm() {
+export default function ForgotPasswordForm() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">

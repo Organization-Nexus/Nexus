@@ -1,4 +1,4 @@
-import FindPasswordForm from "@/components/Auth/FindPasswordForm";
+import ForgotPasswordForm from "@/components/Auth/ForgotPasswordForm";
 import Image from "next/image";
 
 export default function ForgotPasswordPage() {
@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
                 보내드립니다.
               </p>
             </div>
-            <FindPasswordForm />
+            <ForgotPasswordForm />
           </div>
         </div>
       </div>
