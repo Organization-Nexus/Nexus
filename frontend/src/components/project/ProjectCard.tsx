@@ -3,8 +3,24 @@ import ProgressBar from "./ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
 
 const ProjectCard = ({ project }: { project: Project }) => {
-  const status =
-    new Date(project.end_date) >= new Date() ? "in-progress" : "completed";
+  const now = new Date();
+  const startDate = new Date(project.start_date);
+  const endDate = new Date(project.end_date);
+
+  let status: string;
+  let stickerColor: string;
+
+  if (startDate > now) {
+    status = "scheduled";
+    stickerColor = "bg-yellow-400";
+  } else if (endDate >= now) {
+    status = "in-progress";
+    stickerColor = "bg-blue-400";
+  } else {
+    status = "completed";
+    stickerColor = "bg-gray-400";
+  }
+
   const progressPercentage = calculateProjectProgress(
     project.start_date,
     project.end_date
@@ -14,8 +30,12 @@ const ProjectCard = ({ project }: { project: Project }) => {
   const memberCount = projectMembers.length;
   const memberPositions = projectMembers.map((user) => user.position);
 
-  const bgColor = status === "in-progress" ? "bg-blue-100" : "bg-gray-300";
-  const stickerColor = status === "in-progress" ? "bg-blue-600" : "bg-gray-600";
+  const bgColor =
+    status === "in-progress"
+      ? "bg-blue-50"
+      : status === "scheduled"
+      ? "bg-yellow-50"
+      : "bg-gray-50";
 
   return (
     <div
@@ -25,7 +45,13 @@ const ProjectCard = ({ project }: { project: Project }) => {
       <div
         className={`absolute top-2 left-2 px-3 py-1 text-white text-xs rounded-md ${stickerColor}`}
       >
-        {status === "in-progress" ? "진행중" : "완료됨"}
+        {status === "in-progress"
+          ? "진행중"
+          : status === "scheduled"
+          ? "예정됨"
+          : status === "completed"
+          ? "완료됨"
+          : ""}
       </div>
 
       <div className="flex p-6">
@@ -33,7 +59,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
         {project.project_image && (
           <img
             src={project.project_image}
-            alt={`${project.title} image`}
             className="w-32 h-32 object-cover rounded-md mr-4"
           />
         )}

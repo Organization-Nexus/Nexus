@@ -21,8 +21,8 @@ export default async function MyProject() {
   return (
     <>
       <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
-        <div className="flex w-full max-w-screen-2xl mx-auto py-6 space-x-2">
-          <div className="flex-1 bg-white p-8 rounded-lg shadow-md h-[1000px] overflow-y-auto">
+        <div className="flex w-full max-w-screen-2xl mx-auto h-[880px] py-6 space-x-2">
+          <div className="flex-1 bg-white p-8 rounded-xl shadow-md overflow-y-auto">
             <div className="flex justify-between">
               <MyprojectHeader user={user} />
               <ModalButton label="Create Project" />

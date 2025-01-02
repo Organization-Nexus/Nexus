@@ -12,37 +12,64 @@ const ProjectList = ({ projects = [] }: ProjectListProps) => {
     initialData: projects,
   });
 
-  const getProjectStatus = (end_date: string) => {
-    return new Date(end_date) >= new Date() ? "in-progress" : "completed";
+  const getProjectStatus = (start_date: string, end_date: string) => {
+    const now = new Date();
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    if (startDate > now) {
+      return "scheduled";
+    } else if (endDate >= now) {
+      return "in-progress";
+    } else {
+      return "completed";
+    }
   };
 
   const inProgressProjects = project?.filter(
-    (project: Project) => getProjectStatus(project.end_date) === "in-progress"
+    (project: Project) =>
+      getProjectStatus(project.start_date, project.end_date) === "in-progress"
   );
+
   const completedProjects = project?.filter(
-    (project: Project) => getProjectStatus(project.end_date) === "completed"
+    (project: Project) =>
+      getProjectStatus(project.start_date, project.end_date) === "completed"
+  );
+
+  const scheduledProjects = project?.filter(
+    (project: Project) =>
+      getProjectStatus(project.start_date, project.end_date) === "scheduled"
   );
 
   return (
     <div className="mx-auto p-4">
-      {/* Progress Projects */}
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {inProgressProjects?.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+      {/* In Progress Projects */}
+      <div className="grid grid-cols-2 gap-4">
+        {inProgressProjects?.map((project: Project) => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
       </div>
 
       <hr className="my-8" />
 
       {/* Completed Projects */}
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {completedProjects?.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {completedProjects?.map((project: Project) => (
+          <div key={project.id}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
+      </div>
+
+      <hr className="my-8" />
+
+      {/* Scheduled Projects */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {scheduledProjects?.map((project: Project) => (
+          <div key={project.id}>
+            <ProjectCard project={project} />
+          </div>
+        ))}
       </div>
     </div>
   );
