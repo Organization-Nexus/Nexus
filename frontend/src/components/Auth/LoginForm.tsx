@@ -80,8 +80,11 @@ export default function LoginFormComponent() {
           >
             회원가입
           </a>
-          <a href="#" className="text-gray-500 hover:text-gray-700">
-            비밀번호 찾기
+          <a
+            href="/forgot-password"
+            className="text-gray-500 hover:text-gray-700"
+          >
+            비밀번호 재설정
           </a>
         </div>
         <Button className="w-full bg-custom-point hover:bg-custom-hover text-lg py-6">
