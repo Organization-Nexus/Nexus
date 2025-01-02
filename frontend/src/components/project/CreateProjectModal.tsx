@@ -1,136 +1,122 @@
-import { ModalDetailProps } from "@/types/modal";
-import { formatDate } from "@/utils/dateFormatter";
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState } from "react";
+import { Modal } from "../modal/Modal";
 
-const CreateProjectModal = ({ closeModal, label }: ModalDetailProps) => {
-  const formDate = formatDate(new Date().toISOString());
+interface CreateProjectModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const [formData, setFormData] = useState({
+interface ProjectFormData {
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+}
+
+export default function CreateProjectModal({
+  isOpen,
+  onClose,
+}: CreateProjectModalProps) {
+  const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
     description: "",
-    start_date: formDate,
+    start_date: new Date().toISOString().split("T")[0],
     end_date: "",
   });
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-
-    setFormData((prevState) => {
-      if (name === "start_date" && value !== prevState.start_date) {
-        return {
-          ...prevState,
-          [name]: value,
-          end_date: "",
-        };
-      }
-
-      return {
-        ...prevState,
-        [name]: value,
-      };
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    closeModal();
+    // API 호출 로직
+    onClose();
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-w-4xl h-[600px] overflow-auto">
-      <h2 className="text-xl font-semibold mb-4">{label}</h2>
-      <hr className="my-4" />
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
-            제목
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full placeholder:text-sm"
-            placeholder="제목을 입력하세요"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
-            설명
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="start_date"
-            className="block text-sm font-medium text-gray-700"
-          >
-            시작 날짜
-          </label>
-          <input
-            type="date"
-            id="start_date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-            min={formDate}
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="end_date"
-            className="block text-sm font-medium text-gray-700"
-          >
-            종료 날짜
-          </label>
-          <input
-            type="date"
-            id="end_date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-            required
-            min={formData.start_date}
-          />
-        </div>
-        <div className="mt-4 flex justify-between">
-          <button
-            type="button"
-            onClick={closeModal}
-            className="bg-gray-500 text-white py-2 px-4 rounded-md"
-          >
-            취소
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded-md"
-          >
-            생성
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="w-[500px]">
+        <Modal.Title className="text-lg font-medium mb-4">
+          Create Project
+        </Modal.Title>
 
-export default CreateProjectModal;
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              제목
+            </label>
+            <Modal.Input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="제목을 입력하세요"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              설명
+            </label>
+            <Modal.Input
+              type="textarea"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="h-24 resize-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              시작 날짜
+            </label>
+            <Modal.Input
+              type="date"
+              name="start_date"
+              value={formData.start_date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              종료 날짜
+            </label>
+            <Modal.Input
+              type="date"
+              name="end_date"
+              value={formData.end_date}
+              onChange={handleChange}
+              min={formData.start_date}
+              required
+            />
+          </div>
+
+          <div className="flex justify-end space-x-2 pt-4">
+            <Modal.Button
+              variant="secondary"
+              onClick={onClose}
+              className="px-4 py-2 text-sm"
+            >
+              취소
+            </Modal.Button>
+            <Modal.Button
+              variant="primary"
+              onClick={onClose}
+              className="px-4 py-2 text-sm bg-green-500 hover:bg-green-600"
+            >
+              생성
+            </Modal.Button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+}
