@@ -1,10 +1,13 @@
-// components/LogoutButton.tsx
 "use client";
 import Cookies from "js-cookie";
 import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import LogoutModal from "../user/LogoutModal";
 export const LogoutButton = () => {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -22,11 +25,11 @@ export const LogoutButton = () => {
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-    >
-      로그아웃
-    </button>
+    <>
+      <>
+        <Button onClick={() => setIsOpen(true)}>로그아웃</Button>
+        <LogoutModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      </>
+    </>
   );
 };
