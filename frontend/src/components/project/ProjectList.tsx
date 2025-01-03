@@ -7,7 +7,7 @@ import { projectApi } from "@/api/project";
 
 const ProjectList = ({ projects = [] }: ProjectListProps) => {
   const { data: project } = useReactQuery({
-    queryKey: ["project"],
+    queryKey: ["projectList"],
     queryFn: projectApi.getMyProjects,
     initialData: projects,
   });

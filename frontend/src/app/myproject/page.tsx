@@ -2,9 +2,8 @@ import { projectApi } from "@/api/project";
 import ProjectList from "@/components/project/ProjectList";
 import { userApi } from "@/api/user";
 import MyprojectHeader from "@/components/project/MyprojectHeader";
-import { LogoutButton } from "@/components/button/LogoutButton";
-import ModalButton from "@/components/button/ModalButton";
 import RightNavBar from "@/components/navbar/RightNavBar";
+import ModalMain from "@/components/modal/config/ModalMain";
 
 const contents = [
   "Project Management",
@@ -25,7 +24,7 @@ export default async function MyProject() {
           <div className="flex-1 bg-white p-8 rounded-xl shadow-md overflow-y-auto">
             <div className="flex justify-between">
               <MyprojectHeader user={user} />
-              <ModalButton label="Create Project" />
+              <ModalMain label="프로젝트 생성" />
             </div>
             <hr className="my-4" />
             <ProjectList projects={projects} />
@@ -35,7 +34,6 @@ export default async function MyProject() {
           </div>
         </div>
       </div>
-      <LogoutButton />
     </>
   );
 }

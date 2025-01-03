@@ -1,4 +1,4 @@
-import { Project } from "@/types/project";
+import { CreateProject, Project } from "@/types/project";
 import api from "./config/axios";
 
 export const projectApi = {
@@ -6,5 +6,9 @@ export const projectApi = {
     return await api
       .get<Project[]>("/project/my-projects")
       .then((res) => res.data);
+  },
+
+  createProject: async (data: CreateProject) => {
+    return await api.post("/project/create-project", data);
   },
 };
