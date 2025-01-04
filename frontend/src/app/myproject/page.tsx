@@ -1,7 +1,7 @@
 import { projectApi } from "@/api/project";
-import ProjectList from "@/components/project/ProjectList";
+import ProjectList from "@/components/project/project-list/ProjectList";
 import { userApi } from "@/api/user";
-import MyprojectHeader from "@/components/project/MyprojectHeader";
+import MyprojectHeader from "@/components/project/project-list/MyprojectHeader";
 import RightNavBar from "@/components/navbar/RightNavBar";
 import ModalMain from "@/components/modal/config/ModalMain";
 

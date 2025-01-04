@@ -66,7 +66,11 @@ export default function CreateProjectModal({
             X
           </Modal.Button>
         </div>
-        <Modal.Subtitle>프로젝트 정보를 입력해주세요.</Modal.Subtitle>
+        <Modal.Divider />
+        <Modal.Subtitle>프로젝트 정보를 입력해주세요. 🚀</Modal.Subtitle>
+        <span className="text-xs text-gray-400">
+          생성 후 모든 사항이 변경 가능합니다.
+        </span>
         <Modal.Divider />
 
         <form onSubmit={handleSubmit} className="space-y-4">

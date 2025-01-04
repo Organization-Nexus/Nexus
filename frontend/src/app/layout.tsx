@@ -6,7 +6,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="ko-KR">
       <head />
-      <body>
+      <body className="bg-[#EDF2FB]">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

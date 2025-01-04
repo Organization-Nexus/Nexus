@@ -1,8 +1,10 @@
 import { Project } from "@/types/project";
 import ProgressBar from "./ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
+import { useRouter } from "next/navigation";
 
 const ProjectCard = ({ project }: { project: Project }) => {
+  const router = useRouter();
   const now = new Date();
   const startDate = new Date(project.start_date);
   const endDate = new Date(project.end_date);
@@ -37,9 +39,14 @@ const ProjectCard = ({ project }: { project: Project }) => {
       ? "bg-yellow-50"
       : "bg-gray-50";
 
+  const handleCardClick = () => {
+    router.push(`/myproject/${project.id}/dashboard`);
+  };
+
   return (
     <div
-      className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative`}
+      onClick={handleCardClick}
+      className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative cursor-pointer`}
     >
       {/* Status Sticker */}
       <div
