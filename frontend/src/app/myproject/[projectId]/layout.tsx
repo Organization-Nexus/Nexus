@@ -14,7 +14,7 @@ export default function ProjectLayout({ children }: LayoutProps) {
       </div>
 
       {/* Main Content Area */}
-      <div className="ml-72 p-4 min-h-screen w-full ">{children}</div>
+      <div className="ml-72 p-4 min-h-screen w-full">{children}</div>
     </div>
   );
 }

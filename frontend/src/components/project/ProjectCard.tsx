@@ -30,7 +30,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
   const projectMembers = project.projectUsers;
   const memberCount = projectMembers.length;
-  const memberPositions = projectMembers.map((user) => user.position);
+  const memberPositions = projectMembers.map((member) => member.position);
 
   const bgColor =
     status === "in-progress"
@@ -83,8 +83,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
           </div>
 
           {/* Member Information */}
-          <div className="text-sm text-gray-600 mb-2">
-            Members: {memberCount} - Positions: {memberPositions.join(", ")}
+          <div className="flex gap-2 text-sm text-gray-600 mb-2">
+            <p>Members: {memberCount}</p>
+            {memberPositions.map((position, index) => (
+              <span key={index}>Position: {position}</span>
+            ))}
           </div>
 
           {/* Progress Bar */}

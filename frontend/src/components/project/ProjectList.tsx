@@ -4,7 +4,6 @@ import { Project, ProjectListProps } from "@/types/project";
 import { useQuery as useReactQuery } from "@tanstack/react-query";
 import ProjectCard from "./ProjectCard";
 import { projectApi } from "@/api/project";
-import { useMemo } from "react";
 
 const ProjectList = ({ projects = [] }: ProjectListProps) => {
   const { data: project } = useReactQuery({
@@ -14,40 +13,29 @@ const ProjectList = ({ projects = [] }: ProjectListProps) => {
     initialDataUpdatedAt: Date.now(),
   });
 
-  const categorizedProjects = useMemo(() => {
-    const now = new Date();
-    const result: {
-      inProgress: Project[];
-      completed: Project[];
-      scheduled: Project[];
-    } = {
-      inProgress: [],
-      completed: [],
-      scheduled: [],
-    };
+  const now = new Date();
 
-    project?.forEach((proj: Project) => {
-      const startDate = new Date(proj.start_date);
-      const endDate = new Date(proj.end_date);
+  const inProgress: Project[] = [];
+  const completed: Project[] = [];
+  const scheduled: Project[] = [];
 
-      if (startDate > now) {
-        result.scheduled.push(proj);
-      } else if (endDate >= now) {
-        result.inProgress.push(proj);
-      } else {
-        result.completed.push(proj);
-      }
-    });
+  project?.forEach((proj: Project) => {
+    const startDate = new Date(proj.start_date);
+    const endDate = new Date(proj.end_date);
 
-    return result;
-  }, [project]);
-
-  const { inProgress, completed, scheduled } = categorizedProjects;
+    if (startDate > now) {
+      scheduled.push(proj);
+    } else if (endDate >= now) {
+      inProgress.push(proj);
+    } else {
+      completed.push(proj);
+    }
+  });
 
   return (
     <div className="mx-auto p-4">
       <div className="grid grid-cols-2 gap-4">
-        {inProgress?.map((proj) => (
+        {inProgress?.map((proj, index) => (
           <ProjectCard key={proj.id} project={proj} />
         ))}
       </div>
@@ -55,7 +43,7 @@ const ProjectList = ({ projects = [] }: ProjectListProps) => {
       <hr className="my-8" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {completed?.map((proj) => (
+        {completed?.map((proj, index) => (
           <ProjectCard key={proj.id} project={proj} />
         ))}
       </div>
@@ -63,7 +51,7 @@ const ProjectList = ({ projects = [] }: ProjectListProps) => {
       <hr className="my-8" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {scheduled?.map((proj) => (
+        {scheduled?.map((proj, index) => (
           <ProjectCard key={proj.id} project={proj} />
         ))}
       </div>

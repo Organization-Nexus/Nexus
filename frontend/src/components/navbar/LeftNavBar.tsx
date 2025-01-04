@@ -24,7 +24,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaHome className="mr-3" /> Project Home
             </a>
@@ -32,7 +32,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaTasks className="mr-3" /> Dashboard
             </a>
@@ -40,7 +40,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaClipboardList className="mr-3" /> Meeting Notes
             </a>
@@ -51,7 +51,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaUsers className="mr-3" /> Community
             </a>
@@ -59,7 +59,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaCalendarAlt className="mr-3" /> Calendar
             </a>
@@ -70,7 +70,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaClipboardList className="mr-3" /> Milestones
             </a>
@@ -78,7 +78,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaClipboardList className="mr-3" /> Issues
             </a>
@@ -89,7 +89,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaCommentDots className="mr-3" /> My Posts/Comments
             </a>
@@ -97,7 +97,7 @@ function LeftNavBar() {
           <li>
             <a
               href="#"
-              className="flex items-center p-4 hover:bg-gray-100 transition-colors"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaBookmark className="mr-3" /> Bookmarks
             </a>

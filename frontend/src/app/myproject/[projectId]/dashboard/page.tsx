@@ -1,5 +1,6 @@
 import { projectApi } from "@/api/project";
-import CardSection from "@/components/project/project-dashboard/CardSection";
+import CardSection from "@/components/dashboard/CardSection";
+import ProjectInfo from "@/components/dashboard/ProjectInfo";
 
 type DashboardProps = {
   params: {
@@ -14,22 +15,11 @@ export default async function Dashboard({ params }: DashboardProps) {
   return (
     <div className="h-full flex justify-center items-center">
       <div className="w-full max-w-7xl mx-auto">
+        {/* Project Header */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          {/* Project Header */}
-          <div className="flex items-center space-x-4 p-4">
-            <img
-              src={project?.project_image}
-              alt={`${project?.title} project image`}
-              className="w-24 h-24 object-cover"
-            />
-            <div className="flex flex-col">
-              <p className="text-2xl font-semibold">{project?.title}</p>
-              <p className="text-sm text-gray-700">{project?.description}</p>
-            </div>
-          </div>
-
+          {/* Project Info */}
+          <ProjectInfo project={project} />
           <hr className="my-2" />
-
           {/* Project Team Members */}
           <div>
             {project?.projectUsers.map((user, index) => (
@@ -47,21 +37,26 @@ export default async function Dashboard({ params }: DashboardProps) {
           </div>
         </div>
 
+        {/* Dashboard Cards Section */}
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Community Section */}
             <CardSection title="Community">
               <p className="text-gray-600">Coming soon...</p>
             </CardSection>
+            {/* My Tasks Section */}
             <CardSection title="My Tasks">
               <p className="text-gray-600">Coming soon...</p>
             </CardSection>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Calendar Section */}
             <CardSection title="Calendar">
               <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg ">
                 <p className="text-gray-600">Calendar coming soon...</p>
               </div>
             </CardSection>
+            {/* Chat Section */}
             <CardSection title="Chat">
               <p className="text-gray-600">Coming soon...</p>
             </CardSection>

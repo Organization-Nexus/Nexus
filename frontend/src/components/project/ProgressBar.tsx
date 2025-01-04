@@ -1,8 +1,10 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 interface ProgressBarProps {
   progress: number;
-  status: string;
+  status?: string;
 }
 
 const ProgressBar = ({ progress, status }: ProgressBarProps) => {
@@ -19,15 +21,17 @@ const ProgressBar = ({ progress, status }: ProgressBarProps) => {
     progressColor = "bg-transparent";
   } else if (status === "completed") {
     progressColor = "bg-gray-400";
+  } else {
+    progressColor = "bg-green-200";
   }
 
   return (
     <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
       <div
-        className={`h-2.5 rounded-full ${progressColor}`}
+        className={`h-2 rounded-full ${progressColor}`}
         style={{
           width: `${progressWidth}%`,
-          transition: "width 1s ease-in-out",
+          transition: "width 1.5s ease-in-out",
         }}
       ></div>
     </div>
