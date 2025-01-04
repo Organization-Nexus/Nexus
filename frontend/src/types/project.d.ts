@@ -7,6 +7,15 @@ export interface ProjectBase {
   project_image: string;
 }
 
+// 프로젝트의 에러 메시지
+export interface ProjectBaseErrors {
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  project_image: string;
+}
+
 // 프로젝트 상세 정보
 export interface Project extends ProjectBase {
   id: number;

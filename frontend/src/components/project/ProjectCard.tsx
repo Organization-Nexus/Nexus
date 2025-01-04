@@ -1,10 +1,28 @@
 import { Project } from "@/types/project";
 import ProgressBar from "./ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
+import { useRouter } from "next/navigation";
 
 const ProjectCard = ({ project }: { project: Project }) => {
-  const status =
-    new Date(project.end_date) >= new Date() ? "in-progress" : "completed";
+  const router = useRouter();
+  const now = new Date();
+  const startDate = new Date(project.start_date);
+  const endDate = new Date(project.end_date);
+
+  let status: string;
+  let stickerColor: string;
+
+  if (startDate > now) {
+    status = "scheduled";
+    stickerColor = "bg-yellow-400";
+  } else if (endDate >= now) {
+    status = "in-progress";
+    stickerColor = "bg-blue-400";
+  } else {
+    status = "completed";
+    stickerColor = "bg-gray-400";
+  }
+
   const progressPercentage = calculateProjectProgress(
     project.start_date,
     project.end_date
@@ -12,20 +30,35 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
   const projectMembers = project.projectUsers;
   const memberCount = projectMembers.length;
-  const memberPositions = projectMembers.map((user) => user.position);
+  const memberPositions = projectMembers.map((member) => member.position);
 
-  const bgColor = status === "in-progress" ? "bg-blue-100" : "bg-gray-300";
-  const stickerColor = status === "in-progress" ? "bg-blue-600" : "bg-gray-600";
+  const bgColor =
+    status === "in-progress"
+      ? "bg-blue-50"
+      : status === "scheduled"
+      ? "bg-yellow-50"
+      : "bg-gray-50";
+
+  const handleCardClick = () => {
+    router.push(`/myproject/${project.id}/dashboard`);
+  };
 
   return (
     <div
-      className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative`}
+      onClick={handleCardClick}
+      className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative cursor-pointer`}
     >
       {/* Status Sticker */}
       <div
         className={`absolute top-2 left-2 px-3 py-1 text-white text-xs rounded-md ${stickerColor}`}
       >
-        {status === "in-progress" ? "진행중" : "완료됨"}
+        {status === "in-progress"
+          ? "진행중"
+          : status === "scheduled"
+          ? "예정됨"
+          : status === "completed"
+          ? "완료됨"
+          : ""}
       </div>
 
       <div className="flex p-6">
@@ -33,7 +66,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
         {project.project_image && (
           <img
             src={project.project_image}
-            alt={`${project.title} image`}
             className="w-32 h-32 object-cover rounded-md mr-4"
           />
         )}
@@ -51,8 +83,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
           </div>
 
           {/* Member Information */}
-          <div className="text-sm text-gray-600 mb-2">
-            Members: {memberCount} - Positions: {memberPositions.join(", ")}
+          <div className="flex gap-2 text-sm text-gray-600 mb-2">
+            <p>Members: {memberCount}</p>
+            {memberPositions.map((position, index) => (
+              <span key={index}>Position: {position}</span>
+            ))}
           </div>
 
           {/* Progress Bar */}

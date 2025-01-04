@@ -1,7 +1,7 @@
 "use client";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { Modal } from "../modal/Modal";
+import { Modal } from "../modal/config/ModalMaps";
 import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
 

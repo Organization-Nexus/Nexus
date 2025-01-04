@@ -24,7 +24,7 @@ export class FileService {
         projectId,
       });
     } else if (predefinedImage) {
-      return `${process.env.AWS_COMMON_IMAGE_URL}/${predefinedImage}.png`;
+      return `${predefinedImage}`;
     } else {
       return `${process.env.AWS_COMMON_IMAGE_URL}/grass.png`;
     }

@@ -7,42 +7,53 @@ import { projectApi } from "@/api/project";
 
 const ProjectList = ({ projects = [] }: ProjectListProps) => {
   const { data: project } = useReactQuery({
-    queryKey: ["project"],
+    queryKey: ["projectList"],
     queryFn: projectApi.getMyProjects,
     initialData: projects,
+    initialDataUpdatedAt: Date.now(),
   });
 
-  const getProjectStatus = (end_date: string) => {
-    return new Date(end_date) >= new Date() ? "in-progress" : "completed";
-  };
+  const now = new Date();
 
-  const inProgressProjects = project?.filter(
-    (project: Project) => getProjectStatus(project.end_date) === "in-progress"
-  );
-  const completedProjects = project?.filter(
-    (project: Project) => getProjectStatus(project.end_date) === "completed"
-  );
+  const inProgress: Project[] = [];
+  const completed: Project[] = [];
+  const scheduled: Project[] = [];
+
+  project?.forEach((proj: Project) => {
+    const startDate = new Date(proj.start_date);
+    const endDate = new Date(proj.end_date);
+
+    if (startDate > now) {
+      scheduled.push(proj);
+    } else if (endDate >= now) {
+      inProgress.push(proj);
+    } else {
+      completed.push(proj);
+    }
+  });
 
   return (
     <div className="mx-auto p-4">
-      {/* Progress Projects */}
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {inProgressProjects?.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        {inProgress?.map((proj, index) => (
+          <ProjectCard key={proj.id} project={proj} />
+        ))}
       </div>
 
       <hr className="my-8" />
 
-      {/* Completed Projects */}
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {completedProjects?.map((project: Project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {completed?.map((proj, index) => (
+          <ProjectCard key={proj.id} project={proj} />
+        ))}
+      </div>
+
+      <hr className="my-8" />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {scheduled?.map((proj, index) => (
+          <ProjectCard key={proj.id} project={proj} />
+        ))}
       </div>
     </div>
   );
