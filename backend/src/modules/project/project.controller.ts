@@ -23,6 +23,7 @@ import { ProjectUserService } from '../project-user/project-user.service';
 import { ProjectPosition } from '../project-user/entites/project-user.entity';
 import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 import { UserPayload } from 'src/types/user-payload';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Controller('project')
 export class ProjectController {
@@ -32,24 +33,6 @@ export class ProjectController {
     private readonly projectUserService: ProjectUserService,
   ) {}
 
-  private validateFile(
-    file?: Express.Multer.File,
-    projectImage?: string,
-  ): void {
-    if (file && projectImage) {
-      throw new ProjectImageConflictException();
-    }
-
-    if (!file && !projectImage) {
-      throw new ProjectImageRequiredException();
-    }
-
-    if (file && !file.mimetype.startsWith('image/')) {
-      throw new InvalidImageFormatException();
-    }
-  }
-
-  // 프로젝트 생성
   @Post('create-project')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
   @UseInterceptors(FileInterceptor('project_image'))
@@ -58,23 +41,38 @@ export class ProjectController {
     @Req() req: UserPayload,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    this.validateFile(file, createProjectDto.project_image);
     const userId = req.user.id;
-    const project = await this.projectService.createProject(createProjectDto);
-    const imageUrl = await this.fileService.handleProjectImageUpload(
-      userId,
-      project.id,
-      file,
-      createProjectDto.project_image,
-    );
 
+    // 프로젝트 생성
+    const project = await this.projectService.createProject({
+      ...createProjectDto,
+      project_image: null,
+    });
+
+    // 파일 또는 문자열 이미지 처리
+    let projectImageUrl: string | null = null;
+    if (file) {
+      projectImageUrl = await this.fileService.handleFileUpload({
+        file,
+        userId,
+        projectId: project.id,
+        category: Category.PROJECT,
+      });
+    } else if (
+      createProjectDto.project_image &&
+      typeof createProjectDto.project_image === 'string'
+    ) {
+      projectImageUrl = createProjectDto.project_image;
+    }
+
+    // 이미지 업데이트 적용
     const updatedProject = await this.projectService.updateProjectImage({
       projectId: project.id,
-      imageUrl,
+      project_image: projectImageUrl,
     });
 
     await this.projectUserService.createProjectUser({
-      projectId: project.id,
+      projectId: updatedProject.id,
       userId: userId,
       position: ProjectPosition.PM,
       is_sub_admin: true,

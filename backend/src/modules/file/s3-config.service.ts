@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-import { ProjectImageDto } from './dto/project-image.dto';
 import {
   S3ParamsCreationFailedException,
   S3UploadFailedException,
 } from './exception/file-exception';
+import { S3ConfigDto } from './dto/s3-config.dto';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Injectable()
 export class S3ConfigService {
@@ -19,15 +20,53 @@ export class S3ConfigService {
     });
   }
 
-  projectImageParams(
-    projectImageDto: ProjectImageDto,
-  ): S3.Types.PutObjectRequest {
-    const { file, userId, projectId } = projectImageDto;
+  private generateFileKey(
+    userId: number,
+    projectId: number | undefined,
+    fileType: string | undefined,
+    category: Category,
+    file: Express.Multer.File,
+  ): string {
+    const timestamp = new Date().toISOString();
+    const baseKey = `user/${userId}`;
 
+    switch (category) {
+      case Category.AVATAR:
+        return `${baseKey}/${timestamp}-${file.originalname}`;
+
+      case Category.MESSAGE:
+        if (!fileType)
+          throw new Error('FileType is required for MESSAGE category.');
+        return `${baseKey}/message/${fileType}/${timestamp}-${file.originalname}`;
+
+      case Category.PROJECT:
+        if (!projectId)
+          throw new Error('ProjectId is required for PROJECT category.');
+        return `${baseKey}/project/${projectId}/${timestamp}-${file.originalname}`;
+
+      case Category.COMMUNITY:
+        if (!projectId)
+          throw new Error('ProjectId is required for COMMUNITY category.');
+        return `${baseKey}/project/${projectId}/community/${timestamp}-${file.originalname}`;
+
+      default:
+        throw new Error('Invalid category.');
+    }
+  }
+
+  getUploadParams(s3ConfigDto: S3ConfigDto): S3.Types.PutObjectRequest {
+    const { file, userId, projectId, fileType, category } = s3ConfigDto;
     try {
-      const timestamp = new Date().toISOString();
-      const fileKey = `user/${userId}/project/${projectId}/${timestamp}-${file.originalname}`;
-
+      if (!category) {
+        throw new Error('Category is required.');
+      }
+      const fileKey = this.generateFileKey(
+        userId,
+        projectId,
+        fileType,
+        category,
+        file,
+      );
       return {
         Bucket: this.configService.get('AWS_BUCKET_NAME'),
         Key: fileKey,

@@ -12,17 +12,17 @@ export class Project {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 50 })
   title: string;
 
-  @Column()
+  @Column({ length: 100, nullable: true })
   description: string;
 
-  @Column('date')
-  start_date: Date;
+  @Column()
+  start_date: string;
 
-  @Column('date')
-  end_date: Date;
+  @Column()
+  end_date: string;
 
   @CreateDateColumn()
   createAt: Date;
