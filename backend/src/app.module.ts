@@ -12,8 +12,6 @@ import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-import { FeedModule } from './modules/feed/feed.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
