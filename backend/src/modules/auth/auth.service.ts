@@ -45,7 +45,7 @@ export class AuthService {
     // Access Token 생성
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '1h',
+      expiresIn: '8h',
     });
 
     // Refresh Token 생성
@@ -94,7 +94,7 @@ export class AuthService {
     // 새로운 access token 발급
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '1h',
+      expiresIn: '8h',
     });
 
     return {

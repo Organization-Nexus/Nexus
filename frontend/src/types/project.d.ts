@@ -4,7 +4,7 @@ export interface ProjectBase {
   description: string;
   start_date: string;
   end_date: string;
-  project_image: string;
+  project_image: File | string;
 }
 
 // 프로젝트의 에러 메시지
