@@ -28,29 +28,6 @@ import { FeedModule } from './modules/feed/feed.module';
     ProjectModule,
     FileModule,
     ProjectUserModule,
-
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        secure: false,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      },
-      defaults: {
-        from: '"No Reply" <nexus_official@gmail.com>',
-      },
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
-        },
-      },
-    }),
-
     FeedModule,
   ],
 })
