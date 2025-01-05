@@ -50,6 +50,8 @@ import { FeedModule } from './modules/feed/feed.module';
         },
       },
     }),
+
+    FeedModule,
   ],
 })
 export class AppModule {
