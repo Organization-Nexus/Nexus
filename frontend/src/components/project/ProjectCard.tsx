@@ -65,7 +65,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
         {/* Project Image */}
         {project.project_image && (
           <img
-            src={project.project_image}
+            src={
+              typeof project.project_image === "string"
+                ? project.project_image
+                : undefined
+            }
             className="w-32 h-32 object-cover rounded-md mr-4"
           />
         )}

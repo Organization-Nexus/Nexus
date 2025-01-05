@@ -20,12 +20,30 @@ export default function CreateProjectModal({
     project_image: project_image[0],
   });
 
-  const [error, setError] = useState<string>("");
+  const [titleError, setTitleError] = useState<string>("");
+  const [descriptionError, setDescriptionError] = useState<string>("");
+  const [endDateError, setEndDateError] = useState<string>("");
+  const [fileError, setFileError] = useState<string>("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    if (name === "title") {
+      if (value.length > 50) {
+        setTitleError("제목은 50자 이내로 작성해주세요.");
+      } else {
+        setTitleError("");
+      }
+    }
+
+    if (name === "description") {
+      if (value.length > 100) {
+        setDescriptionError("설명은 100자 이내로 작성해주세요.");
+      } else {
+        setDescriptionError("");
+      }
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -33,27 +51,65 @@ export default function CreateProjectModal({
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("파일 크기는 5MB 이하만 가능합니다.");
+        setFileError("파일 크기는 5MB 이하만 가능합니다.");
         return;
       }
       const fileType = file.type.split("/")[1].toLowerCase();
       if (!["jpg", "jpeg", "png"].includes(fileType)) {
-        setError("jpg, png, jpeg 파일만 업로드 가능합니다.");
+        setFileError("jpg, png, jpeg 파일만 업로드 가능합니다.");
         return;
       }
-      setError("");
-      const fileName = file.name.split(".")[0];
-      setFormData({ ...formData, project_image: fileName });
+      setFileError("");
+      const fileUrl = URL.createObjectURL(file);
+      setFormData({ ...formData, project_image: fileUrl });
     }
   };
 
   const handleSubmit = async () => {
     try {
-      await projectApi.createProject(formData);
+      setTitleError("");
+      setDescriptionError("");
+      setEndDateError("");
+
+      if (!formData.title || formData.title.length > 50) {
+        setTitleError("제목은 50자 이내로 작성해주세요. 🚨 ");
+        return;
+      }
+      if (!formData.description || formData.description.length > 100) {
+        setDescriptionError("설명은 100자 이내로 작성해주세요. 🚨");
+        return;
+      }
+      if (!formData.end_date) {
+        setEndDateError("마감일을 입력해주세요. 🚨");
+        return;
+      }
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("start_date", formData.start_date);
+      formDataToSend.append("end_date", formData.end_date);
+
+      const fileInput = document.getElementById(
+        "project_image"
+      ) as HTMLInputElement;
+      let projectImage: File | string;
+
+      if (fileInput?.files?.[0]) {
+        projectImage = fileInput.files[0];
+      } else {
+        projectImage =
+          formData.project_image !== project_image[0]
+            ? formData.project_image
+            : project_image[0];
+      }
+      formDataToSend.append("project_image", projectImage);
+
+      await projectApi.createProject(formDataToSend);
       queryClient.invalidateQueries({ queryKey: ["projectList"] });
       onClose();
     } catch (err) {
-      setError("프로젝트 생성에 실패했습니다.");
+      setFileError("프로젝트 생성에 실패했습니다.");
     }
   };
 
@@ -81,7 +137,7 @@ export default function CreateProjectModal({
                 제목 <span className="text-red-500">*</span>
               </label>
               <span className="text-xs text-gray-400">
-                10자 이내로 작성해주세요. (필수)
+                50자 이내로 작성해주세요. (필수)
               </span>
             </div>
             <Modal.Input
@@ -93,6 +149,9 @@ export default function CreateProjectModal({
               className="placeholder:text-sm placeholder:gray-400"
               required
             />
+            {titleError && (
+              <span className="text-red-500 text-sm">{titleError}</span>
+            )}
           </div>
 
           {/* 설명 입력 */}
@@ -113,6 +172,9 @@ export default function CreateProjectModal({
               className="h-24 resize-none placeholder:text-sm placeholder:gray-400"
               placeholder="프로젝트에 대해 설명해주세요."
             />
+            {descriptionError && (
+              <span className="text-red-500 text-sm">{descriptionError}</span>
+            )}
           </div>
 
           {/* 시작일, 마감일 입력 */}
@@ -148,6 +210,9 @@ export default function CreateProjectModal({
                 min={formData.start_date}
                 required
               />
+              {endDateError && (
+                <span className="text-red-500 text-sm">{endDateError}</span>
+              )}
             </div>
           </div>
 
@@ -166,7 +231,11 @@ export default function CreateProjectModal({
               <div className="w-24 h-24 relative border-2 border-blue-500 rounded-md overflow-hidden flex items-center justify-center">
                 {formData.project_image && (
                   <img
-                    src={formData.project_image}
+                    src={
+                      typeof formData.project_image === "string"
+                        ? formData.project_image
+                        : ""
+                    }
                     alt="Preview"
                     className="object-fit w-full h-full"
                   />
@@ -187,8 +256,8 @@ export default function CreateProjectModal({
                 className="hidden"
               />
             </div>
-            {error && (
-              <span className="text-red-500 text-sm mt-2">{error}</span>
+            {fileError && (
+              <span className="text-red-500 text-sm mt-2">{fileError}</span>
             )}
           </div>
 

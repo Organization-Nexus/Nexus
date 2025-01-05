@@ -8,8 +8,13 @@ export const projectApi = {
       .then((res) => res.data);
   },
 
-  createProject: async (data: CreateProject) => {
-    return await api.post("/project/create-project", data);
+  createProject: async (data: CreateProject | FormData) => {
+    const isFormData = data instanceof FormData;
+    return await api.post("/project/create-project", data, {
+      headers: {
+        "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+      },
+    });
   },
 
   getProjectById: async (id: string): Promise<Project> => {
