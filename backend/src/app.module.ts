@@ -27,7 +27,6 @@ import { join } from 'path';
     ProjectModule,
     FileModule,
     ProjectUserModule,
-    FeedModule,
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
