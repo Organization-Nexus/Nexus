@@ -14,6 +14,7 @@ import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { UserPayload } from 'src/types/user-payload';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Controller('feed')
 export class FeedController {
@@ -31,5 +32,20 @@ export class FeedController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const userId = req.user.id;
+    const projectId = createFeedDto.projectId;
+    const feed = await this.feedService.createFeed(createFeedDto, userId);
+    if (file) {
+      await this.fileService.handleFileUpload({
+        file,
+        userId,
+        projectId,
+        category: Category.COMMUNITY,
+      });
+      await this.feedService.upadateFeed(feed.id);
+    }
+    return {
+      message: 'Feed created successfully',
+      feed,
+    };
   }
 }
