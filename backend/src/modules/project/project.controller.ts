@@ -8,6 +8,7 @@ import {
   Req,
   Get,
   Param,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -25,6 +26,7 @@ import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard'
 import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('project')
 export class ProjectController {
   constructor(

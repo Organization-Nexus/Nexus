@@ -9,7 +9,9 @@ import { RateLimitingModule } from './modules/rate-limiting/rate-limiting.module
 import { ProjectModule } from './modules/project/project.module';
 import { FileModule } from './modules/file/file.module';
 import { ProjectUserModule } from './modules/project-user/project-user.module';
-import { FeedModule } from './modules/feed/feed.module';
+import { CommunityModule } from './modules/community/community.module';
+import { NoticeModule } from './modules/notice/notice.module';
+import { VoteModule } from './modules/vote/vote.module';
 
 @Module({
   imports: [
@@ -25,7 +27,9 @@ import { FeedModule } from './modules/feed/feed.module';
     ProjectModule,
     FileModule,
     ProjectUserModule,
-    FeedModule,
+    CommunityModule,
+    NoticeModule,
+    VoteModule,
   ],
 })
 export class AppModule {

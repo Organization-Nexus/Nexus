@@ -1,14 +1,11 @@
+import { Community } from 'src/modules/community/entites/community.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
-import { Project } from 'src/modules/project/entities/project.entity';
-import { CommunityType } from 'src/types/enum/community.enum';
 import {
   Column,
   Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('feed')
@@ -16,29 +13,22 @@ export class Feed {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 50, nullable: false })
+  @Column({ length: 50 })
   title: string;
 
-  @Column({ length: 2000, nullable: true })
-  description: string;
+  @Column({ length: 100 })
+  content: string;
 
   @Column({ nullable: true })
-  community_image: string;
-
-  @CreateDateColumn()
-  createAt: Date;
-
-  @UpdateDateColumn()
-  updateAt: Date;
-
-  @Column({ type: 'enum', enum: CommunityType })
-  type: CommunityType;
+  feed_image: string;
 
   @ManyToOne(() => ProjectUser, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_user_id' })
-  projectUser: ProjectUser;
+  @JoinColumn({ name: 'projectUser_id' })
+  project_user: ProjectUser;
 
-  @ManyToOne(() => Project, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_id' })
-  project: Project;
+  @ManyToOne(() => Community, (community) => community.feeds, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'community_id' })
+  community: Community;
 }
