@@ -5,5 +5,5 @@ export class UpdateProjectImageDto {
   projectId: number;
 
   @IsString()
-  imageUrl: string;
+  project_image: string;
 }

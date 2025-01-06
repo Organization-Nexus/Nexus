@@ -1,41 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { S3ConfigService } from './s3-config.service';
-import { ProjectImageDto } from './dto/project-image.dto';
-import { ProjectImageInvalidFormatException } from './exception/file-exception';
+import { UploadFileDto } from './dto/upload-file.dto';
 import { S3UploadFailedException } from './exception/file-exception';
+import { S3ConfigDto } from './dto/s3-config.dto';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Injectable()
 export class FileService {
   constructor(private readonly s3ConfigService: S3ConfigService) {}
 
-  async handleProjectImageUpload(
-    userId: number,
-    projectId: number,
-    file?: Express.Multer.File,
-    predefinedImage?: string,
-  ): Promise<string> {
-    if (file) {
-      if (!file.mimetype.startsWith('image/')) {
-        throw new ProjectImageInvalidFormatException();
-      }
-      return await this.projectImageUpload({
-        file,
-        userId,
-        projectId,
-      });
-    } else if (predefinedImage) {
-      return `${predefinedImage}`;
-    } else {
-      return `${process.env.AWS_COMMON_IMAGE_URL}/grass.png`;
+  async handleFileUpload(uploadFileDto: UploadFileDto): Promise<string> {
+    const { file, userId, projectId, category: categoryString } = uploadFileDto;
+    const category = Category[categoryString as keyof typeof Category];
+    if (!category) {
+      throw new BadRequestException('Invalid category');
     }
+    const fileType = file.mimetype.split('/')[1].toLowerCase();
+
+    if (!File) {
+      throw new Error('No file uploaded');
+    }
+
+    return await this.uploadFileHelper({
+      file,
+      userId,
+      projectId,
+      fileType,
+      category,
+    });
   }
 
-  private async projectImageUpload(
-    projectImageDto: ProjectImageDto,
-  ): Promise<string> {
+  private async uploadFileHelper(s3ConfigDto: S3ConfigDto): Promise<string> {
     try {
-      const uploadParams =
-        this.s3ConfigService.projectImageParams(projectImageDto);
+      const uploadParams = this.s3ConfigService.getUploadParams(s3ConfigDto);
       const data = await this.s3ConfigService.uploadToS3(uploadParams);
       return data.Location;
     } catch (error) {

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class ProjectImageDto {
+export class UploadFileDto {
   @IsNotEmpty()
   file: Express.Multer.File;
 
@@ -8,7 +8,10 @@ export class ProjectImageDto {
   @IsNumber()
   userId: number;
 
-  @IsNotEmpty()
   @IsNumber()
-  projectId: number;
+  @IsNumber()
+  projectId?: number;
+
+  @IsString()
+  category: string;
 }

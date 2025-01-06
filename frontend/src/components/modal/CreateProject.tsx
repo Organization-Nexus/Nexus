@@ -103,6 +103,7 @@ export default function CreateProjectModal({
             ? formData.project_image
             : project_image[0];
       }
+
       formDataToSend.append("project_image", projectImage);
 
       await projectApi.createProject(formDataToSend);

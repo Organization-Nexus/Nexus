@@ -27,9 +27,9 @@ export class ProjectService {
   async updateProjectImage(
     updateProjectImageDto: UpdateProjectImageDto,
   ): Promise<Project> {
-    const { projectId, imageUrl } = updateProjectImageDto;
+    const { projectId, project_image } = updateProjectImageDto;
     const project = await this.projectRepository.findOneBy({ id: projectId });
-    project.project_image = imageUrl;
+    project.project_image = project_image;
     return await this.projectRepository.save(project);
   }
 
