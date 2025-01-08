@@ -1,10 +1,13 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Post,
+  Put,
   Req,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -13,7 +16,14 @@ import { LocalAuthGuard } from './guard/local.guard';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guard/jwt.guard';
 import { RefreshTokenGuard } from './guard/refresh-token.guard';
+import {
+  changePasswordDto,
+  ResetPasswordDto,
+  SendResetCodeDto,
+  VerifyResetCodeDto,
+} from './dto/change-password.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -39,5 +49,30 @@ export class AuthController {
   @Post('register')
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('change-password')
+  async changePassword(@Body() dto: changePasswordDto, @Req() req) {
+    return this.authService.changePassword(
+      req.user.id,
+      dto.oldPassword,
+      dto.newPassword,
+    );
+  }
+
+  @Post('password-reset/send-code')
+  async sendResetCode(@Body() dto: SendResetCodeDto) {
+    return this.authService.sendPasswordResetCode(dto.email);
+  }
+
+  @Post('password-reset/verify-code')
+  async verifyResetCode(@Body() dto: VerifyResetCodeDto) {
+    return this.authService.verifyResetCode(dto.email, dto.code);
+  }
+
+  @Post('password-reset')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
   }
 }

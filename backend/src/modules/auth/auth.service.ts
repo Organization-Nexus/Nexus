@@ -13,6 +13,10 @@ import { UserLog } from '../user/entities/user-log.entity';
 import { plainToClass } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
 import { RedisService } from '../redis/redis.service';
+import { UserNotFoundException } from '../user/exception/user.exception';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ResetPasswordDto } from './dto/change-password.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +27,8 @@ export class AuthService {
     private readonly userLogRepository: Repository<UserLog>,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -133,5 +139,90 @@ export class AuthService {
 
     // 순환 참조 방지를 위해 반환할 때 class-transformer 사용
     return plainToClass(User, savedUser);
+  }
+
+  // 비밀번호 변경
+  async changePassword(
+    userId: number,
+    oldPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordMatch) {
+      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    return this.userRepository.save(user);
+  }
+
+  // 비밀번호 재설정 코드 전송
+  async sendPasswordResetCode(email: string) {
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // 6자리 랜덤 코드 생성
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Redis에 코드 저장 (10분 유효)
+    await this.redisService.set(`passwordReset:${email}`, resetCode, 10 * 60);
+
+    // 이메일 전송
+    await this.mailerService.sendMail({
+      to: email,
+      subject: '비밀번호 재설정 코드',
+      template: 'password-reset', // 이메일 템플릿
+      context: {
+        code: resetCode,
+        name: user.name,
+        expireMinutes: 10,
+        logoUrl: this.configService.get('LOGO_URL'),
+        year: new Date().getFullYear(),
+      },
+    });
+
+    return { message: '비밀번호 재설정 코드가 이메일로 전송되었습니다.' };
+  }
+
+  // 재설정 코드 검증
+  async verifyResetCode(email: string, code: string) {
+    const savedCode = await this.redisService.get(`passwordReset:${email}`);
+
+    if (!savedCode || savedCode !== code) {
+      throw new BadRequestException('유효하지 않은 코드입니다.');
+    }
+
+    return { message: '코드가 확인되었습니다.' };
+  }
+
+  // 비밀번호 재설정
+  async resetPassword(dto: ResetPasswordDto) {
+    const { email, code, newPassword } = dto;
+
+    // 코드 재확인
+    const savedCode = await this.redisService.get(`passwordReset:${email}`);
+    if (!savedCode || savedCode !== code) {
+      throw new BadRequestException('유효하지 않은 코드입니다.');
+    }
+
+    // 비밀번호 재설정
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // 새 비밀번호 해시화 및 저장
+    user.password = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.save(user);
+
+    // Redis에서 코드 삭제
+    await this.redisService.del(`passwordReset:${email}`);
+
+    return { message: '비밀번호가 성공적으로 재설정되었습니다.' };
   }
 }

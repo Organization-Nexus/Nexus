@@ -9,6 +9,9 @@ import { RateLimitingModule } from './modules/rate-limiting/rate-limiting.module
 import { ProjectModule } from './modules/project/project.module';
 import { FileModule } from './modules/file/file.module';
 import { ProjectUserModule } from './modules/project-user/project-user.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -24,6 +27,28 @@ import { ProjectUserModule } from './modules/project-user/project-user.module';
     ProjectModule,
     FileModule,
     ProjectUserModule,
+
+    MailerModule.forRoot({
+      transport: {
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        secure: false,
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      },
+      defaults: {
+        from: '"No Reply" <nexus_official@gmail.com>',
+      },
+      template: {
+        dir: join(__dirname, 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
   ],
 })
 export class AppModule {
