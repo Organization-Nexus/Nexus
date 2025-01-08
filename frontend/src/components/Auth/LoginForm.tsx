@@ -40,7 +40,7 @@ export default function LoginFormComponent() {
       router.push("/myproject");
       alert("로그인되었습니다.");
     } catch (error: any) {
-      setError(error.message);
+      setError(error.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
