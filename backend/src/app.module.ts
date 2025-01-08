@@ -12,6 +12,7 @@ import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,8 +49,6 @@ import { join } from 'path';
         },
       },
     }),
-
-    FeedModule,
   ],
 })
 export class AppModule {
