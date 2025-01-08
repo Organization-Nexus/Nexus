@@ -1,51 +1,49 @@
-// import {
-//   Body,
-//   Controller,
-//   Post,
-//   Req,
-//   UploadedFile,
-//   UseGuards,
-//   UseInterceptors,
-// } from '@nestjs/common';
-// import { FeedService } from './feed.service';
-// import { FileService } from '../file/file.service';
-// import { JwtAuthGuard } from '../auth/guard/jwt.guard';
-// import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
-// import { FileInterceptor } from '@nestjs/platform-express';
-// import { CreateFeedDto } from './dto/create-feed.dto';
-// import { UserPayload } from 'src/types/user-payload';
-// import { Category } from 'src/types/enum/file-category.enum';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Param,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FeedService } from './feed.service';
+import { FileService } from '../file/file.service';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateFeedDto } from './dto/create-feed.dto';
+import { UserPayload } from 'src/types/user-payload';
 
-// @Controller('feed')
-// export class FeedController {
-//   constructor(
-//     private readonly feedService: FeedService,
-//     private readonly fileService: FileService,
-//   ) {}
+@UseInterceptors(ClassSerializerInterceptor)
+@Controller('feed')
+export class FeedController {
+  constructor(private readonly feedService: FeedService) {}
 
-//   @Post('create-feed')
-//   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-//   @UseInterceptors(FileInterceptor('community_image'))
-//   async createFeed(
-//     @Body() createFeedDto: CreateFeedDto,
-//     @Req() req: UserPayload,
-//     @UploadedFile() file?: Express.Multer.File,
-//   ) {
-//     const userId = req.user.id;
-//     const projectId = createFeedDto.projectId;
-//     const feed = await this.feedService.createFeed(createFeedDto, userId);
-//     if (file) {
-//       await this.fileService.handleFileUpload({
-//         file,
-//         userId,
-//         projectId,
-//         category: Category.COMMUNITY,
-//       });
-//       await this.feedService.upadateFeed(feed.id);
-//     }
-//     return {
-//       message: 'Feed created successfully',
-//       feed,
-//     };
-//   }
-// }
+  // POST /api/feed/:projectId/create-feed
+  // @Post(':projectId/create-feed')
+  // @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  // @UseInterceptors(FileInterceptor('feed_file'))
+  // async createFeed(
+  //   @Param('projectId') projectId: number,
+  //   @Body() createFeedDto: CreateFeedDto,
+  //   @Req() req: UserPayload,
+  //   @UploadedFile() file?: Express.Multer.File,
+  // ) {
+  //   const userId = req.user.id;
+
+  //   // 피드 생성 서비스 호출
+  //   const feed = await this.feedService.createFeed(
+  //     createFeedDto,
+  //     projectId,
+  //     userId,
+  //   );
+
+  //   return {
+  //     message: 'Feed created successfully',
+  //     feed,
+  //   };
+  // }
+}

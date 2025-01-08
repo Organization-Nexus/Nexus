@@ -12,6 +12,7 @@ import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { CommunityModule } from './modules/community/community.module';
 import { NoticeModule } from './modules/notice/notice.module';
 import { VoteModule } from './modules/vote/vote.module';
+import { FeedModule } from './modules/feed/feed.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { VoteModule } from './modules/vote/vote.module';
     FileModule,
     ProjectUserModule,
     CommunityModule,
+    FeedModule,
     NoticeModule,
     VoteModule,
   ],

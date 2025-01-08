@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateFeedDto {
-  @IsNotEmpty()
-  @IsNumber()
-  projectId: number;
-
   @IsString()
   title: string;
 
@@ -13,5 +9,5 @@ export class CreateFeedDto {
 
   @IsOptional()
   @IsString()
-  community_image?: string;
+  feed_file?: string;
 }
