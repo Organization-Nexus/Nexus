@@ -1,3 +1,4 @@
+import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import {
@@ -7,6 +8,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 export enum ProjectPosition {
@@ -17,20 +19,10 @@ export enum ProjectPosition {
   PM = 'PM',
 }
 
-@Entity()
+@Entity('project_user')
 export class ProjectUser {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Project, (project) => project.projectUsers, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'project_id' })
-  project: Project;
-
-  @ManyToOne(() => User, (user) => user.projectUsers, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
 
   @Column({
     type: 'varchar',
@@ -47,4 +39,19 @@ export class ProjectUser {
 
   @Column({ type: 'boolean', default: false })
   is_sub_admin: boolean;
+
+  @ManyToOne(() => Project, (project) => project.projectUsers, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'project_id' })
+  project: Project;
+
+  @ManyToOne(() => User, (user) => user.projectUsers, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToMany(() => Feed, (feed) => feed.author)
+  feeds: Feed[];
 }

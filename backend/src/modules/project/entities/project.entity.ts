@@ -1,3 +1,4 @@
+import { Community } from 'src/modules/community/entites/community.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import {
   Entity,
@@ -5,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('project')
@@ -32,4 +34,7 @@ export class Project {
 
   @OneToMany(() => ProjectUser, (projectUser) => projectUser.project)
   projectUsers: ProjectUser[];
+
+  @OneToOne(() => Community, (community) => community.project)
+  community: Community;
 }

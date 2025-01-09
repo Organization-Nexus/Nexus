@@ -3,9 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectImageDto } from './dto/update-project-image.dto';
-import { ProjectUser } from '../project-user/entites/project-user.entity';
+import {
+  ProjectPosition,
+  ProjectUser,
+} from '../project-user/entites/project-user.entity';
 import { ProjectNotFoundException } from './exception/project-exception';
+import { CommunityService } from '../community/community.service';
+import { ProjectUserService } from '../project-user/project-user.service';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -15,21 +20,37 @@ export class ProjectService {
 
     @InjectRepository(ProjectUser)
     private readonly projectUserRepository: Repository<ProjectUser>,
+    private readonly projectUserService: ProjectUserService,
+
+    private readonly communityService: CommunityService,
   ) {}
 
-  // 프로젝트 생성
-  async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
+  async createProject(
+    createProjectDto: CreateProjectDto,
+    userId: number,
+  ): Promise<Project> {
     const project = this.projectRepository.create(createProjectDto);
-    return await this.projectRepository.save(project);
+    const savedProject = await this.projectRepository.save(project);
+
+    await this.communityService.createCommunity(savedProject.id);
+    await this.projectUserService.createProjectUser({
+      projectId: savedProject.id,
+      userId: userId,
+      position: ProjectPosition.PM,
+      is_sub_admin: true,
+    });
+
+    return savedProject;
   }
 
-  // 프로젝트 이미지 업데이트
-  async updateProjectImage(
-    updateProjectImageDto: UpdateProjectImageDto,
-  ): Promise<Project> {
-    const { projectId, project_image } = updateProjectImageDto;
+  // 프로젝트 수정
+  async updateProject(updateProjectDto: UpdateProjectDto): Promise<Project> {
+    const { projectId, ...updateFields } = updateProjectDto;
     const project = await this.projectRepository.findOneBy({ id: projectId });
-    project.project_image = project_image;
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    Object.assign(project, updateFields);
     return await this.projectRepository.save(project);
   }
 
@@ -43,10 +64,11 @@ export class ProjectService {
   }
 
   // 프로젝트 상세 조회
-  async getProjectDetail(projectId: number): Promise<Project> {
+  async getProject(projectId: number, userId: number): Promise<Project> {
+    await this.projectUserService.validateProjectMember(projectId, userId);
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
-      relations: ['projectUsers', 'projectUsers.user'],
+      relations: ['projectUsers', 'projectUsers.user', 'community'],
     });
     if (!project) {
       throw new ProjectNotFoundException(projectId);

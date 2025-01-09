@@ -4,6 +4,7 @@ import { UploadFileDto } from './dto/upload-file.dto';
 import { S3UploadFailedException } from './exception/file-exception';
 import { S3ConfigDto } from './dto/s3-config.dto';
 import { Category } from 'src/types/enum/file-category.enum';
+import { FileValidator } from './validator/file-validator';
 
 @Injectable()
 export class FileService {
@@ -15,7 +16,8 @@ export class FileService {
     if (!category) {
       throw new BadRequestException('Invalid category');
     }
-    const fileType = file.mimetype.split('/')[1].toLowerCase();
+    const fileTypeInfo = FileValidator.validate(file);
+    const fileType = fileTypeInfo.category;
 
     if (!File) {
       throw new Error('No file uploaded');

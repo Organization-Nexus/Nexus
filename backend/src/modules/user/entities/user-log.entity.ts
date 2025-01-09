@@ -9,7 +9,7 @@ import {
 import { User } from './user.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity('user_log')
 export class UserLog {
   @PrimaryColumn() // User 테이블 기본키 그대로 사용
   user_id: number;

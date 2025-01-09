@@ -32,7 +32,7 @@ function ProjectInfo({ project }: { project: ProjectBase }) {
           <ProgressBar progress={progressPercentage} />
           <div className="flex justify-between text-gray-400 text-xs">
             <p>{project?.start_date}</p>
-            <p>{project?.start_date}</p>
+            <p>{project?.end_date}</p>
           </div>
         </div>
       </div>

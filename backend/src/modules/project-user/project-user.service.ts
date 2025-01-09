@@ -56,4 +56,21 @@ export class ProjectUserService {
     }
     return !!projectUser;
   }
+
+  async getProjectUser(
+    userId: number,
+    projectId: number,
+  ): Promise<ProjectUser> {
+    const projectUser = await this.projectUserRepository.findOne({
+      where: { user: { id: userId }, project: { id: projectId } },
+    });
+
+    if (!projectUser) {
+      throw new Error(
+        `User with ID ${userId} not found in project with ID ${projectId}`,
+      );
+    }
+
+    return projectUser;
+  }
 }
