@@ -64,11 +64,11 @@ export class ProjectService {
   }
 
   // 프로젝트 상세 조회
-  async getProjectDetail(projectId: number, userId: number): Promise<Project> {
+  async getProject(projectId: number, userId: number): Promise<Project> {
     await this.projectUserService.validateProjectMember(projectId, userId);
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
-      relations: ['projectUsers', 'projectUsers.user'],
+      relations: ['projectUsers', 'projectUsers.user', 'community'],
     });
     if (!project) {
       throw new ProjectNotFoundException(projectId);

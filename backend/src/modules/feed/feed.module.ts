@@ -6,11 +6,17 @@ import { Feed } from './entites/feed.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Community } from '../community/entites/community.entity';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
+import { ProjectModule } from '../project/project.module';
+import { ProjectUserModule } from '../project-user/project-user.module';
+import { CommunityModule } from '../community/community.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Feed, Community, ProjectUser]),
     FileModule,
+    ProjectModule,
+    ProjectUserModule,
+    CommunityModule,
   ],
   controllers: [FeedController],
   providers: [FeedService],

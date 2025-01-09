@@ -78,6 +78,6 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    return await this.projectService.getProjectDetail(projectId, userId);
+    return await this.projectService.getProject(projectId, userId);
   }
 }

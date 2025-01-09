@@ -15,8 +15,12 @@ export class CommunityService {
       project: { id: projectId },
       createdAt: new Date(),
     });
-
-    // 커뮤니티 저장
     return await this.communityRepository.save(community);
+  }
+
+  async getCommunityByProjectId(projectId: number): Promise<Community> {
+    return await this.communityRepository.findOneBy({
+      project: { id: projectId },
+    });
   }
 }

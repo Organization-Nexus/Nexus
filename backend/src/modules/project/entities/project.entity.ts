@@ -35,8 +35,6 @@ export class Project {
   @OneToMany(() => ProjectUser, (projectUser) => projectUser.project)
   projectUsers: ProjectUser[];
 
-  @OneToOne(() => Community, (community) => community.project, {
-    cascade: true,
-  })
+  @OneToOne(() => Community, (community) => community.project)
   community: Community;
 }

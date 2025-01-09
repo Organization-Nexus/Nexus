@@ -17,5 +17,6 @@ import { FileModule } from '../file/file.module';
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
+  exports: [ProjectService],
 })
 export class ProjectModule {}
