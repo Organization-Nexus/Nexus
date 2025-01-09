@@ -55,7 +55,7 @@ import { FeedModule } from './modules/feed/feed.module';
 export class AppModule {
   constructor() {
     console.log(
-      `🚀 Running Database Login as PostGres User : ${process.env.POSTGRES_USER}`,
+      `🚀 Running Database Login as PostGres User: ${process.env.POSTGRES_USER}`,
     );
   }
 }
