@@ -1,14 +1,9 @@
 import { projectApi } from "@/api/project";
 import CardSection from "@/components/dashboard/CardSection";
 import ProjectInfo from "@/components/dashboard/ProjectInfo";
+import { ProjectIdProps } from "@/types/project";
 
-type DashboardProps = {
-  params: {
-    projectId: string;
-  };
-};
-
-export default async function Dashboard({ params }: DashboardProps) {
+export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const project = await projectApi.getProjectById(projectId);
 

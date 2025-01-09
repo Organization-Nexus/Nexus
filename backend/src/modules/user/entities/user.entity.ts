@@ -64,6 +64,8 @@ export class User {
   @Exclude()
   log: UserLog;
 
-  @OneToMany(() => ProjectUser, (projectUser) => projectUser.user)
+  @OneToMany(() => ProjectUser, (projectUser) => projectUser.user, {
+    cascade: true,
+  })
   projectUsers: ProjectUser[];
 }

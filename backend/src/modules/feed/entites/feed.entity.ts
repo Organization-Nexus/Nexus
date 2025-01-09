@@ -16,19 +16,21 @@ export class Feed {
   @Column({ length: 50 })
   title: string;
 
-  @Column({ length: 100 })
+  @Column({ length: 2000 })
   content: string;
 
   @Column({ nullable: true })
-  feed_image: string;
-
-  @ManyToOne(() => ProjectUser, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'projectUser_id' })
-  project_user: ProjectUser;
+  feed_file: string;
 
   @ManyToOne(() => Community, (community) => community.feeds, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'community_id' })
   community: Community;
+
+  @ManyToOne(() => ProjectUser, (projectUser) => projectUser.feeds, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'author_id' })
+  author: ProjectUser;
 }
