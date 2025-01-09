@@ -23,4 +23,13 @@ export class CommunityService {
       project: { id: projectId },
     });
   }
+
+  async getFeedsByProjectId(projectId: number): Promise<Community> {
+    const community = await this.communityRepository.findOne({
+      where: { project: { id: projectId } },
+      relations: ['feeds'],
+    });
+
+    return community;
+  }
 }
