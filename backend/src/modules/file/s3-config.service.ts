@@ -47,7 +47,6 @@ export class S3ConfigService {
       case Category.COMMUNITY:
         if (!projectId)
           throw new Error('ProjectId is required for COMMUNITY category.');
-        return `${baseKey}/project/${projectId}/community/${timestamp}-${file.originalname}`;
 
       default:
         throw new Error('Invalid category.');
