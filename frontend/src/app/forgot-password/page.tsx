@@ -1,4 +1,4 @@
-import FindPasswordForm from "@/components/auth/ForgotPasswordForm";
+import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import Image from "next/image";
 
 export default function ForgotPasswordPage() {
@@ -21,16 +21,16 @@ export default function ForgotPasswordPage() {
         <div className="col-span-6 p-8 flex justify-center items-center">
           <div className="w-[500px] bg-white p-8 -mt-32">
             <div className="mb-6">
-              <h2 className="text-3xl text-center font-semibold">
+              <h2 className="mb-6 text-3xl text-center font-semibold">
                 {" "}
-                비밀번호 찾기
+                비밀번호 재설정
               </h2>
               <p className="text-sm text-center mt-2 text-muted-foreground">
-                가입했던 이메일을 입력하시면 비밀번호 재설정 링크를
+                가입했던 이메일을 입력하시면 비밀번호 재설정 인증 코드를
                 보내드립니다.
               </p>
             </div>
-            <FindPasswordForm />
+            <ForgotPasswordForm />
           </div>
         </div>
       </div>

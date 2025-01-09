@@ -8,15 +8,7 @@ import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import { RegisterRequest } from "@/types/auth";
 import { userValidation } from "@/utils/validators/userValidation";
-
-interface ValidationErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-  phoneNumber?: string;
-  githubUrl?: string;
-  mainPosition?: string;
-}
+import { ValidationErrors } from "@/types/user";
 
 export default function RegisterFormComponent() {
   const router = useRouter();
@@ -65,6 +57,7 @@ export default function RegisterFormComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
 
     if (!validateForm()) {
       return;
@@ -100,7 +93,6 @@ export default function RegisterFormComponent() {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          required
         />
         {errors.name && (
           <p className="text-red-500 text-sm mt-1">{errors.name}</p>
@@ -114,7 +106,6 @@ export default function RegisterFormComponent() {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          required
         />
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -128,7 +119,6 @@ export default function RegisterFormComponent() {
           name="password"
           value={formData.password}
           onChange={handleChange}
-          required
         />
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -142,7 +132,6 @@ export default function RegisterFormComponent() {
           name="phoneNumber"
           value={formData.phoneNumber}
           onChange={handleChange}
-          required
         />
         {errors.phoneNumber && (
           <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>

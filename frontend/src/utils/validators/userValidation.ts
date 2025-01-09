@@ -38,3 +38,15 @@ export const userValidation = {
     return undefined;
   },
 };
+
+export const loginValidation = {
+  email: (value: string): string | undefined => {
+    if (!value) return "이메일을 입력해주세요.";
+    return undefined;
+  },
+
+  password: (value: string): string | undefined => {
+    if (!value) return "비밀번호를 입력해주세요.";
+    return undefined;
+  },
+};

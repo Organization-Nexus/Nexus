@@ -7,3 +7,12 @@ export interface User {
   githubUrl: string | null;
   role: string;
 }
+
+export interface ValidationErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  phoneNumber?: string;
+  githubUrl?: string;
+  mainPosition?: string;
+}

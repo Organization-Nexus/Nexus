@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { loginValidation } from "@/utils/validators/userValidation";
 
 export default function LoginFormComponent() {
   const router = useRouter();
@@ -14,7 +15,12 @@ export default function LoginFormComponent() {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    global: "",
+  });
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,24 +29,54 @@ export default function LoginFormComponent() {
       ...prev,
       [id]: value,
     }));
+
+    // 실시간 유효성 검사
+    const validationError =
+      loginValidation[id as keyof typeof loginValidation]?.(value) || ""; // undefined를 빈 문자열로 변환
+    setErrors((prev) => ({
+      ...prev,
+      [id]: validationError,
+    }));
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors = {
+      email: loginValidation.email(formData.email) || "",
+      password: loginValidation.password(formData.password) || "",
+      global: "", // 전역 에러 초기화
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some((error) => error !== "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({ email: "", password: "", global: "" });
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
-    setError("");
 
     try {
       const { data } = await authApi.login(formData);
 
-      // 토큰 저장
+      // 로그인 성공: 토큰 저장 및 페이지 이동
       Cookies.set("access_token", data.access_token);
       Cookies.set("refresh_token", data.refresh_token);
 
       router.push("/myproject");
       alert("로그인되었습니다.");
     } catch (error: any) {
-      setError(error.response?.data?.message);
+      const serverErrorMessage =
+        error.response?.data?.message || "로그인에 실패했습니다.";
+
+      setErrors((prev) => ({
+        ...prev,
+        global: serverErrorMessage,
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -49,11 +85,12 @@ export default function LoginFormComponent() {
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
-        {error && (
+        {errors.global && (
           <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm">
-            {error}
+            {errors.global}
           </div>
         )}
+
         <div className="space-y-2">
           <Input
             id="email"
@@ -62,6 +99,9 @@ export default function LoginFormComponent() {
             value={formData.email}
             onChange={handleChange}
           />
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Input
@@ -72,6 +112,9 @@ export default function LoginFormComponent() {
             value={formData.password}
             onChange={handleChange}
           />
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
         </div>
         <div className="text-sm text-right">
           <a
