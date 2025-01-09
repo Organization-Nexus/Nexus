@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { FeedService } from './feed.service';
-import { FeedController } from './feed.controller';
 import { FileModule } from '../file/file.module';
 import { Feed } from './entites/feed.entity';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
@@ -9,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Feed, ProjectUser, Project]), FileModule],
-  controllers: [FeedController],
+  controllers: [],
   providers: [FeedService],
 })
 export class FeedModule {}
