@@ -1,3 +1,9 @@
+export interface ProjectIdProps {
+  params: {
+    projectId: string;
+  };
+}
+
 // 프로젝트의 기본 정보
 export interface ProjectBase {
   title: string;

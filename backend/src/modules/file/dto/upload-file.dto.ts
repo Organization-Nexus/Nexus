@@ -9,7 +9,6 @@ export class UploadFileDto {
   userId: number;
 
   @IsNumber()
-  @IsNumber()
   projectId?: number;
 
   @IsString()
