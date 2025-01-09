@@ -169,8 +169,8 @@ export class AuthService {
     // 6자리 랜덤 코드 생성
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Redis에 코드 저장 (10분 유효)
-    await this.redisService.set(`passwordReset:${email}`, resetCode, 10 * 60);
+    // Redis에 코드 저장 (3분 유효)
+    await this.redisService.set(`passwordReset:${email}`, resetCode, 3 * 60);
 
     // 이메일 전송
     await this.mailerService.sendMail({
@@ -180,7 +180,7 @@ export class AuthService {
       context: {
         code: resetCode,
         name: user.name,
-        expireMinutes: 10,
+        expireMinutes: 3,
         logoUrl: this.configService.get('LOGO_URL'),
         year: new Date().getFullYear(),
       },
