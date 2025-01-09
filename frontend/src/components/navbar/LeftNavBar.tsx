@@ -8,6 +8,7 @@ import {
   FaClipboardList,
   FaBookmark,
 } from "react-icons/fa"; // 아이콘 사용
+import { LogoutButton } from "../button/LogoutButton";
 
 function LeftNavBar() {
   return (
@@ -100,6 +101,14 @@ function LeftNavBar() {
               className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
             >
               <FaBookmark className="mr-3" /> Bookmarks
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
+            >
+              <LogoutButton />
             </a>
           </li>
         </ul>

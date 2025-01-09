@@ -35,7 +35,7 @@ import { VoteModule } from './modules/vote/vote.module';
 export class AppModule {
   constructor() {
     console.log(
-      `🚀 Running Database Login as PostGres User : ${process.env.POSTGRES_USER}`,
+      `🚀 Running Database Login as PostGres User: ${process.env.POSTGRES_USER}`,
     );
   }
 }
