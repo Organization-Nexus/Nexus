@@ -5,13 +5,12 @@ import { CommunityService } from './community.service';
 export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
+  // GET /api/community/feeds/:projectId
   @Get('feeds/:projectId')
   async getFeedsByProjectId(@Param('projectId') projectId: number) {
+    console.log('🧑‍🚀 date : ', new Date(Date.now()).toISOString());
     const community =
       await this.communityService.getFeedsByProjectId(projectId);
-    return {
-      message: 'Community feeds fetched successfully',
-      feeds: community.feeds,
-    };
+    return community.feeds;
   }
 }

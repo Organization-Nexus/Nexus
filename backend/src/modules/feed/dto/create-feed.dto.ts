@@ -1,5 +1,4 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 
 export class CreateFeedDto {
   @IsString()
@@ -11,10 +10,4 @@ export class CreateFeedDto {
   @IsOptional()
   @IsString()
   feed_file?: string;
-
-  @IsNumber()
-  community_id: number;
-
-  @IsNumber()
-  author: number;
 }

@@ -19,9 +19,13 @@ export class CommunityService {
   }
 
   async getCommunityByProjectId(projectId: number): Promise<Community> {
-    return await this.communityRepository.findOneBy({
-      project: { id: projectId },
+    const community = await this.communityRepository.findOneBy({
+      id: projectId,
     });
+    if (!community) {
+      throw new Error('Community not found');
+    }
+    return community;
   }
 
   async getFeedsByProjectId(projectId: number): Promise<Community> {

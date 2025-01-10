@@ -2,6 +2,7 @@ import { Community } from 'src/modules/community/entites/community.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -25,7 +26,6 @@ export class Feed {
   @ManyToOne(() => Community, (community) => community.feeds, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'community_id' })
   community: Community;
 
   @ManyToOne(() => ProjectUser, (projectUser) => projectUser.feeds, {
@@ -33,4 +33,7 @@ export class Feed {
   })
   @JoinColumn({ name: 'author_id' })
   author: ProjectUser;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

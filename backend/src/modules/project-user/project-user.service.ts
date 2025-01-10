@@ -47,14 +47,14 @@ export class ProjectUserService {
   async validateProjectMember(
     projectId: number,
     userId: number,
-  ): Promise<boolean> {
+  ): Promise<ProjectUser> {
     const projectUser = await this.projectUserRepository.findOne({
       where: { project: { id: projectId }, user: { id: userId } },
     });
     if (!projectUser) {
       throw new YourNotProjectMemberException(userId, projectId);
     }
-    return !!projectUser;
+    return projectUser;
   }
 
   async getProjectUser(
