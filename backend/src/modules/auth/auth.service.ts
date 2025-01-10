@@ -17,6 +17,7 @@ import { UserNotFoundException } from '../user/exception/user.exception';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ResetPasswordDto } from './dto/change-password.dto';
 import { ConfigService } from '@nestjs/config';
+import { EmailService } from '../mailer/email.service';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +28,8 @@ export class AuthService {
     private readonly userLogRepository: Repository<UserLog>,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
-    private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -169,24 +170,22 @@ export class AuthService {
     // 6자리 랜덤 코드 생성
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Redis에 코드 저장 (3분 유효)
-    await this.redisService.set(`passwordReset:${email}`, resetCode, 3 * 60);
+    // Redis에 코드 저장 (5분 유효)
+    await this.redisService.set(`passwordReset:${email}`, resetCode, 5 * 60);
 
-    // 이메일 전송
-    await this.mailerService.sendMail({
-      to: email,
-      subject: '비밀번호 재설정 코드',
-      template: 'password-reset', // 이메일 템플릿
-      context: {
-        code: resetCode,
-        name: user.name,
-        expireMinutes: 3,
-        logoUrl: this.configService.get('LOGO_URL'),
-        year: new Date().getFullYear(),
-      },
+    // 이메일 전송을 큐에 추가
+    await this.emailService.sendPasswordResetEmail(email, {
+      code: resetCode,
+      name: user.name,
+      expireMinutes: 5,
+      logoUrl: this.configService.get('LOGO_URL'),
+      year: new Date().getFullYear(),
     });
 
-    return { message: '비밀번호 재설정 코드가 이메일로 전송되었습니다.' };
+    return {
+      message:
+        '비밀번호 재설정 코드가 이메일로 전송되고 있습니다. 잠시만 기다려주세요.',
+    };
   }
 
   // 재설정 코드 검증
