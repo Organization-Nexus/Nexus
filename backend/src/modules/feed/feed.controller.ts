@@ -14,7 +14,7 @@ import { FeedService } from './feed.service';
 import { FileService } from '../file/file.service';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CreateFeedNoticeDto } from './dto/create-feed-notice.dto';
 import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
@@ -34,7 +34,7 @@ export class FeedController {
   // POST /api/feed/create-feed/:projectId
   @Post('create-feed/:projectId')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FileInterceptor('feed_file'))
+  @UseInterceptors(FilesInterceptor('feed_file'))
   async createFeed(
     @Body() createFeedDto: CreateFeedNoticeDto,
     @Param('projectId') projectId: number,
@@ -52,16 +52,12 @@ export class FeedController {
 
     let feedFiles = null;
     if (files && files.length > 0) {
-      feedFiles = await Promise.all(
-        files.map(async (file) =>
-          this.fileService.handleFileUpload({
-            file,
-            userId: req.user.id,
-            projectId,
-            category: Category.COMMUNITY,
-          }),
-        ),
-      );
+      feedFiles = await this.fileService.handleFileUpload({
+        files,
+        userId: req.user.id,
+        projectId,
+        category: Category.COMMUNITY,
+      });
     }
     return await this.feedService.createFeed(
       createFeedDto,
@@ -91,16 +87,12 @@ export class FeedController {
     await this.feedService.validateFeedOwner(feedId, projectUserId);
     let feedFiles = null;
     if (files && files.length > 0) {
-      feedFiles = await Promise.all(
-        files.map(async (file) =>
-          this.fileService.handleFileUpload({
-            file,
-            userId: req.user.id,
-            projectId,
-            category: Category.COMMUNITY,
-          }),
-        ),
-      );
+      feedFiles = await this.fileService.handleFileUpload({
+        files,
+        userId: req.user.id,
+        projectId,
+        category: Category.COMMUNITY,
+      });
     }
     return await this.feedService.updateFeed(feedId, updateFeedDto, feedFiles);
   }
@@ -129,7 +121,7 @@ export class FeedController {
   // POST /api/feed/create-notice/:projectId
   @Post('create-notice/:projectId')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FileInterceptor('feed_file'))
+  @UseInterceptors(FilesInterceptor('feed_file'))
   async createNotice(
     @Body() createNotceDto: CreateFeedNoticeDto,
     @Param('projectId') projectId: number,
@@ -149,16 +141,12 @@ export class FeedController {
       await this.communityService.getCommunityByProjectId(projectId);
     let feedFiles = null;
     if (files && files.length > 0) {
-      feedFiles = await Promise.all(
-        files.map(async (file) =>
-          this.fileService.handleFileUpload({
-            file,
-            userId: req.user.id,
-            projectId,
-            category: Category.COMMUNITY,
-          }),
-        ),
-      );
+      feedFiles = await this.fileService.handleFileUpload({
+        files,
+        userId: req.user.id,
+        projectId,
+        category: Category.COMMUNITY,
+      });
     }
     const isNotice = true;
     return await this.feedService.createFeed(

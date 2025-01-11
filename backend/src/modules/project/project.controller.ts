@@ -9,6 +9,7 @@ import {
   Get,
   Param,
   ClassSerializerInterceptor,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -40,7 +41,9 @@ export class ProjectController {
   ) {
     const userId = req.user.id;
     if (file && !file.mimetype.startsWith('image/')) {
-      throw new Error('Invalid file type. Only image files are allowed.');
+      throw new BadRequestException(
+        'Invalid file type. Only image files are allowed.',
+      );
     }
     const project = await this.projectService.createProject(
       createProjectDto,
@@ -48,16 +51,21 @@ export class ProjectController {
     );
     const projectImage = file
       ? await this.fileService.handleFileUpload({
-          file,
+          files: [file],
           userId,
           projectId: project.id,
           category: Category.PROJECT,
         })
       : createProjectDto.project_image || null;
+    const finalProjectImage = Array.isArray(projectImage)
+      ? projectImage[0]
+      : projectImage;
+
     const updatedProject = await this.projectService.updateProject({
       projectId: project.id,
-      project_image: projectImage,
+      project_image: finalProjectImage,
     });
+
     return {
       message: 'Project created successfully',
       project: updatedProject,
