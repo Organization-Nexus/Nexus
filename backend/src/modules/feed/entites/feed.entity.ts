@@ -20,8 +20,11 @@ export class Feed {
   @Column({ length: 2000 })
   content: string;
 
-  @Column({ nullable: true })
-  feed_file: string;
+  @Column('text', { array: true, nullable: true })
+  feed_files: string[];
+
+  @Column({ default: false })
+  isNotice: boolean;
 
   @ManyToOne(() => Community, (community) => community.feeds, {
     onDelete: 'CASCADE',

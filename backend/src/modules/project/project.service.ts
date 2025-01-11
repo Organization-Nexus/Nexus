@@ -64,8 +64,7 @@ export class ProjectService {
   }
 
   // 프로젝트 상세 조회
-  async getProject(projectId: number, userId: number): Promise<Project> {
-    await this.projectUserService.validateProjectMember(projectId, userId);
+  async getProject(projectId: number): Promise<Project> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
       relations: ['projectUsers', 'projectUsers.user', 'community'],

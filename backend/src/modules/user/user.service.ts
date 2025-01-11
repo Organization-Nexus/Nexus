@@ -21,6 +21,15 @@ export class UserService {
     private readonly userLogRepository: Repository<UserLog>,
   ) {}
 
+  // 이메일로 유저 조회
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    return user;
+  }
+
   // 특정 유저 조회
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({

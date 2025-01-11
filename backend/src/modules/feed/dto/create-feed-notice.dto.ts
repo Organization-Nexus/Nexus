@@ -1,6 +1,6 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
-export class CreateFeedDto {
+export class CreateFeedNoticeDto {
   @IsString()
   title: string;
 

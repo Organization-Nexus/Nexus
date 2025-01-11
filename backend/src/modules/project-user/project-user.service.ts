@@ -6,10 +6,12 @@ import { ProjectUser } from './entites/project-user.entity';
 import { Project } from '../project/entities/project.entity';
 import { User } from '../user/entities/user.entity';
 import {
+  AlreadyProjectMemberException,
   ProjectNotFoundException,
   UserNotFoundException,
   YourNotProjectMemberException,
 } from './exception/project-user.exception';
+import { Bool } from 'aws-sdk/clients/clouddirectory';
 
 @Injectable()
 export class ProjectUserService {
@@ -44,7 +46,7 @@ export class ProjectUserService {
     });
   }
 
-  async validateProjectMember(
+  async validateProjectMemberByUserId(
     projectId: number,
     userId: number,
   ): Promise<ProjectUser> {
@@ -57,20 +59,16 @@ export class ProjectUserService {
     return projectUser;
   }
 
-  async getProjectUser(
-    userId: number,
+  async validateProjectMemberByEmail(
     projectId: number,
-  ): Promise<ProjectUser> {
+    email: string,
+  ): Promise<Boolean> {
     const projectUser = await this.projectUserRepository.findOne({
-      where: { user: { id: userId }, project: { id: projectId } },
+      where: { user: { email }, project: { id: projectId } },
     });
-
-    if (!projectUser) {
-      throw new Error(
-        `User with ID ${userId} not found in project with ID ${projectId}`,
-      );
+    if (projectUser) {
+      throw new AlreadyProjectMemberException(email, projectId);
     }
-
-    return projectUser;
+    return true;
   }
 }

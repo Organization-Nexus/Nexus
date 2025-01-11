@@ -10,7 +10,6 @@ import { ProjectModule } from './modules/project/project.module';
 import { FileModule } from './modules/file/file.module';
 import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { CommunityModule } from './modules/community/community.module';
-import { NoticeModule } from './modules/notice/notice.module';
 import { VoteModule } from './modules/vote/vote.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -33,7 +32,6 @@ import { join } from 'path';
     ProjectUserModule,
     CommunityModule,
     FeedModule,
-    NoticeModule,
     VoteModule,
     MailerModule.forRoot({
       transport: {

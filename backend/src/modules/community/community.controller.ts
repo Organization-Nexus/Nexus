@@ -8,9 +8,12 @@ export class CommunityController {
   // GET /api/community/feeds/:projectId
   @Get('feeds/:projectId')
   async getFeedsByProjectId(@Param('projectId') projectId: number) {
-    console.log('🧑‍🚀 date : ', new Date(Date.now()).toISOString());
-    const community =
-      await this.communityService.getFeedsByProjectId(projectId);
-    return community.feeds;
+    return await this.communityService.getFeedsByProjectId(projectId);
+  }
+
+  // GET /api/community/notices/:projectId
+  @Get('notices/:projectId')
+  async getNoticesByProjectId(@Param('projectId') projectId: number) {
+    return await this.communityService.getNoticesByProjectId(projectId);
   }
 }
