@@ -9,5 +9,6 @@ import { UserLog } from './entities/user-log.entity';
   imports: [TypeOrmModule.forFeature([User, UserLog])], // UserRepository를 제공
   providers: [UserService],
   controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule {}

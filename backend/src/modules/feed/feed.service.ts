@@ -1,4 +1,72 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Feed } from './entites/feed.entity';
+import { Repository } from 'typeorm';
+import { ProjectUser } from '../project-user/entites/project-user.entity';
+import { CreateFeedNoticeDto } from './dto/create-feed-notice.dto';
+import { Community } from '../community/entites/community.entity';
+import {
+  NoPermissionThisFeedException,
+  NotFoundFeedException,
+} from './exception/feed-exception';
 
 @Injectable()
-export class FeedService {}
+export class FeedService {
+  constructor(
+    @InjectRepository(Feed)
+    private readonly feedRepository: Repository<Feed>,
+  ) {}
+
+  async createFeed(
+    createFeedNoticeDto: CreateFeedNoticeDto,
+    feedFiles: string[],
+    communityId: Community,
+    projectUser: ProjectUser,
+    isNotice?: boolean,
+  ): Promise<Feed> {
+    const feed = this.feedRepository.create({
+      ...createFeedNoticeDto,
+      feed_files: feedFiles,
+      community: communityId,
+      author: projectUser,
+      isNotice,
+    });
+    return await this.feedRepository.save(feed);
+  }
+
+  async validateFeedOwner(feedId: number, userId: number) {
+    const feed = await this.feedRepository.findOne({
+      where: { id: feedId },
+      relations: ['author'],
+    });
+    if (feed.author.id !== userId) {
+      throw new NoPermissionThisFeedException(userId);
+    }
+    return feed;
+  }
+
+  async updateFeed(
+    feedId: number,
+    updateFeedDto: CreateFeedNoticeDto,
+    feedFiles: string[],
+  ): Promise<Feed> {
+    const feed = await this.feedRepository.findOneBy({ id: feedId });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
+    const updateFields = {
+      ...updateFeedDto,
+      imageUrl: feedFiles || feed.feed_files,
+    };
+    Object.assign(feed, updateFields);
+    return await this.feedRepository.save(feed);
+  }
+
+  async deleteFeed(feedId: number): Promise<void> {
+    const feed = await this.feedRepository.findOneBy({ id: feedId });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
+    await this.feedRepository.remove(feed);
+  }
+}

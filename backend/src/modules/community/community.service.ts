@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/modules/community/entites/community.entity';
+import { Feed } from '../feed/entites/feed.entity';
 
 @Injectable()
 export class CommunityService {
@@ -13,23 +14,30 @@ export class CommunityService {
   async createCommunity(projectId: number): Promise<Community> {
     const community = this.communityRepository.create({
       project: { id: projectId },
-      createdAt: new Date(),
     });
     return await this.communityRepository.save(community);
   }
 
   async getCommunityByProjectId(projectId: number): Promise<Community> {
-    return await this.communityRepository.findOneBy({
-      project: { id: projectId },
+    const community = await this.communityRepository.findOneBy({
+      id: projectId,
     });
+    return community;
   }
 
-  async getFeedsByProjectId(projectId: number): Promise<Community> {
+  async getFeedsByProjectId(projectId: number): Promise<Feed[]> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
       relations: ['feeds'],
     });
+    return community.feeds.filter((feed) => !feed.isNotice);
+  }
 
-    return community;
+  async getNoticesByProjectId(projectId: number): Promise<Feed[]> {
+    const community = await this.communityRepository.findOne({
+      where: { project: { id: projectId } },
+      relations: ['feeds'],
+    });
+    return community.feeds.filter((feed) => feed.isNotice);
   }
 }

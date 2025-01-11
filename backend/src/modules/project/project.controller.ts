@@ -18,12 +18,14 @@ import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard'
 import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
 import { FileService } from '../file/file.service';
+import { ProjectUserService } from '../project-user/project-user.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('project')
 export class ProjectController {
   constructor(
     private readonly projectService: ProjectService,
+    private readonly projectUserService: ProjectUserService,
     private readonly fileService: FileService,
   ) {}
 
@@ -44,7 +46,7 @@ export class ProjectController {
       createProjectDto,
       userId,
     );
-    const projectImageUrl = file
+    const projectImage = file
       ? await this.fileService.handleFileUpload({
           file,
           userId,
@@ -54,7 +56,7 @@ export class ProjectController {
       : createProjectDto.project_image || null;
     const updatedProject = await this.projectService.updateProject({
       projectId: project.id,
-      project_image: projectImageUrl,
+      project_image: projectImage,
     });
     return {
       message: 'Project created successfully',
@@ -78,6 +80,10 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    return await this.projectService.getProject(projectId, userId);
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.projectService.getProject(projectId);
   }
 }
