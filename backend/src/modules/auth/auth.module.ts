@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserLog } from '../user/entities/user-log.entity';
 import { RedisModule } from '../redis/redis.module';
+import { MailModule } from '../mailer/mailer.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RedisModule } from '../redis/redis.module';
     PassportModule,
     JwtModule.register({}),
     RedisModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],

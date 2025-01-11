@@ -12,9 +12,7 @@ import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { CommunityModule } from './modules/community/community.module';
 import { VoteModule } from './modules/vote/vote.module';
 import { FeedModule } from './modules/feed/feed.module';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
+import { MailModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -33,27 +31,7 @@ import { join } from 'path';
     CommunityModule,
     FeedModule,
     VoteModule,
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        secure: false,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      },
-      defaults: {
-        from: '"No Reply" <nexus_official@gmail.com>',
-      },
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
-        },
-      },
-    }),
+    MailModule,
   ],
 })
 export class AppModule {

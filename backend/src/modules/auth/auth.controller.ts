@@ -22,6 +22,8 @@ import {
   SendResetCodeDto,
   VerifyResetCodeDto,
 } from './dto/change-password.dto';
+import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -61,6 +63,8 @@ export class AuthController {
     );
   }
 
+  @UseGuards(ThrottlerBehindProxyGuard)
+  @Throttle({ default: { limit: 1, ttl: 60000 } }) // 1분당 1번
   @Post('password-reset/send-code')
   async sendResetCode(@Body() dto: SendResetCodeDto) {
     return this.authService.sendPasswordResetCode(dto.email);
