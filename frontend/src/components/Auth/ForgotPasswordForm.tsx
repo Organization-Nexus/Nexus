@@ -5,7 +5,12 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/api/auth";
-import { userValidation } from "@/utils/validators/userValidation";
+import {
+  userValidation,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  VALIDATION_CONSTANTS,
+} from "@/utils/validators/userValidation";
 
 type Step = 1 | 2 | 3;
 
@@ -32,6 +37,7 @@ export default function ForgotPasswordForm() {
   const [message, setMessage] = useState<MessageType>({ type: "", text: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimeout, setResendTimeout] = useState(0);
+  const [codeTimeout, setCodeTimeout] = useState(0);
 
   const router = useRouter();
 
@@ -46,6 +52,17 @@ export default function ForgotPasswordForm() {
     return () => clearInterval(timer);
   }, [resendTimeout]);
 
+  // 인증코드 유효 시간 타이머 관리
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (codeTimeout > 0) {
+      timer = setInterval(() => {
+        setCodeTimeout((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [codeTimeout]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -59,7 +76,7 @@ export default function ForgotPasswordForm() {
     if (!message.text) return null;
     return (
       <div
-        className={`p-3 rounded-lg text-sm ${
+        className={`p-3 rounded-lg text-sm whitespace-pre-line ${
           message.type === "error"
             ? "bg-red-50 text-red-500"
             : "bg-green-50 text-green-500"
@@ -70,26 +87,26 @@ export default function ForgotPasswordForm() {
     );
   };
 
-  // 이전 단계로 이동
-  const handlePrevStep = () => {
-    setStep((prev) => (prev - 1) as Step);
-    setMessage({ type: "", text: "" });
-  };
-
-  const validate = (field: keyof FormDataType) => {
+  const validate = (field: keyof FormDataType): boolean => {
     let errorMessage: string | undefined;
 
-    if (field === "email") {
-      errorMessage = userValidation.email(formData.email);
-    } else if (field === "code") {
-      errorMessage = !formData.code ? "인증번호를 입력해주세요." : undefined;
-    } else if (field === "newPassword" || field === "confirmPassword") {
-      errorMessage = userValidation.password(
-        formData.newPassword && formData.confirmPassword
-      );
-      if (!errorMessage && formData.newPassword !== formData.confirmPassword) {
-        errorMessage = "비밀번호가 일치하지 않습니다.";
-      }
+    switch (field) {
+      case "email":
+        errorMessage = userValidation.email(formData.email);
+        break;
+      case "code":
+        errorMessage = userValidation.verificationCode(formData.code);
+        break;
+      case "newPassword":
+      case "confirmPassword":
+        errorMessage = userValidation.newPassword(formData.newPassword);
+        if (!errorMessage) {
+          errorMessage = userValidation.confirmPassword(
+            formData.newPassword,
+            formData.confirmPassword
+          );
+        }
+        break;
     }
 
     if (errorMessage) {
@@ -109,15 +126,25 @@ export default function ForgotPasswordForm() {
       await authApi.sendResetCode({ email: formData.email });
       setMessage({
         type: "success",
-        text: "인증 코드가 이메일로 전송되었습니다. 이메일을 확인해주세요.",
+        text: SUCCESS_MESSAGES.CODE_SENT,
       });
-      setResendTimeout(180); // 3분
+      setResendTimeout(VALIDATION_CONSTANTS.RESEND_TIMEOUT); // 재전송 제한 1분
+      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 인증코드 유효시간 3분
       setStep(2);
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: "이메일 전송에 실패했습니다. 다시 시도해주세요.",
-      });
+    } catch (error: any) {
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers["retry-after"]; // 남은 시간(초)
+        const remainingTries = error.response.headers["x-ratelimit-remaining"]; // 남은 시도 횟수
+
+        setMessage({
+          type: "error",
+          text: ERROR_MESSAGES.EMAIL_SEND_LIMIT_ERROR,
+        });
+      } else
+        setMessage({
+          type: "error",
+          text: ERROR_MESSAGES.EMAIL_SEND_ERROR,
+        });
     } finally {
       setIsLoading(false);
     }
@@ -133,13 +160,14 @@ export default function ForgotPasswordForm() {
       await authApi.sendResetCode({ email: formData.email });
       setMessage({
         type: "success",
-        text: "인증 코드가 재전송되었습니다. 이메일을 확인해주세요.",
+        text: SUCCESS_MESSAGES.CODE_RESENT,
       });
-      setResendTimeout(180); // 3분
+      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 3분
+      setResendTimeout(VALIDATION_CONSTANTS.RESEND_TIMEOUT); // 1분
     } catch (error) {
       setMessage({
         type: "error",
-        text: "이메일 재전송에 실패했습니다.",
+        text: ERROR_MESSAGES.EMAIL_SEND_ERROR,
       });
     } finally {
       setIsLoading(false);
@@ -157,10 +185,10 @@ export default function ForgotPasswordForm() {
         email: formData.email,
         code: formData.code,
       });
-      setMessage({ type: "success", text: "인증번호가 확인되었습니다." });
+      setMessage({ type: "success", text: SUCCESS_MESSAGES.CODE_VERIFIED });
       setStep(3);
     } catch (error) {
-      setMessage({ type: "error", text: "잘못된 인증번호입니다." });
+      setMessage({ type: "error", text: ERROR_MESSAGES.CODE_INVALID });
     } finally {
       setIsLoading(false);
     }
@@ -178,14 +206,12 @@ export default function ForgotPasswordForm() {
         code: formData.code,
         newPassword: formData.newPassword,
       });
-      alert(
-        "비밀번호가 성공적으로 변경되었습니다. 로그인 페이지로 이동합니다."
-      );
+      alert(SUCCESS_MESSAGES.PASSWORD_RESET);
       router.push("/login");
     } catch (error) {
       setMessage({
         type: "error",
-        text: "비밀번호 변경에 실패했습니다.",
+        text: ERROR_MESSAGES.PASSWORD_RESET_ERROR,
       });
     } finally {
       setIsLoading(false);
@@ -236,9 +262,9 @@ export default function ForgotPasswordForm() {
                 name="code"
                 className="text-lg p-6"
               />
-              {resendTimeout > 0 && (
+              {codeTimeout > 0 && (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-custom-point">
-                  {formatTime(resendTimeout)}
+                  {formatTime(codeTimeout)}
                 </span>
               )}
             </div>

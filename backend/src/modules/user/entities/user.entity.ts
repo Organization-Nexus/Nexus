@@ -61,7 +61,6 @@ export class User {
   updatedAt: Date;
 
   @OneToOne(() => UserLog, (userLog) => userLog.user, { cascade: true })
-  @Exclude()
   log: UserLog;
 
   @OneToMany(() => ProjectUser, (projectUser) => projectUser.user, {
