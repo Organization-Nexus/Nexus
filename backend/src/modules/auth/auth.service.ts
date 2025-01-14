@@ -133,7 +133,7 @@ export class AuthService {
 
     const userLog = new UserLog();
     userLog.user = user;
-
+    userLog.profileImage = process.env.DEFAULT_PROFILE_IMAGE;
     user.log = userLog;
 
     const savedUser = await this.userRepository.save(user);
