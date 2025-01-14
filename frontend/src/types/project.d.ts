@@ -35,6 +35,7 @@ export interface ProjectUser {
   joined_at: string;
   is_ban: boolean;
   is_sub_admin: boolean;
+  user: User;
 }
 
 // 프로젝트 목록을 위한 props

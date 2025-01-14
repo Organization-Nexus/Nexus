@@ -1,6 +1,5 @@
 import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
-// import { Notice } from 'src/modules/notice/entites/notice.entites';
 // import { Vote } from 'src/modules/vote/entites/vote.entity';
 import {
   Column,
@@ -28,9 +27,6 @@ export class Community {
 
   @OneToMany(() => Feed, (feed) => feed.community)
   feeds: Feed[];
-
-  //   @OneToMany(() => Notice, (notice) => notice.community)
-  //   notices: Notice[];
 
   //   @OneToMany(() => Vote, (vote) => vote.community)
   //   votes: Vote[];

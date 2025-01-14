@@ -2,6 +2,7 @@ import { Project } from "@/types/project";
 import ProgressBar from "./ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
 import { useRouter } from "next/navigation";
+import { FaRegFaceGrinBeam } from "react-icons/fa6";
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const router = useRouter();
@@ -30,7 +31,6 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
   const projectMembers = project.projectUsers;
   const memberCount = projectMembers.length;
-  const memberPositions = projectMembers.map((member) => member.position);
 
   const bgColor =
     status === "in-progress"
@@ -87,11 +87,13 @@ const ProjectCard = ({ project }: { project: Project }) => {
           </div>
 
           {/* Member Information */}
-          <div className="flex gap-2 text-sm text-gray-600 mb-2">
-            <p>Members: {memberCount}</p>
-            {memberPositions.map((position, index) => (
-              <span key={index}>Position: {position}</span>
-            ))}
+          <div className="flex gap-2 text-sm text-gray-500 mb-2">
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-md">
+                <FaRegFaceGrinBeam />
+              </p>
+              {memberCount}
+            </div>
           </div>
 
           {/* Progress Bar */}

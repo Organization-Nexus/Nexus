@@ -9,5 +9,5 @@ export class CreateFeedNoticeDto {
 
   @IsOptional()
   @IsString()
-  feed_file?: string;
+  feed_files?: string;
 }

@@ -5,7 +5,7 @@ import { ProjectIdProps } from "@/types/project";
 
 export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
-  const project = await projectApi.getProjectById(projectId);
+  const projects = await projectApi.getProjectById(projectId);
 
   return (
     <div className="h-full flex justify-center items-center">
@@ -13,20 +13,21 @@ export default async function Dashboard({ params }: ProjectIdProps) {
         {/* Project Header */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           {/* Project Info */}
-          <ProjectInfo project={project} />
+          <ProjectInfo project={projects} />
           <hr className="my-2" />
           {/* Project Team Members */}
-          <div>
-            {project?.projectUsers.map((user, index) => (
-              <div className="flex">
-                <div
-                  key={index}
-                  className="flex flex-col items-center justify-center p-4 "
-                >
-                  <div className="w-16 h-16 bg-gray-200 rounded-3xl mb-1"></div>
-                  <p className="font-bold text-sm text-gray-700">홍길동</p>
-                  <p className="text-xs text-gray-400">{user.position}</p>
-                </div>
+          <div className="flex flex-wrap justify-start gap-4">
+            {projects?.projectUsers.map((user, index) => (
+              <div
+                className="flex flex-col items-center justify-center p-4"
+                key={index}
+              >
+                <div className="w-16 h-16 bg-gray-200 rounded-3xl mb-1"></div>
+                {/* user.user.name으로 접근 */}
+                <p className="font-bold text-sm text-gray-700">
+                  {user.user?.name}
+                </p>
+                <p className="text-xs text-gray-400">{user.position}</p>
               </div>
             ))}
           </div>
