@@ -6,6 +6,9 @@ export interface User {
   mainPosition: string;
   githubUrl: string | null;
   role: string;
+  log: {
+    profileImage: string;
+  };
 }
 
 export interface ValidationErrors {

@@ -20,17 +20,17 @@ export default async function MyProject() {
   return (
     <>
       <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
-        <div className="flex w-full max-w-screen-2xl mx-auto h-[880px] py-6 space-x-2">
-          <div className="flex-1 bg-white p-8 rounded-xl shadow-md overflow-y-auto">
-            <div className="flex justify-between">
+        <div className="flex w-full max-w-screen-2xl mx-auto h-[880px] py-16 space-x-12">
+          <div className="flex-1 bg-white p-9 rounded-2xl shadow-md overflow-y-auto">
+            <div className="flex justify-between px-4">
               <MyprojectHeader user={user} />
               <ModalMain label="프로젝트 생성" />
             </div>
             <hr className="my-4" />
             <ProjectList projects={projects} />
           </div>
-          <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
-            <RightNavBar contents={contents} />
+          <div className="w-[400px] bg-white px-6 py-3 rounded-2xl shadow-xl h-[400px] overflow-y-auto">
+            <RightNavBar contents={contents} user={user} />
           </div>
         </div>
       </div>
