@@ -38,9 +38,7 @@ export default async function Feed({ params }: ProjectIdProps) {
           <div className="w-[70%]">
             <FeedNoticeList feeds={feeds} />
           </div>
-          <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto">
-            <RightNavBar contents={["FEED"]} />
-          </div>
+          <div className="w-[350px] bg-white p-6 rounded-lg shadow-xl h-[600px] overflow-y-auto"></div>
         </div>
       </div>
     </>
