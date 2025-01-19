@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Modal } from "../modal/config/ModalMaps";
 import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
   };
 
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -25,7 +28,8 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
 
-      // 로그아웃 후 로그인 페이지로 리다이렉트
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      // router.refresh();
       router.push("/login");
     } catch (error: any) {
       console.error("로그아웃 실패:", error);
