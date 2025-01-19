@@ -1,4 +1,4 @@
-import { Project, ProjectBase } from "@/types/project";
+import { ProjectBase } from "@/types/project";
 import React from "react";
 import ProgressBar from "../project/ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
@@ -15,7 +15,7 @@ function ProjectInfo({ project }: { project: ProjectBase }) {
           src={
             typeof project?.project_image === "string"
               ? project.project_image
-              : URL.createObjectURL(project.project_image)
+              : undefined
           }
           alt={`${project?.title} project image`}
           className="w-24 h-24 object-cover"

@@ -16,7 +16,7 @@ interface RightNavBarProps {
 
 const RightNavBar = ({ contents, user }: RightNavBarProps) => {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-white rounded-lg">
       <div className="flex mb-4">
         <div className="flex gap-4 w-full h-full items-center">
           <div className="w-12 h-12 rounded-2xl ">

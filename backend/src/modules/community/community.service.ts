@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { Feed } from '../feed/entites/feed.entity';
+import { GetFeedNoticeDto } from './dto/get-feed-notice.dto';
 
 @Injectable()
 export class CommunityService {
@@ -25,18 +26,46 @@ export class CommunityService {
     return community;
   }
 
-  async getFeedsByProjectId(projectId: number): Promise<Feed[]> {
+  async getFeedsByProjectId(projectId: number): Promise<GetFeedNoticeDto[]> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: ['feeds'],
+      relations: [
+        'feeds',
+        'feeds.author',
+        'feeds.author.user',
+        'feeds.author.user.log',
+      ],
     });
-    return community.feeds.filter((feed) => !feed.isNotice);
+
+    return community.feeds
+      .filter((feed) => !feed.isNotice)
+      .map(
+        ({ id, title, content, feed_files, isNotice, createdAt, author }) => ({
+          id,
+          title,
+          content,
+          feed_files,
+          isNotice,
+          createdAt,
+          author: {
+            position: author.position,
+            user: {
+              name: author.user.name,
+              log: {
+                status: author.user.log.status,
+                profileImage: author.user.log.profileImage,
+                rank: author.user.log.rank,
+              },
+            },
+          },
+        }),
+      );
   }
 
   async getNoticesByProjectId(projectId: number): Promise<Feed[]> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: ['feeds'],
+      relations: ['feeds', 'feeds.author', 'feeds.author.user'],
     });
     return community.feeds.filter((feed) => feed.isNotice);
   }

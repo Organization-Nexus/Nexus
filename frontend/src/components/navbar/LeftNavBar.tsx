@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   FaHome,
   FaTasks,
@@ -7,109 +9,159 @@ import {
   FaCommentDots,
   FaClipboardList,
   FaBookmark,
-} from "react-icons/fa"; // 아이콘 사용
+  FaAngleDown,
+  FaAngleUp,
+  FaVoteYea,
+  FaExclamation,
+  FaCodeBranch,
+} from "react-icons/fa";
 import { LogoutButton } from "../button/LogoutButton";
+import { usePathname, useRouter } from "next/navigation";
+import NavBarBtn from "./NavBarBtn";
 
-function LeftNavBar() {
+function LeftNavBar({ projectId }: { projectId: string }) {
+  const [isCommunityOpen, setCommunityOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const isActive = (path: string) => pathname.startsWith(path);
+  const navigateTo = (path: string) => {
+    router.push(path);
+  };
+
+  const toggleCommunity = () => {
+    setCommunityOpen((prev) => !prev);
+  };
+
   return (
     <div className="bg-white text-gray-800 flex flex-col h-full rounded-xl">
       {/* Header */}
-      <div className="p-4 text-xl font-semibold border-b border-gray-200">
-        Nexus
-      </div>
+      <div className="p-4 text-xl font-semibold">Nexus</div>
 
       {/* Navigation Links */}
-      <nav className="flex-1">
+      <nav className="flex-1 mx-auto w-[90%]">
+        <hr className="my-4" />
         <ul>
-          {/* Project Section */}
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaHome className="mr-3" /> Project Home
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaTasks className="mr-3" /> Dashboard
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Meeting Notes
-            </a>
-          </li>
-          <hr className="my-2 border-gray-300" />
+          {/* Project Home */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject`)}
+            icon={<FaHome className="mr-3" />}
+            label="내 프로젝트"
+            padding="p-4"
+          />
 
-          {/* Community Section */}
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaUsers className="mr-3" /> Community
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaCalendarAlt className="mr-3" /> Calendar
-            </a>
-          </li>
-          <hr className="my-2 border-gray-300" />
+          {/* Dashboard */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/dashboard`)}
+            icon={<FaTasks className="mr-3" />}
+            label="대시보드"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/dashboard`)}
+          />
 
-          {/* Milestones and Issues Section */}
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Milestones
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaClipboardList className="mr-3" /> Issues
-            </a>
-          </li>
-          <hr className="my-2 border-gray-300" />
+          <hr className="my-4" />
 
-          {/* Bookmarks Section */}
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaCommentDots className="mr-3" /> My Posts/Comments
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
-              <FaBookmark className="mr-3" /> Bookmarks
-            </a>
-          </li>
-          <li>
-            <a
-              href="#"
-              className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors"
-            >
+          {/* Community */}
+          <div
+            className="flex justify-between items-center cursor-pointer mt-1 p-4"
+            onClick={toggleCommunity}
+          >
+            <div className="flex items-center">
+              <FaUsers className="mr-3" />
+              <p className="text-md">커뮤니티</p>
+            </div>
+            {isCommunityOpen ? <FaAngleUp /> : <FaAngleDown />}
+          </div>
+
+          {isCommunityOpen && (
+            <div className="text-sm text-gray-600">
+              <hr />
+              <NavBarBtn
+                onClick={() =>
+                  navigateTo(`/myproject/${projectId}/community/feed`)
+                }
+                icon={<FaClipboardList className="mr-3" />}
+                label="피드"
+                padding="px-4 py-2"
+                isActive={isActive(`/myproject/${projectId}/community/feed`)}
+              />
+              <NavBarBtn
+                onClick={() =>
+                  navigateTo(`/myproject/${projectId}/community/notice`)
+                }
+                icon={<FaVoteYea className="mr-3" />}
+                label="투표"
+                padding="px-4 py-2"
+                isActive={isActive(`/myproject/${projectId}/community/notice`)}
+              />
+              <NavBarBtn
+                onClick={() =>
+                  navigateTo(`/myproject/${projectId}/community/announces`)
+                }
+                icon={<FaExclamation className="mr-3" />}
+                label="공지사항"
+                padding="px-4 py-2 mb-1"
+                isActive={isActive(
+                  `/myproject/${projectId}/community/announces`
+                )}
+              />
+              <hr />
+            </div>
+          )}
+
+          {/* Calendar */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}
+            icon={<FaCalendarAlt className="mr-3" />}
+            label="달력"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/calendar`)}
+          />
+
+          {/* Milestones */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/milestones`)}
+            icon={<FaClipboardList className="mr-3" />}
+            label="마일스톤"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/milestones`)}
+          />
+
+          {/* Issues */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/issues`)}
+            icon={<FaCodeBranch className="mr-3" />}
+            label="이슈"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/issues`)}
+          />
+
+          <hr className="my-4" />
+
+          {/* My Posts/Comments */}
+          <NavBarBtn
+            onClick={() =>
+              navigateTo(`/myproject/${projectId}/my-posts-comments`)
+            }
+            icon={<FaCommentDots className="mr-3" />}
+            label="내가 쓴 글/댓글"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/my-posts-comments`)}
+          />
+
+          {/* Bookmarks */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/bookmarks`)}
+            icon={<FaBookmark className="mr-3" />}
+            label="나의 북마크"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/bookmarks`)}
+          />
+
+          {/* Logout */}
+          <li className="mt-1">
+            <div className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors">
               <LogoutButton />
-            </a>
+            </div>
           </li>
         </ul>
       </nav>
