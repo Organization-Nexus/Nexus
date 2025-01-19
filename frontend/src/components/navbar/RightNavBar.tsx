@@ -19,13 +19,14 @@ const RightNavBar = ({ contents, user }: RightNavBarProps) => {
     <div className="p-4">
       <div className="flex mb-4">
         <div className="flex gap-4 w-full h-full items-center">
-          <div className="w-12 h-12 border-2 rounded-2xl bg-border">
-            <div className="relative w-[44px] h-[44px]">
+          <div className="w-12 h-12 rounded-2xl ">
+            <div className="relative w-[48px] h-[48px] rounded-2xl">
               <Image
                 src={user.log.profileImage}
                 alt="Profile Image"
-                fill
-                className="object-cover"
+                width={48}
+                height={48}
+                className="object-cover rounded-2xl"
                 priority
               />
             </div>
@@ -36,7 +37,7 @@ const RightNavBar = ({ contents, user }: RightNavBarProps) => {
               <p className="text-md text-custom-smallText font-semibold">
                 {user.mainPosition}
               </p>
-              <p className="text-sm text-custom-smallText font-semibold">
+              <p className="text-sm text-custom-smallText">
                 {new Date().toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "numeric",
