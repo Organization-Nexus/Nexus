@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef } from "react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { createPortal } from "react-dom";
 import {
   BaseModalProps,
@@ -194,7 +198,18 @@ function ModalDivider({ className }: BaseModalProps) {
 }
 
 // 메인 모달
-function ModalRoot({ isOpen, onClose, children, className }: ModalRootProps) {
+function ModalRoot({
+  isOpen,
+  onClose,
+  children,
+  className,
+  hasOverlay = true,
+}: ModalRootProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(contentRef, onClose);
+
   if (!isOpen) return null;
 
   const baseClassName = "fixed inset-0 z-50";
@@ -204,9 +219,12 @@ function ModalRoot({ isOpen, onClose, children, className }: ModalRootProps) {
 
   return createPortal(
     <div className={finalClassName}>
-      <ModalDimmed onClick={onClose} />
+      {hasOverlay && <ModalDimmed onClick={onClose} />}
       <div className="fixed inset-0 flex items-center justify-center">
-        <div className={`bg-white p-6 rounded-lg shadow-lg w-1/2 ${className}`}>
+        <div
+          ref={contentRef}
+          className={`bg-white p-6 rounded-2xl shadow-lg w-1/2 ${className}`}
+        >
           {children}
         </div>
       </div>
