@@ -39,6 +39,10 @@ export class CommunityService {
 
     return community.feeds
       .filter((feed) => !feed.isNotice)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
       .map(
         ({ id, title, content, feed_files, isNotice, createdAt, author }) => ({
           id,

@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 
 export class FileValidator {
   private static readonly fileTypeMap = new Map([
+    ['image/jpg', { category: 'image', maxSize: 5 * 1024 * 1024 }],
     ['image/jpeg', { category: 'image', maxSize: 5 * 1024 * 1024 }],
     ['image/png', { category: 'image', maxSize: 5 * 1024 * 1024 }],
     ['image/gif', { category: 'image', maxSize: 5 * 1024 * 1024 }],
@@ -29,21 +30,30 @@ export class FileValidator {
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       { category: 'docs', maxSize: 10 * 1024 * 1024 },
     ],
+    ['application/x-hwp', { category: 'docs', maxSize: 10 * 1024 * 1024 }],
   ]);
 
   static validate(file: Express.Multer.File) {
+    // MIME 타입 체크
     const fileType = this.fileTypeMap.get(file.mimetype);
 
-    if (!fileType) {
+    // MIME 타입이 없으면 확장자로 체크
+    if (!fileType && file.originalname.endsWith('.hwp')) {
+      file.mimetype = 'application/x-hwp'; // MIME 타입을 강제로 지정
+    }
+
+    const fileTypeAfterCheck = this.fileTypeMap.get(file.mimetype);
+
+    if (!fileTypeAfterCheck) {
       throw new BadRequestException('Invalid file type.');
     }
 
-    if (file.size > fileType.maxSize) {
+    if (file.size > fileTypeAfterCheck.maxSize) {
       throw new BadRequestException(
-        `File size exceeds the ${fileType.maxSize / 1024 / 1024}MB limit.`,
+        `File size exceeds the ${fileTypeAfterCheck.maxSize / 1024 / 1024}MB limit.`,
       );
     }
 
-    return fileType;
+    return fileTypeAfterCheck;
   }
 }

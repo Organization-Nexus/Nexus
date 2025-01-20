@@ -27,27 +27,26 @@ export class S3ConfigService {
     category: Category,
     file: Express.Multer.File,
   ): string {
-    const timestamp = new Date().toISOString();
     const baseKey = `user/${userId}`;
 
     switch (category) {
       case Category.AVATAR:
-        return `${baseKey}/${timestamp}-${file.originalname}`;
+        return `${baseKey}/${file.originalname}`;
 
       case Category.MESSAGE:
         if (!fileType)
           throw new Error('FileType is required for MESSAGE category.');
-        return `${baseKey}/message/${fileType}/${timestamp}-${file.originalname}`;
+        return `${baseKey}/message/${fileType}/${file.originalname}`;
 
       case Category.PROJECT:
         if (!projectId)
           throw new Error('ProjectId is required for PROJECT category.');
-        return `${baseKey}/project/${projectId}/${timestamp}-${file.originalname}`;
+        return `${baseKey}/project/${projectId}/${file.originalname}`;
 
       case Category.COMMUNITY:
         if (!projectId)
           throw new Error('ProjectId is required for COMMUNITY category.');
-        return `${baseKey}/project/${projectId}/community/${fileType}/${timestamp}-${file.originalname}`;
+        return `${baseKey}/project/${projectId}/community/${fileType}/${file.originalname}`;
 
       default:
         throw new Error('Invalid category.');
