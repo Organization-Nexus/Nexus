@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
-import { ProjectBase } from "@/types/project";
 import { project_image } from "@/data/project_image";
 import { projectApi } from "@/api/project";
 import { useQueryClient } from "@tanstack/react-query";
+import { Project } from "@/types/project";
 
 export default function CreateProjectModal({
   isOpen,
@@ -12,7 +12,8 @@ export default function CreateProjectModal({
 }: ModalRootProps) {
   const queryClient = useQueryClient();
 
-  const [formData, setFormData] = useState<ProjectBase>({
+  const [formData, setFormData] = useState<Project>({
+    id: 0,
     title: "",
     description: "",
     start_date: new Date().toISOString().split("T")[0],
@@ -180,7 +181,6 @@ export default function CreateProjectModal({
 
           {/* 시작일, 마감일 입력 */}
           <div className="flex justify-between w-full">
-            {/* 시작일 */}
             <div className="w-1/2 pr-2">
               <div className="flex items-center">
                 <label className="block text-lg font-bold text-gray-700 pr-2">

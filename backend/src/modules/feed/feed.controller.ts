@@ -14,7 +14,7 @@ import { FeedService } from './feed.service';
 import { FileService } from '../file/file.service';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateFeedNoticeDto } from './dto/create-feed-notice.dto';
 import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
@@ -34,7 +34,7 @@ export class FeedController {
   // POST /api/feed/create-feed/:projectId
   @Post('create-feed/:projectId')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FilesInterceptor('feed_file'))
+  @UseInterceptors(FilesInterceptor('community_files'))
   async createFeed(
     @Body() createFeedDto: CreateFeedNoticeDto,
     @Param('projectId') projectId: number,
@@ -50,9 +50,9 @@ export class FeedController {
     const community =
       await this.communityService.getCommunityByProjectId(projectId);
 
-    let feedFiles = null;
+    let communityFiles = null;
     if (files && files.length > 0) {
-      feedFiles = await this.fileService.handleFileUpload({
+      communityFiles = await this.fileService.handleFileUpload({
         files,
         userId: req.user.id,
         projectId,
@@ -61,7 +61,7 @@ export class FeedController {
     }
     return await this.feedService.createFeed(
       createFeedDto,
-      feedFiles,
+      communityFiles,
       community,
       projectUser,
     );
@@ -70,7 +70,7 @@ export class FeedController {
   // PATCH /api/feed/update-feed/:feedId/:projectId
   @Patch('update-feed/:feedId/:projectId')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FileInterceptor('feed_file'))
+  @UseInterceptors(FilesInterceptor('community_files'))
   async updateFeed(
     @Param('feedId') feedId: number,
     @Param('projectId') projectId: number,
@@ -85,16 +85,20 @@ export class FeedController {
         projectId,
       );
     await this.feedService.validateFeedOwner(feedId, projectUserId);
-    let feedFiles = null;
+    let communityFiles = null;
     if (files && files.length > 0) {
-      feedFiles = await this.fileService.handleFileUpload({
+      communityFiles = await this.fileService.handleFileUpload({
         files,
         userId: req.user.id,
         projectId,
         category: Category.COMMUNITY,
       });
     }
-    return await this.feedService.updateFeed(feedId, updateFeedDto, feedFiles);
+    return await this.feedService.updateFeed(
+      feedId,
+      updateFeedDto,
+      communityFiles,
+    );
   }
 
   // DELETE /api/feed/delete-feed/:feedId/:projectId
@@ -121,7 +125,7 @@ export class FeedController {
   // POST /api/feed/create-notice/:projectId
   @Post('create-notice/:projectId')
   @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FilesInterceptor('feed_file'))
+  @UseInterceptors(FilesInterceptor('community_files'))
   async createNotice(
     @Body() createNotceDto: CreateFeedNoticeDto,
     @Param('projectId') projectId: number,
@@ -140,9 +144,9 @@ export class FeedController {
     }
     const community =
       await this.communityService.getCommunityByProjectId(projectId);
-    let feedFiles = null;
+    let community_file = null;
     if (files && files.length > 0) {
-      feedFiles = await this.fileService.handleFileUpload({
+      community_file = await this.fileService.handleFileUpload({
         files,
         userId: req.user.id,
         projectId,
@@ -153,7 +157,7 @@ export class FeedController {
     const isImportant = createNotceDto.isImportant || false;
     return await this.feedService.createFeed(
       createNotceDto,
-      feedFiles,
+      community_file,
       community,
       projectUser,
       isNotice,

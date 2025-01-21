@@ -13,8 +13,8 @@ export interface UserInfo {
   email: string;
   name: string;
   phoneNumber: string;
-  githubUrl?: string; // Optional field
-  profileImage: string;
+  githubUrl?: string;
+  log: { profileImage: string };
 }
 
 // Props : ProjectUsers

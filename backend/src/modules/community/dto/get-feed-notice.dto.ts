@@ -19,7 +19,7 @@ export class GetFeedNoticeDto {
 
   @IsArray()
   @IsString({ each: true })
-  feed_files: string[];
+  community_files: string[];
 
   @IsDate()
   createdAt: Date;

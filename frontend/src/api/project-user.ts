@@ -1,4 +1,4 @@
-import { ProjectUser } from "@/types/project";
+import { ProjectUser } from "@/types/project-user";
 import { api } from "./config/axios";
 
 export const projectUserApi = {

@@ -19,7 +19,7 @@ export class FeedService {
 
   async createFeed(
     createFeedNoticeDto: CreateFeedNoticeDto,
-    feedFiles: string[],
+    communityFiles: string[],
     communityId: Community,
     projectUser: ProjectUser,
     isNotice?: boolean,
@@ -27,7 +27,7 @@ export class FeedService {
   ): Promise<Feed> {
     const feed = this.feedRepository.create({
       ...createFeedNoticeDto,
-      feed_files: feedFiles,
+      community_files: communityFiles,
       community: communityId,
       author: projectUser,
       isNotice,
@@ -50,7 +50,7 @@ export class FeedService {
   async updateFeed(
     feedId: number,
     updateFeedDto: CreateFeedNoticeDto,
-    feedFiles: string[],
+    communityFiles: string[],
   ): Promise<Feed> {
     const feed = await this.feedRepository.findOneBy({ id: feedId });
     if (!feed) {
@@ -58,7 +58,7 @@ export class FeedService {
     }
     const updateFields = {
       ...updateFeedDto,
-      imageUrl: feedFiles || feed.feed_files,
+      imageUrl: communityFiles || feed.community_files,
     };
     Object.assign(feed, updateFields);
     return await this.feedRepository.save(feed);

@@ -9,7 +9,7 @@ export class CreateFeedNoticeDto {
 
   @IsOptional()
   @IsString()
-  feed_files?: string;
+  community_files?: string[];
 
   @IsOptional()
   @IsBoolean()

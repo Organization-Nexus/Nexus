@@ -44,7 +44,7 @@ export class CommunityService {
           id: feed.id,
           title: feed.title,
           content: feed.content,
-          feed_files: feed.feed_files,
+          community_files: feed.community_files,
           isNotice: feed.isNotice,
           isImportant: feed.isImportant,
           createdAt: feed.createdAt,

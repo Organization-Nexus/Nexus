@@ -70,38 +70,6 @@ function LeftNavBar({ projectId }: { projectId: string }) {
             isActive={isActive(`/myproject/${projectId}/community`)}
           />
 
-          <div className="text-sm text-gray-600">
-            <hr />
-            <NavBarBtn
-              onClick={() =>
-                navigateTo(`/myproject/${projectId}/community/feed`)
-              }
-              icon={<FaClipboardList className="mr-3" />}
-              label="피드"
-              padding="px-4 py-2"
-              isActive={isActive(`/myproject/${projectId}/community/feed`)}
-            />
-            <NavBarBtn
-              onClick={() =>
-                navigateTo(`/myproject/${projectId}/community/notice`)
-              }
-              icon={<FaVoteYea className="mr-3" />}
-              label="투표"
-              padding="px-4 py-2"
-              isActive={isActive(`/myproject/${projectId}/community/notice`)}
-            />
-            <NavBarBtn
-              onClick={() =>
-                navigateTo(`/myproject/${projectId}/community/announces`)
-              }
-              icon={<FaExclamation className="mr-3" />}
-              label="공지사항"
-              padding="px-4 py-2 mb-1"
-              isActive={isActive(`/myproject/${projectId}/community/announces`)}
-            />
-            <hr />
-          </div>
-
           {/* Calendar */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}

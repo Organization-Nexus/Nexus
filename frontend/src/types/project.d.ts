@@ -2,6 +2,7 @@ import { ProjectUser } from "./project-user";
 
 // Project Informations
 export interface Project {
+  id: number;
   title: string;
   description: string;
   start_date: string;

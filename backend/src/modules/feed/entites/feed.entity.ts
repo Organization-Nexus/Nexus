@@ -21,7 +21,7 @@ export class Feed {
   content: string;
 
   @Column('text', { array: true, nullable: true })
-  feed_files: string[];
+  community_files: string[];
 
   @Column({ default: false })
   isNotice: boolean;

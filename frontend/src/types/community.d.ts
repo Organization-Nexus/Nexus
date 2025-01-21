@@ -14,26 +14,26 @@ enum Status {
 
 // Community Informations
 export interface Community {
+  id: number;
   title: string;
   content: string;
   community_files?: string[];
   createdAt: string;
   isNotice: boolean;
-}
-
-// Community Detail
-export interface CommunityDetail extends Community {
-  id: number;
   author: Author;
 }
 
 // Community Author Informations
 export interface Author {
-  name: string;
-  profileImage: string;
   position: string;
-  rank: Rank;
-  status: Status;
+  user: {
+    name: string;
+    log: {
+      status: Status;
+      profileImage: string;
+      rank: Rank;
+    };
+  };
 }
 
 // Notice Detail
