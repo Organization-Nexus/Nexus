@@ -8,12 +8,16 @@ export class CommunityController {
   // GET /api/community/feeds/:projectId
   @Get('feeds/:projectId')
   async getFeedsByProjectId(@Param('projectId') projectId: number) {
-    return await this.communityService.getFeedsByProjectId(projectId);
+    const { feeds } =
+      await this.communityService.getFeedsOrNoticesByProjectId(projectId);
+    return feeds;
   }
 
   // GET /api/community/notices/:projectId
   @Get('notices/:projectId')
   async getNoticesByProjectId(@Param('projectId') projectId: number) {
-    return await this.communityService.getNoticesByProjectId(projectId);
+    const { notices } =
+      await this.communityService.getFeedsOrNoticesByProjectId(projectId);
+    return notices;
   }
 }

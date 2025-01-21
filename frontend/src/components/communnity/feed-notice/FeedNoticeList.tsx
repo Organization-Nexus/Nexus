@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FeedNoticeListProps } from "@/types/feed";
+import { FeedNoticeListProps } from "@/types/community";
 import { convertToKST } from "@/utils/convertToKST";
 import { isImageFile } from "@/utils/isImageFile";
 import FileItem from "@/components/utils/FileItem";
@@ -52,8 +52,12 @@ function FeedNoticeList({ feeds }: FeedNoticeListProps) {
           new Date(feed.createdAt).toISOString()
         );
         const files = feed.feed_files || [];
-        const imageFiles = files.filter((file) => isImageFile(file));
-        const documentFiles = files.filter((file) => !isImageFile(file));
+        const imageFiles: string[] = files.filter((file: string) =>
+          isImageFile(file)
+        );
+        const documentFiles: string[] = files.filter(
+          (file: string) => !isImageFile(file)
+        );
 
         const contentMaxHeight = "100px";
 
@@ -72,7 +76,7 @@ function FeedNoticeList({ feeds }: FeedNoticeListProps) {
                     className="w-16 h-16 rounded-md"
                   />
                   <div>
-                    <p className="font-medium text-gray-800">
+                    <p className="text-2xl font-bold text-gray-800">
                       {feed.author.user.name}
                     </p>
                     <p className="text-sm text-gray-500">
@@ -101,7 +105,7 @@ function FeedNoticeList({ feeds }: FeedNoticeListProps) {
             {/* 더보기 버튼 */}
             {feed.content.length > 200 && (
               <button
-                className="text-blue-500 mt-2"
+                className="text-blue-500 my-2"
                 onClick={() => handleToggleExpand(feed.id)}
               >
                 {expandedFeed === feed.id ? "간략히 보기" : "더보기"}

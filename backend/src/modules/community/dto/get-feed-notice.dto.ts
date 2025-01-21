@@ -27,6 +27,9 @@ export class GetFeedNoticeDto {
   @IsBoolean()
   isNotice: boolean;
 
+  @IsBoolean()
+  isImportant: boolean;
+
   author: AuthorDto;
 }
 

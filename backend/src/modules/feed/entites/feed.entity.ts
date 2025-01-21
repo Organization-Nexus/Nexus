@@ -26,6 +26,9 @@ export class Feed {
   @Column({ default: false })
   isNotice: boolean;
 
+  @Column({ default: false })
+  isImportant: boolean;
+
   @ManyToOne(() => Community, (community) => community.feeds, {
     onDelete: 'CASCADE',
   })

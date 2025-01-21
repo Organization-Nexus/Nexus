@@ -128,6 +128,7 @@ export class FeedController {
     @Req() req: UserPayload,
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
+    console.log('FormData: ', createNotceDto);
     const userId = req.user.id;
     const projectUser =
       await this.projectUserService.validateProjectMemberByUserId(
@@ -149,12 +150,14 @@ export class FeedController {
       });
     }
     const isNotice = true;
+    const isImportant = createNotceDto.isImportant || false;
     return await this.feedService.createFeed(
       createNotceDto,
       feedFiles,
       community,
       projectUser,
       isNotice,
+      isImportant,
     );
   }
 }

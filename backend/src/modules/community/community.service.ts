@@ -26,7 +26,9 @@ export class CommunityService {
     return community;
   }
 
-  async getFeedsByProjectId(projectId: number): Promise<GetFeedNoticeDto[]> {
+  async getFeedsOrNoticesByProjectId(
+    projectId: number,
+  ): Promise<{ feeds: GetFeedNoticeDto[]; notices: GetFeedNoticeDto[] }> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
       relations: [
@@ -36,41 +38,47 @@ export class CommunityService {
         'feeds.author.user.log',
       ],
     });
-
-    return community.feeds
-      .filter((feed) => !feed.isNotice)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .map(
-        ({ id, title, content, feed_files, isNotice, createdAt, author }) => ({
-          id,
-          title,
-          content,
-          feed_files,
-          isNotice,
-          createdAt,
+    const { feeds, notices } = community.feeds.reduce(
+      (result, feed) => {
+        const transformedFeed: GetFeedNoticeDto = {
+          id: feed.id,
+          title: feed.title,
+          content: feed.content,
+          feed_files: feed.feed_files,
+          isNotice: feed.isNotice,
+          isImportant: feed.isImportant,
+          createdAt: feed.createdAt,
           author: {
-            position: author.position,
+            position: feed.author.position,
             user: {
-              name: author.user.name,
+              name: feed.author.user.name,
               log: {
-                status: author.user.log.status,
-                profileImage: author.user.log.profileImage,
-                rank: author.user.log.rank,
+                status: feed.author.user.log.status,
+                profileImage: feed.author.user.log.profileImage,
+                rank: feed.author.user.log.rank,
               },
             },
           },
-        }),
-      );
-  }
+        };
 
-  async getNoticesByProjectId(projectId: number): Promise<Feed[]> {
-    const community = await this.communityRepository.findOne({
-      where: { project: { id: projectId } },
-      relations: ['feeds', 'feeds.author', 'feeds.author.user'],
-    });
-    return community.feeds.filter((feed) => feed.isNotice);
+        if (feed.isNotice) {
+          result.notices.push(transformedFeed);
+        } else {
+          result.feeds.push(transformedFeed);
+        }
+        return result;
+      },
+      { feeds: [], notices: [] } as {
+        feeds: GetFeedNoticeDto[];
+        notices: GetFeedNoticeDto[];
+      },
+    );
+
+    feeds.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    return { feeds, notices };
   }
 }

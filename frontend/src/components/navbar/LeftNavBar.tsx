@@ -56,12 +56,19 @@ function LeftNavBar({ projectId }: { projectId: string }) {
           <hr className="my-4" />
 
           {/* Community */}
-          <div className="flex justify-between items-center cursor-pointer mt-1 p-4">
+          {/* <div className="flex justify-between items-center cursor-pointer mt-1 p-4">
             <div className="flex items-center">
               <FaUsers className="mr-3" />
               <p className="text-md">커뮤니티</p>
             </div>
-          </div>
+          </div> */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/community`)}
+            icon={<FaUsers className="mr-3" />}
+            label="커뮤니티"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/community`)}
+          />
 
           <div className="text-sm text-gray-600">
             <hr />

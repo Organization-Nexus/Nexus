@@ -1,7 +1,6 @@
-import { feedApi } from "@/api/feed";
+import { communityApi } from "@/api/community";
 import { projectApi } from "@/api/project";
 import FeedNoticeList from "@/components/communnity/feed-notice/FeedNoticeList";
-import type { Feed } from "@/types/feed";
 import { ProjectIdProps } from "@/types/project";
 import React from "react";
 import Image from "next/image";
@@ -9,7 +8,7 @@ import Image from "next/image";
 export default async function Feed({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const project = await projectApi.getProjectById(projectId);
-  const feeds = await feedApi.getfeedsByProjectId(projectId);
+  const feeds = await communityApi.getfeedsByProjectId(projectId);
 
   return (
     <>

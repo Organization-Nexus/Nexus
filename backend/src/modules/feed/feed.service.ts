@@ -23,6 +23,7 @@ export class FeedService {
     communityId: Community,
     projectUser: ProjectUser,
     isNotice?: boolean,
+    isImportant?: boolean,
   ): Promise<Feed> {
     const feed = this.feedRepository.create({
       ...createFeedNoticeDto,
@@ -30,6 +31,7 @@ export class FeedService {
       community: communityId,
       author: projectUser,
       isNotice,
+      isImportant,
     });
     return await this.feedRepository.save(feed);
   }

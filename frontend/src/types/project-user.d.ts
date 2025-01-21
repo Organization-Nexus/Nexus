@@ -1,36 +1,23 @@
+// Project User Informations
 export interface ProjectUser {
   id: number;
   position: string;
+  user: UserInfo;
   joined_at: string;
   is_ban: boolean;
   is_sub_admin: boolean;
-  user: User;
 }
 
-export interface User {
-  id: number;
+// User Info (Minimized User Data)
+export interface UserInfo {
   email: string;
   name: string;
   phoneNumber: string;
-  mainPosition: string;
-  githubUrl: string | null;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-  log: Log;
-}
-
-export interface Log {
-  user_id: number;
+  githubUrl?: string; // Optional field
   profileImage: string;
-  rank: number;
-  status: string;
-  lastLoggedIn: string | null;
-  lastLoggedOut: string | null;
-  refreshToken: string | null;
-  refreshTokenExpiresAt: string | null;
 }
 
-export interface ProjectUserProps {
+// Props : ProjectUsers
+export interface ProjectUserListProps {
   projectUsers: ProjectUser[];
 }

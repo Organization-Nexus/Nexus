@@ -1,11 +1,7 @@
-export interface ProjectIdProps {
-  params: {
-    projectId: string;
-  };
-}
+import { ProjectUser } from "./project-user";
 
-// 프로젝트의 기본 정보
-export interface ProjectBase {
+// Project Informations
+export interface Project {
   title: string;
   description: string;
   start_date: string;
@@ -13,35 +9,25 @@ export interface ProjectBase {
   project_image: File | string;
 }
 
-// 프로젝트의 에러 메시지
-export interface ProjectBaseErrors {
-  title: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  project_image: string;
-}
-
-// 프로젝트 상세 정보
-export interface Project extends ProjectBase {
+// Project Detail
+export interface ProjectDetail extends Project {
   id: number;
   projectUsers: ProjectUser[];
 }
 
-// 프로젝트 사용자 정보
-export interface ProjectUser {
-  id: number;
-  position: string;
-  joined_at: string;
-  is_ban: boolean;
-  is_sub_admin: boolean;
-  user: User;
+// Props : ProjectId
+export interface ProjectIdProps {
+  params: {
+    projectId: string;
+  };
 }
 
-// 프로젝트 목록을 위한 props
+// Props : Projects
 export interface ProjectListProps {
   projects: Project[];
 }
 
-// 프로젝트 생성 시 필요한 정보
-export interface CreateProject extends ProjectBase {}
+// Props: Project
+export interface ProjectProps {
+  project: Project;
+}
