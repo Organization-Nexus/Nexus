@@ -25,6 +25,14 @@ export default function RegisterFormComponent() {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const registerValidation = {
+    name: userValidation.name,
+    email: userValidation.email,
+    password: userValidation.password,
+    phoneNumber: userValidation.phoneNumber,
+    githubUrl: userValidation.githubUrl,
+  } as const;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -34,7 +42,7 @@ export default function RegisterFormComponent() {
 
     // 실시간 유효성 검사
     const validationError =
-      userValidation[name as keyof typeof userValidation]?.(value);
+      registerValidation[name as keyof typeof registerValidation]?.(value);
     setErrors((prev) => ({
       ...prev,
       [name]: validationError,

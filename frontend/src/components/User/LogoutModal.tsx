@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Modal } from "../modal/config/ModalMaps";
 import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
   };
 
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -25,7 +28,9 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
 
-      // 로그아웃 후 로그인 페이지로 리다이렉트
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      onClose();
+      // router.refresh();
       router.push("/login");
     } catch (error: any) {
       console.error("로그아웃 실패:", error);
@@ -34,28 +39,27 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="w-[500px]">
-        <Modal.Subtitle className="text-lg font-medium mb-4">
-          로그아웃 하시겠습니까?
-        </Modal.Subtitle>
+    <Modal isOpen={isOpen} onClose={onClose} className="w-[450px] rounded-xl">
+      <Modal.Title className="text-base font-normal place-self-center mb-0 mt-4">
+        로그아웃 하시겠습니까?
+      </Modal.Title>
 
-        <div className="flex justify-end space-x-2 pt-4">
-          <Modal.Button
-            variant="secondary"
-            onClick={onClose}
-            className="px-4 py-2 text-sm"
-          >
-            취소
-          </Modal.Button>
-          <Modal.Button
-            variant="primary"
-            onClick={handleLogout}
-            className="px-4 py-2 text-sm bg-green-500 hover:bg-green-600"
-          >
-            확인
-          </Modal.Button>
-        </div>
+      <div className="grid grid-cols-2 justify-items-stretch p-4 pb-0">
+        <Modal.Button
+          variant="secondary"
+          onClick={onClose}
+          className="text-sm w-full m-1"
+        >
+          취소
+        </Modal.Button>
+
+        <Modal.Button
+          variant="primary"
+          onClick={handleLogout}
+          className="text-sm w-full m-1"
+        >
+          확인
+        </Modal.Button>
       </div>
     </Modal>
   );
