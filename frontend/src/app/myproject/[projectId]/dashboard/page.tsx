@@ -1,11 +1,14 @@
 import { projectApi } from "@/api/project";
+import { projectUserApi } from "@/api/project-user";
 import CardSection from "@/components/dashboard/CardSection";
 import ProjectInfo from "@/components/dashboard/ProjectInfo";
+import ProjectUsers from "@/components/dashboard/ProjectUsers";
 import { ProjectIdProps } from "@/types/project";
 
 export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const projects = await projectApi.getProjectById(projectId);
+  const projectUsers = await projectUserApi.getProjectUser(projectId);
 
   return (
     <div className="h-full flex justify-center items-center">
@@ -17,19 +20,7 @@ export default async function Dashboard({ params }: ProjectIdProps) {
           <hr className="my-2" />
           {/* Project Team Members */}
           <div className="flex flex-wrap justify-start gap-4">
-            {projects?.projectUsers.map((user, index) => (
-              <div
-                className="flex flex-col items-center justify-center p-4"
-                key={index}
-              >
-                <div className="w-16 h-16 bg-gray-200 rounded-3xl mb-1"></div>
-                {/* user.user.name으로 접근 */}
-                <p className="font-bold text-sm text-gray-700">
-                  {user.user?.name}
-                </p>
-                <p className="text-xs text-gray-400">{user.position}</p>
-              </div>
-            ))}
+            <ProjectUsers projectUsers={projectUsers} />
           </div>
         </div>
 

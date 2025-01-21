@@ -39,6 +39,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
       ? "bg-yellow-50"
       : "bg-gray-50";
 
+  const trimmedDescription =
+    project.description.length > 25
+      ? `${project.description.slice(0, 25)}...`
+      : project.description;
+
   const handleCardClick = () => {
     router.push(`/myproject/${project.id}/dashboard`);
   };
@@ -73,21 +78,21 @@ const ProjectCard = ({ project }: { project: Project }) => {
             className="w-32 h-32 object-cover rounded-md mr-4"
           />
         )}
-        <div className="flex-1">
+        <div className="flex-1 space-y-2">
           {/* Title and Description */}
           <h3 className="text-xl font-semibold text-gray-800">
             {project.title}
           </h3>
-          <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+          <p className="text-sm text-gray-600">{trimmedDescription}</p>
 
           {/* Dates */}
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <div className="flex justify-between text-xs text-gray-500">
             <div>Start Date: {project.start_date}</div>
             <div>End Date: {project.end_date}</div>
           </div>
 
           {/* Member Information */}
-          <div className="flex gap-2 text-sm text-gray-500 mb-2">
+          <div className="flex gap-2 text-sm text-gray-500">
             <div className="flex items-center justify-center gap-1">
               <p className="text-md">
                 <FaRegFaceGrinBeam />

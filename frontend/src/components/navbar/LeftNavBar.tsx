@@ -20,16 +20,11 @@ import { usePathname, useRouter } from "next/navigation";
 import NavBarBtn from "./NavBarBtn";
 
 function LeftNavBar({ projectId }: { projectId: string }) {
-  const [isCommunityOpen, setCommunityOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const isActive = (path: string) => pathname.startsWith(path);
   const navigateTo = (path: string) => {
     router.push(path);
-  };
-
-  const toggleCommunity = () => {
-    setCommunityOpen((prev) => !prev);
   };
 
   return (
@@ -61,52 +56,19 @@ function LeftNavBar({ projectId }: { projectId: string }) {
           <hr className="my-4" />
 
           {/* Community */}
-          <div
-            className="flex justify-between items-center cursor-pointer mt-1 p-4"
-            onClick={toggleCommunity}
-          >
+          {/* <div className="flex justify-between items-center cursor-pointer mt-1 p-4">
             <div className="flex items-center">
               <FaUsers className="mr-3" />
               <p className="text-md">커뮤니티</p>
             </div>
-            {isCommunityOpen ? <FaAngleUp /> : <FaAngleDown />}
-          </div>
-
-          {isCommunityOpen && (
-            <div className="text-sm text-gray-600">
-              <hr />
-              <NavBarBtn
-                onClick={() =>
-                  navigateTo(`/myproject/${projectId}/community/feed`)
-                }
-                icon={<FaClipboardList className="mr-3" />}
-                label="피드"
-                padding="px-4 py-2"
-                isActive={isActive(`/myproject/${projectId}/community/feed`)}
-              />
-              <NavBarBtn
-                onClick={() =>
-                  navigateTo(`/myproject/${projectId}/community/notice`)
-                }
-                icon={<FaVoteYea className="mr-3" />}
-                label="투표"
-                padding="px-4 py-2"
-                isActive={isActive(`/myproject/${projectId}/community/notice`)}
-              />
-              <NavBarBtn
-                onClick={() =>
-                  navigateTo(`/myproject/${projectId}/community/announces`)
-                }
-                icon={<FaExclamation className="mr-3" />}
-                label="공지사항"
-                padding="px-4 py-2 mb-1"
-                isActive={isActive(
-                  `/myproject/${projectId}/community/announces`
-                )}
-              />
-              <hr />
-            </div>
-          )}
+          </div> */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/community`)}
+            icon={<FaUsers className="mr-3" />}
+            label="커뮤니티"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/community`)}
+          />
 
           {/* Calendar */}
           <NavBarBtn

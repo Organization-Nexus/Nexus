@@ -17,9 +17,9 @@ export const projectApi = {
     });
   },
 
-  getProjectById: async (id: string): Promise<Project> => {
+  getProjectById: async (userId: string): Promise<Project> => {
     return await api
-      .get<Project>(`/project/detail/${id}`)
+      .get<Project>(`/project/detail/${userId}`)
       .then((res) => res.data);
   },
 };

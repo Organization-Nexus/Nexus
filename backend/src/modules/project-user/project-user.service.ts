@@ -71,4 +71,11 @@ export class ProjectUserService {
     }
     return true;
   }
+
+  async getProjectUsers(projectId: number): Promise<ProjectUser[]> {
+    return await this.projectUserRepository.find({
+      where: { project: { id: projectId } },
+      relations: ['user', 'user.log'],
+    });
+  }
 }

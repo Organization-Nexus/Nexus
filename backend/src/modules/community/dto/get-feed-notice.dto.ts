@@ -19,13 +19,16 @@ export class GetFeedNoticeDto {
 
   @IsArray()
   @IsString({ each: true })
-  feed_files: string[];
+  community_files: string[];
 
   @IsDate()
   createdAt: Date;
 
   @IsBoolean()
   isNotice: boolean;
+
+  @IsBoolean()
+  isImportant: boolean;
 
   author: AuthorDto;
 }
