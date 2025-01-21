@@ -13,7 +13,7 @@ export function useOutsideClick<T extends HTMLElement>(
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [ref, handler]);
+    document.addEventListener("mouseup", handleClickOutside);
+    return () => document.removeEventListener("mouseup", handleClickOutside);
+  }, [ref, handler]); // 의존성 배열 추가
 }
