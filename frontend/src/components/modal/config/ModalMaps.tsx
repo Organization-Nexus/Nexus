@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef } from "react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { createPortal } from "react-dom";
 import {
   BaseModalProps,
@@ -11,18 +15,12 @@ import {
 } from "@/types/modal";
 
 // Dimmed 배경
-function ModalDimmed({
-  onClick,
-  className,
-}: {
-  onClick: () => void;
-  className?: string;
-}) {
+function ModalDimmed({ className }: { className?: string }) {
   const baseClassName = "fixed inset-0 bg-black bg-opacity-65";
   const finalClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
-  return <div className={finalClassName} onClick={onClick} />;
+  return <div className={finalClassName} />;
 }
 
 // 제목
@@ -173,7 +171,7 @@ function ModalLabelButton({
   className,
   ...props
 }: LabelButtonProps) {
-  const baseClassName = "flex flex-col items-center bg-gray-400";
+  const baseClassName = "flex flex-col items-center";
   const finalClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
@@ -194,7 +192,23 @@ function ModalDivider({ className }: BaseModalProps) {
 }
 
 // 메인 모달
-function ModalRoot({ isOpen, onClose, children, className }: ModalRootProps) {
+function ModalRoot({
+  isOpen,
+  onClose,
+  children,
+  className,
+  hasOverlay = true,
+}: ModalRootProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    const overlay = e.currentTarget;
+    const clickedElement = e.target as HTMLElement;
+
+    if (overlay === clickedElement) {
+      onClose();
+    }
+  };
   if (!isOpen) return null;
 
   const baseClassName = "fixed inset-0 z-50";
@@ -203,12 +217,20 @@ function ModalRoot({ isOpen, onClose, children, className }: ModalRootProps) {
     : baseClassName;
 
   return createPortal(
-    <div className={finalClassName}>
-      <ModalDimmed onClick={onClose} />
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className={`bg-white p-6 rounded-lg shadow-lg w-1/2 ${className}`}>
-          {children}
-        </div>
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        hasOverlay ? "bg-black bg-opacity-65" : ""
+      }`}
+      onClick={handleOverlayClick}
+    >
+      <div
+        ref={modalRef}
+        className={`bg-white p-6 rounded-2xl shadow-lg w-1/2 z-10 ${
+          className || ""
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
       </div>
     </div>,
     document.body

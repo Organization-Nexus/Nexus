@@ -10,6 +10,7 @@ export interface BaseModalProps {
 export interface ModalRootProps extends BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
+  hasOverlay?: boolean;
 }
 
 // 체크버튼 컴포넌트

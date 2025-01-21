@@ -2,19 +2,36 @@
 
 import React from "react";
 import Image from "next/image";
-
-interface RightNavBarProps {
-  contents: string[];
-  user: {
-    name: string;
-    mainPosition: string;
-    log: {
-      profileImage: string;
-    };
+import { useQuery } from "@tanstack/react-query";
+import { userApi } from "@/api/user";
+// 사용자 타입 정의
+interface User {
+  name: string;
+  mainPosition: string;
+  log: {
+    profileImage: string;
   };
 }
 
-const RightNavBar = ({ contents, user }: RightNavBarProps) => {
+interface RightNavBarProps {
+  contents: string[];
+}
+
+const RightNavBar = ({ contents }: RightNavBarProps) => {
+  // User 타입 명시
+  const { data: user, isLoading } = useQuery<User>({
+    queryKey: ["user"],
+    queryFn: userApi.getUser,
+  });
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (!user) {
+    return <div>사용자 정보를 불러올 수 없습니다.</div>;
+  }
+
   return (
     <div className="p-4 bg-white rounded-lg">
       <div className="flex mb-4">
