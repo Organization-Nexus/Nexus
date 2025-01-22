@@ -19,7 +19,6 @@ export interface Community {
   content: string;
   community_files?: string[];
   createdAt: string;
-  isNotice: boolean;
   author: Author;
 }
 
@@ -45,4 +44,14 @@ export interface Notice extends Community {
 export interface CommunityClientTapsProps {
   feeds: Community[];
   notices: Notice[];
+}
+
+// Props: CommunityTemplateItem
+export type CommunityTemplateItem =
+  | { community: Community; type: "feed" }
+  | { community: Notice; type: "notice" };
+
+// Props: CommunityTemplate
+export interface CommunityTemplateProps {
+  items: CommunityTemplateItem[];
 }
