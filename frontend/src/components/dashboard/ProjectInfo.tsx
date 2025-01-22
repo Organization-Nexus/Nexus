@@ -1,9 +1,8 @@
-import React from "react";
+import { ProjectProps } from "@/types/project";
 import ProgressBar from "../project/ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
-import { Project } from "@/types/project";
 
-function ProjectInfo({ project }: { project: Project }) {
+export default function ProjectInfo({ project }: ProjectProps) {
   const progressPercentage = calculateProjectProgress(
     project.start_date,
     project.end_date
@@ -39,5 +38,3 @@ function ProjectInfo({ project }: { project: Project }) {
     </>
   );
 }
-
-export default ProjectInfo;

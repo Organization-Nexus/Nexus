@@ -12,18 +12,17 @@ enum Status {
   Banned = "Banned",
 }
 
-// Community Informations
+// Community Information
 export interface Community {
   id: number;
   title: string;
   content: string;
   community_files?: string[];
   createdAt: string;
-  isNotice: boolean;
   author: Author;
 }
 
-// Community Author Informations
+// Community Author Information
 export interface Author {
   position: string;
   user: {
@@ -41,9 +40,18 @@ export interface Notice extends Community {
   isImportant: boolean;
 }
 
-// Props : Feeds And Notices
-export interface ItemListProps<T> {
-  items: T[];
+// Props: CommunityClientTaps
+export interface CommunityClientTapsProps {
+  feeds: Community[];
+  notices: Notice[];
 }
-export type FeedListProps = ItemListProps<Community>;
-export type NoticeListProps = ItemListProps<Notice>;
+
+// Props: CommunityTemplateItem
+export type CommunityTemplateItem =
+  | { community: Community; type: "feed" }
+  | { community: Notice; type: "notice" };
+
+// Props: CommunityTemplate
+export interface CommunityTemplateProps {
+  items: CommunityTemplateItem[];
+}

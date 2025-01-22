@@ -1,7 +1,6 @@
 import { ProjectUserListProps } from "@/types/project-user";
-import React from "react";
 
-function ProjectUsers({ projectUsers = [] }: ProjectUserListProps) {
+export default function ProjectUsers({ projectUsers }: ProjectUserListProps) {
   return (
     <div className="flex flex-wrap gap-4">
       {projectUsers.map((projectUser) => (
@@ -28,5 +27,3 @@ function ProjectUsers({ projectUsers = [] }: ProjectUserListProps) {
     </div>
   );
 }
-
-export default ProjectUsers;

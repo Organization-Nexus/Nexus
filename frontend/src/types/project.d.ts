@@ -8,12 +8,13 @@ export interface Project {
   start_date: string;
   end_date: string;
   project_image: File | string;
+  projectUsers: ProjectUser[];
 }
 
-// Project Detail
-export interface ProjectDetail extends Project {
-  id: number;
-  projectUsers: ProjectUser[];
+// Props : ProgressBar
+export interface ProgressBarProps {
+  progress: number;
+  status?: string;
 }
 
 // Props : ProjectId

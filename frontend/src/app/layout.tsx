@@ -3,17 +3,15 @@ import "../styles/globals.css";
 import QueryProvider from "@/provider/queryClient";
 import NavigationWrapper from "@/components/NavigationWrapper";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko-KR">
       <head />
-      <body className="bg-[#EDF2FB]">
+      <body className="bg-[#EDF2FB] hide-scrollbar">
         <QueryProvider>
           <NavigationWrapper>{children}</NavigationWrapper>
         </QueryProvider>
       </body>
     </html>
   );
-};
-
-export default Layout;
+}

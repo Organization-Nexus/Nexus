@@ -4,7 +4,7 @@ import calculateProjectProgress from "@/utils/calculateProjectProgress";
 import { useRouter } from "next/navigation";
 import { FaRegFaceGrinBeam } from "react-icons/fa6";
 
-const ProjectCard = ({ project }: { project: Project }) => {
+export default function ProjectCard({ project }: { project: Project }) {
   const router = useRouter();
   const now = new Date();
   const startDate = new Date(project.start_date);
@@ -29,8 +29,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
     project.end_date
   );
 
-  const projectMembers = project.projectUsers;
-  const memberCount = projectMembers.length;
+  const memberCount = project.projectUsers.length;
 
   const bgColor =
     status === "in-progress"
@@ -107,6 +106,4 @@ const ProjectCard = ({ project }: { project: Project }) => {
       </div>
     </div>
   );
-};
-
-export default ProjectCard;
+}

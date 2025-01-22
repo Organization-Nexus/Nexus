@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   FaHome,
   FaTasks,
@@ -9,17 +8,14 @@ import {
   FaCommentDots,
   FaClipboardList,
   FaBookmark,
-  FaAngleDown,
-  FaAngleUp,
-  FaVoteYea,
-  FaExclamation,
   FaCodeBranch,
 } from "react-icons/fa";
 import { LogoutButton } from "../button/LogoutButton";
 import { usePathname, useRouter } from "next/navigation";
+import { LeftNavBarProps } from "@/types/navbar";
 import NavBarBtn from "./NavBarBtn";
 
-function LeftNavBar({ projectId }: { projectId: string }) {
+export default function LeftNavBar({ projectId }: LeftNavBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isActive = (path: string) => pathname.startsWith(path);
@@ -56,12 +52,6 @@ function LeftNavBar({ projectId }: { projectId: string }) {
           <hr className="my-4" />
 
           {/* Community */}
-          {/* <div className="flex justify-between items-center cursor-pointer mt-1 p-4">
-            <div className="flex items-center">
-              <FaUsers className="mr-3" />
-              <p className="text-md">커뮤니티</p>
-            </div>
-          </div> */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/community`)}
             icon={<FaUsers className="mr-3" />}
@@ -135,5 +125,3 @@ function LeftNavBar({ projectId }: { projectId: string }) {
     </div>
   );
 }
-
-export default LeftNavBar;

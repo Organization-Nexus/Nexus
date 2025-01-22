@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function CommunityInfo({ project }: ProjectProps) {
   return (
-    <div className="flex justify-center w-full pt-4">
+    <div className="flex justify-center w-full pt-4 mt-8">
       <div className="w-3/4 max-w-7xl space-y-6">
         <div className="">
           <div className="flex items-center space-x-6">
@@ -33,7 +33,6 @@ export default function CommunityInfo({ project }: ProjectProps) {
             </div>
           </div>
         </div>
-        <hr />
       </div>
     </div>
   );

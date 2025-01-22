@@ -5,7 +5,7 @@ import { useQuery as useReactQuery } from "@tanstack/react-query";
 import ProjectCard from "./ProjectCard";
 import { projectApi } from "@/api/project";
 
-const ProjectList = ({ projects = [] }: ProjectListProps) => {
+export default function ProjectList({ projects }: ProjectListProps) {
   const { data: project } = useReactQuery({
     queryKey: ["projectList"],
     queryFn: projectApi.getMyProjects,
@@ -57,6 +57,4 @@ const ProjectList = ({ projects = [] }: ProjectListProps) => {
       </div>
     </div>
   );
-};
-
-export default ProjectList;
+}
