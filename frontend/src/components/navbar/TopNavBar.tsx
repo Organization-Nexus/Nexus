@@ -8,7 +8,6 @@ import { TopNavBarProps } from "@/types/navbar";
 
 export default function TopNavBar({ user }: TopNavBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <div className="fixed top-0 right-0 border-2 bg-white shadow-sm my-4 mx-4 rounded-3xl">
       <div className="px-4 h-10 flex items-center">

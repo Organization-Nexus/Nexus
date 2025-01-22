@@ -18,7 +18,6 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
   if (!user) {
     return <div>사용자 정보를 불러올 수 없습니다.</div>;
   }
-
   return (
     <div className="p-4 bg-white rounded-lg">
       <div className="flex mb-4">
