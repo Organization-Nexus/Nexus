@@ -1,14 +1,11 @@
-import React from "react";
+import { ImageModalProps } from "@/types/utill";
 
-interface ImageModalProps {
-  isOpen: boolean;
-  imageUrl: string | null;
-  onClose: () => void;
-}
-
-const ImageModal = ({ isOpen, imageUrl, onClose }: ImageModalProps) => {
+export default function ImageModal({
+  isOpen,
+  imageUrl,
+  onClose,
+}: ImageModalProps) {
   if (!isOpen || !imageUrl) return null;
-
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -23,6 +20,4 @@ const ImageModal = ({ isOpen, imageUrl, onClose }: ImageModalProps) => {
       </div>
     </div>
   );
-};
-
-export default ImageModal;
+}

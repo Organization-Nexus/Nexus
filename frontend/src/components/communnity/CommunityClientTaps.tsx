@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Community } from "@/types/community";
 import { Users, Siren, Newspaper, Vote } from "lucide-react";
-import FeedAndNoticeContent from "./contents/Feed-NoticeContent";
+import FeedContent from "./contents/FeedContent";
+import { CommunityClientTapsProps } from "@/types/community";
 
 const tabButtonStyle =
   "flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors";
 const activeTabStyle = "text-primary font-semibold border-b-2 border-primary";
 const tabContentStyle = "";
 
-export default function CommunityClientTabs({ feeds }: { feeds: Community[] }) {
+export default function CommunityClientTabs({
+  feeds,
+  notices,
+}: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState("all");
 
   const handleTabClick = (tab: string) => {
@@ -72,7 +75,7 @@ export default function CommunityClientTabs({ feeds }: { feeds: Community[] }) {
           )}
           {selectedTab === "feeds" && (
             <div className={tabContentStyle}>
-              <FeedAndNoticeContent feeds={feeds} />
+              <FeedContent feeds={feeds} />
             </div>
           )}
           {selectedTab === "votes" && (

@@ -1,10 +1,6 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
-import { ProjectBase } from "@/types/project";
-import { project_image } from "@/data/project_image";
-import { projectApi } from "@/api/project";
-import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { IdCard, LogOut, UserRound } from "lucide-react";
 import { Button } from "../ui/button";

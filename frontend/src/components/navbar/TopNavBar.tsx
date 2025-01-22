@@ -1,21 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { BellRing, Headphones, MessageCircleMore } from "lucide-react";
-import CreateProjectModal from "../modal/CreateProject";
 import ProfileImage from "../modal/ProfileImage";
+import { TopNavBarProps } from "@/types/navbar";
 
-interface TopNavBarProps {
-  user: {
-    name: string;
-    log: {
-      profileImage: string;
-    };
-  };
-}
-
-const TopNavBar = ({ user }: TopNavBarProps) => {
+export default function TopNavBar({ user }: TopNavBarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -52,6 +43,4 @@ const TopNavBar = ({ user }: TopNavBarProps) => {
       </div>
     </div>
   );
-};
-
-export default TopNavBar;
+}

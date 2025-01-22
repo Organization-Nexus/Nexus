@@ -1,12 +1,8 @@
-import React from "react";
 import { FileText } from "lucide-react";
 import { isImageFile } from "@/utils/isImageFile";
+import { FileItemProps } from "@/types/utill";
 
-interface FileItemProps {
-  file: string;
-}
-
-function FileItem({ file }: FileItemProps) {
+export default function FileItem({ file }: FileItemProps) {
   const fullFileName = file.split("/").pop() || "download";
   const fileName = fullFileName.replace(/^\d+-/, "");
   const decodedFileName = decodeURIComponent(fileName);
@@ -29,5 +25,3 @@ function FileItem({ file }: FileItemProps) {
     </div>
   );
 }
-
-export default FileItem;

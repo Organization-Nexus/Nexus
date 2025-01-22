@@ -19,6 +19,7 @@ export default function CreateProjectModal({
     start_date: new Date().toISOString().split("T")[0],
     end_date: "",
     project_image: project_image[0],
+    projectUsers: [],
   });
 
   const [titleError, setTitleError] = useState<string>("");

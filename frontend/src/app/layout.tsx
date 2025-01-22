@@ -3,7 +3,7 @@ import "../styles/globals.css";
 import QueryProvider from "@/provider/queryClient";
 import NavigationWrapper from "@/components/NavigationWrapper";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko-KR">
       <head />
@@ -14,6 +14,4 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </body>
     </html>
   );
-};
-
-export default Layout;
+}

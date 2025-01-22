@@ -1,10 +1,8 @@
 "use client";
 import { userApi } from "@/api/user";
-import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 
-function MyprojectHeader() {
+export default function MyprojectHeader() {
   const { data: user } = useQuery({
     queryKey: ["user"],
     queryFn: userApi.getUser,
@@ -17,5 +15,3 @@ function MyprojectHeader() {
     </div>
   );
 }
-
-export default MyprojectHeader;

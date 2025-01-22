@@ -14,7 +14,7 @@ import { isImageFile } from "@/utils/isImageFile";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export default function FeedsContent({ feeds }: { feeds: Community[] }) {
+export default function FeedContent({ feeds }: { feeds: Community[] }) {
   const [expandedFeed, setExpandedFeed] = useState<null | string | number>(
     null
   );
@@ -108,6 +108,8 @@ export default function FeedsContent({ feeds }: { feeds: Community[] }) {
                   {expandedFeed === feed.id ? "간략히 보기" : "더보기"}
                 </button>
               )}
+
+              {/* 이미지 파일 처리 */}
               {imageFiles.length > 0 && (
                 <div className="space-y-4 mt-4">
                   <Carousel>
@@ -131,6 +133,7 @@ export default function FeedsContent({ feeds }: { feeds: Community[] }) {
                 </div>
               )}
 
+              {/* 문서 파일 처리 */}
               {documentFiles.length > 0 && (
                 <div className="space-y-2 mt-4">
                   {documentFiles.map((file, index) => (

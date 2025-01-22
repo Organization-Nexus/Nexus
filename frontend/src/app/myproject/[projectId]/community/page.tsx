@@ -14,7 +14,7 @@ export default async function Community({ params }: ProjectIdProps) {
     <div className="flex justify-center py-8">
       <div className="w-2/3 max-w-7xl">
         <CommunityInfo project={project} />
-        <CommunityClientTaps feeds={feeds} />
+        <CommunityClientTaps feeds={feeds} notices={notices} />
       </div>
 
       <div className="pl-8">

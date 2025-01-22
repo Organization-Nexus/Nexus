@@ -1,13 +1,9 @@
 "use client";
 
+import { ProgressBarProps } from "@/types/project";
 import { useEffect, useState } from "react";
 
-interface ProgressBarProps {
-  progress: number;
-  status?: string;
-}
-
-const ProgressBar = ({ progress, status }: ProgressBarProps) => {
+export default function ProgressBar({ progress, status }: ProgressBarProps) {
   const [progressWidth, setProgressWidth] = useState(0);
 
   useEffect(() => {
@@ -36,6 +32,4 @@ const ProgressBar = ({ progress, status }: ProgressBarProps) => {
       ></div>
     </div>
   );
-};
-
-export default ProgressBar;
+}

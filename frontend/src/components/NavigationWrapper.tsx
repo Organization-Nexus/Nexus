@@ -6,7 +6,11 @@ import TopNavBar from "@/components/navbar/TopNavBar";
 import { userApi } from "@/api/user";
 import { useQuery } from "@tanstack/react-query";
 
-const NavigationWrapper = ({ children }: { children: ReactNode }) => {
+export default function NavigationWrapper({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const hideNavBarPaths = ["/login", "/register", "/forgot-password"];
@@ -30,6 +34,4 @@ const NavigationWrapper = ({ children }: { children: ReactNode }) => {
       <main>{children}</main>
     </div>
   );
-};
-
-export default NavigationWrapper;
+}
