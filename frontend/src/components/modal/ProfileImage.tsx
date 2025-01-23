@@ -4,7 +4,7 @@ import { ModalRootProps } from "@/types/modal";
 import Image from "next/image";
 import { IdCard, LogOut, UserRound } from "lucide-react";
 import { Button } from "../ui/button";
-import LogoutModal from "../user/LogoutModal";
+import LogoutModal from "./LogoutModal";
 
 interface ProfileImageProps extends ModalRootProps {
   user: {
@@ -20,16 +20,9 @@ export default function ProfileImage({
   onClose,
   user,
 }: ProfileImageProps) {
+  const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
-  const handleLogoutClick = () => {
-    onClose(); // 프로필 모달을 먼저 닫고
-    setTimeout(() => {
-      // 약간의 지연 후 로그아웃 모달 열기
-      setIsLogoutOpen(true);
-    }, 100);
-  };
-  // 로그아웃 모달 상태 확인용 콘솔
-  console.log("isLogoutOpen:", isLogoutOpen);
+
   return (
     <>
       <Modal
@@ -50,14 +43,20 @@ export default function ProfileImage({
             />
           </div>
           <div className="col-span-2">
-            <Modal.Title className="text-xl mb-0">{user.name}</Modal.Title>
+            <Modal.Title className="text-xl font-bold mb-0">
+              {user.name}
+            </Modal.Title>
           </div>
         </div>
 
         <Button variant="nothing" className="h-7 hover:font-semibold">
           <UserRound />내 프로필
         </Button>
-        <Button variant="nothing" className="h-7 hover:font-semibold">
+        <Button
+          onClick={() => setIsMyPageOpen(true)}
+          variant="nothing"
+          className="h-7 hover:font-semibold"
+        >
           <IdCard />
           마이페이지
         </Button>
@@ -70,6 +69,7 @@ export default function ProfileImage({
           로그아웃
         </Button>
       </Modal>
+
       <LogoutModal
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}

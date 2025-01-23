@@ -1,7 +1,7 @@
 export const VALIDATION_CONSTANTS = {
   NAME: {
     MIN_LENGTH: 2,
-    MAX_LENGTH: 10,
+    MAX_LENGTH: 5,
   },
   PASSWORD: {
     MIN_LENGTH: 8,

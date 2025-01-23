@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { createPortal } from "react-dom";
 import {
   BaseModalProps,
@@ -23,12 +22,56 @@ function ModalDimmed({ className }: { className?: string }) {
   return <div className={finalClassName} />;
 }
 
-// 제목
-function ModalTitle({ children, className }: BaseModalProps) {
-  const baseClassName = "text-2xl font-bold mb-4";
+// 메인 모달
+function ModalRoot({
+  isOpen,
+  onClose,
+  children,
+  className,
+  hasOverlay = true,
+}: ModalRootProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    const overlay = e.currentTarget;
+    const clickedElement = e.target as HTMLElement;
+
+    if (overlay === clickedElement) {
+      onClose();
+    }
+  };
+  if (!isOpen) return null;
+
+  const baseClassName = "fixed inset-0 z-50";
   const finalClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
+
+  return createPortal(
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        hasOverlay ? "bg-black bg-opacity-65" : ""
+      }`}
+      onClick={handleOverlayClick}
+    >
+      <div
+        ref={modalRef}
+        className={`bg-white p-6 rounded-2xl shadow-lg w-1/2 z-10 ${
+          className || ""
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// 제목
+function ModalTitle({ children, className }: BaseModalProps) {
+  const baseClassName = "text-2xl font-bold mb-4";
+  const finalClassName = className ? `${className}` : baseClassName;
   return <div className={finalClassName}>{children}</div>;
 }
 
@@ -189,52 +232,6 @@ function ModalDivider({ className }: BaseModalProps) {
     ? `${baseClassName} ${className}`
     : baseClassName;
   return <hr className={finalClassName} />;
-}
-
-// 메인 모달
-function ModalRoot({
-  isOpen,
-  onClose,
-  children,
-  className,
-  hasOverlay = true,
-}: ModalRootProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    const overlay = e.currentTarget;
-    const clickedElement = e.target as HTMLElement;
-
-    if (overlay === clickedElement) {
-      onClose();
-    }
-  };
-  if (!isOpen) return null;
-
-  const baseClassName = "fixed inset-0 z-50";
-  const finalClassName = className
-    ? `${baseClassName} ${className}`
-    : baseClassName;
-
-  return createPortal(
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${
-        hasOverlay ? "bg-black bg-opacity-65" : ""
-      }`}
-      onClick={handleOverlayClick}
-    >
-      <div
-        ref={modalRef}
-        className={`bg-white p-6 rounded-2xl shadow-lg w-1/2 z-10 ${
-          className || ""
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-      </div>
-    </div>,
-    document.body
-  );
 }
 
 // 입력
