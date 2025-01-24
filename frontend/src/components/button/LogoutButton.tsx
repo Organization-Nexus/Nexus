@@ -1,10 +1,8 @@
 "use client";
-import Cookies from "js-cookie";
-import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import LogoutModal from "../user/LogoutModal";
+import LogoutModal from "../modal/LogoutModal";
 export const LogoutButton = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);

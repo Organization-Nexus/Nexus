@@ -35,7 +35,9 @@ export interface TextButtonProps extends BaseModalProps {
 
 // 기본 버튼 컴포넌트
 export interface ButtonProps extends TextButtonProps {
+  onClick?: () => void;
   variant?: "primary" | "secondary" | "danger" | "nothing";
+  type?: "button" | "submit" | "reset";
 }
 
 // 라벨 버튼 컴포넌트
@@ -53,4 +55,13 @@ export interface InputProps {
   required?: boolean;
   min?: string;
   className?: string;
+}
+
+export interface MyPageProps {
+  user: {
+    name: string;
+    log: {
+      profileImage: string;
+    };
+  };
 }
