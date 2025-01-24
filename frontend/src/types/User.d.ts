@@ -19,3 +19,10 @@ export interface ValidationErrors {
   githubUrl?: string;
   mainPosition?: string;
 }
+
+export interface UpdateUserDto {
+  name: string;
+  mainPosition: string;
+  githubUrl: string | null;
+  profileImage: string;
+}

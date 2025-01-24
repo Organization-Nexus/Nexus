@@ -44,7 +44,7 @@ export const ERROR_MESSAGES = {
   PHONE_INVALID: "올바른 전화번호 형식이 아닙니다.",
 
   // Github URL 관련
-  GITHUB_INVALID: "올바른 Github URL이 아닙니다.",
+  GITHUB_INVALID: "올바른 Github 주소가 아닙니다.",
 
   // 비밀번호 재설정 관련 메시지 추가
   CODE_REQUIRED: "인증번호를 입력해주세요.",

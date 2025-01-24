@@ -179,6 +179,7 @@ function ModalButton({
   variant = "primary",
   disabled,
   className,
+  type = "button",
 }: ButtonProps) {
   const variantClasses = {
     primary: "bg-[#50E161] hover:bg-[#45c14f] text-white",
@@ -199,7 +200,7 @@ function ModalButton({
         onClick={onClick}
         disabled={disabled}
         className={finalClassName}
-        type="button"
+        type={type}
       >
         {children}
       </button>

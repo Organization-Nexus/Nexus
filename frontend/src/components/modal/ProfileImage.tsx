@@ -5,6 +5,7 @@ import Image from "next/image";
 import { IdCard, LogOut, UserRound } from "lucide-react";
 import { Button } from "../ui/button";
 import LogoutModal from "./LogoutModal";
+import MyPageModal from "./Mypage";
 
 interface ProfileImageProps extends ModalRootProps {
   user: {
@@ -70,6 +71,10 @@ export default function ProfileImage({
         </Button>
       </Modal>
 
+      <MyPageModal
+        isOpen={isMyPageOpen}
+        onClose={() => setIsMyPageOpen(false)}
+      />
       <LogoutModal
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}

@@ -15,6 +15,7 @@ module.exports = {
           point: "#50E161",
           hover: "#4F8856",
           divider: "#DEDEDE",
+          gray: "#DEDEDE",
           smallText: "#969696",
         },
         background: "hsl(var(--background))",
