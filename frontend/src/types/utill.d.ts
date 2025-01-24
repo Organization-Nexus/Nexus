@@ -1,5 +1,5 @@
 export interface FileItemProps {
-  file: string;
+  file: File;
 }
 
 export interface ImageModalProps {

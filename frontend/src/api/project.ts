@@ -1,4 +1,4 @@
-import { CreateProject, Project } from "@/types/project";
+import { Project } from "@/types/project";
 import api from "./config/axios";
 
 export const projectApi = {
@@ -8,7 +8,7 @@ export const projectApi = {
       .then((res) => res.data);
   },
 
-  createProject: async (data: CreateProject | FormData) => {
+  createProject: async (data: Project | FormData) => {
     const isFormData = data instanceof FormData;
     return await api.post("/project/create-project", data, {
       headers: {

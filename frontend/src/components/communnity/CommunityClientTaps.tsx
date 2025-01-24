@@ -1,23 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import { Users, Siren, Newspaper, Vote } from "lucide-react";
-import { CommunityClientTapsProps } from "@/types/community";
 import CommunityTemplate from "./contents/CommunityTemplate";
+import { Button } from "../ui/button";
+import { Newspaper, Siren, SquarePlus, Users, Vote } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import CreateCommunity from "../modal/CreateCommunity";
+import { CommunityClientTapsProps } from "@/types/community";
 
 const tabButtonStyle =
   "flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors";
 const activeTabStyle = "text-primary font-semibold border-b-2 border-primary";
-const tabContentStyle = "";
+
+const tabs = [
+  { key: "all", label: "전체보기", icon: <Users size={20} /> },
+  { key: "notice", label: "공지사항", icon: <Siren size={20} /> },
+  { key: "feed", label: "피드", icon: <Newspaper size={20} /> },
+  { key: "vote", label: "투표", icon: <Vote size={20} /> },
+];
 
 export default function CommunityClientTabs({
+  projectId,
   feeds,
   notices,
 }: CommunityClientTapsProps) {
-  const [selectedTab, setSelectedTab] = useState("all");
+  const [selectedTab, setSelectedTab] = useState<string>("all");
+  const [isCreateCommunityOpen, setIsCreateCommunityOpen] = useState(false);
+  const [createType, setCreateType] = useState<string | null>(null);
 
-  const handleTabClick = (tab: string) => {
-    setSelectedTab(tab);
+  const handleTabClick = (tabKey: string) => {
+    setSelectedTab(tabKey);
+  };
+
+  const openCreateCommunity = (key: string) => {
+    setCreateType(key);
+    setIsCreateCommunityOpen(true);
+  };
+
+  const closeCreateCommunity = () => {
+    setIsCreateCommunityOpen(false);
+    setCreateType(null);
   };
 
   const items = [
@@ -31,79 +59,68 @@ export default function CommunityClientTabs({
   return (
     <div className="flex justify-center w-full p-8">
       <div className="w-4/5 max-w-7xl space-y-4">
-        {/* 탭 버튼들 */}
         <div className="flex justify-between items-center">
-          <div className="flex space-x-4 items-center">
-            <button
-              onClick={() => handleTabClick("all")}
-              className={`${tabButtonStyle} ${
-                selectedTab === "all" ? activeTabStyle : ""
-              }`}
-            >
-              <Users size={20} />
-              <span>전체보기</span>
-            </button>
-
-            <button
-              onClick={() => handleTabClick("notices")}
-              className={`${tabButtonStyle} ${
-                selectedTab === "notices" ? activeTabStyle : ""
-              }`}
-            >
-              <Siren size={20} />
-              <span>공지사항</span>
-            </button>
-
-            <button
-              onClick={() => handleTabClick("feeds")}
-              className={`${tabButtonStyle} ${
-                selectedTab === "feeds" ? activeTabStyle : ""
-              }`}
-            >
-              <Newspaper size={20} />
-              <span>피드</span>
-            </button>
-
-            <button
-              onClick={() => handleTabClick("votes")}
-              className={`${tabButtonStyle} ${
-                selectedTab === "votes" ? activeTabStyle : ""
-              }`}
-            >
-              <Vote size={20} />
-              <span>투표</span>
-            </button>
+          <div className="flex items-center space-x-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabClick(tab.key)}
+                className={`${tabButtonStyle} ${
+                  selectedTab === tab.key ? activeTabStyle : ""
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="flex items-center">커뮤니티 생성</div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="default">
+                <SquarePlus />
+                커뮤니티 생성
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>컨텐츠 선택</DropdownMenuLabel>
+              {tabs
+                .filter((tab) => tab.key !== "all")
+                .map((tab) => (
+                  <DropdownMenuItem
+                    key={tab.key}
+                    onClick={() => openCreateCommunity(tab.label)}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <hr className="my-4" />
 
-        {/* 탭 내용 */}
         <div className="mt-8">
-          {selectedTab === "all" && (
-            <div className={tabContentStyle}>전체보기 콘텐츠</div>
+          {selectedTab === "all" && <div>전체보기</div>}
+          {selectedTab === "notice" && (
+            <CommunityTemplate type="notice" items={notices} />
           )}
-          {selectedTab === "notices" && (
-            <div className={tabContentStyle}>
-              <CommunityTemplate
-                items={items.filter((item) => item.type === "notice")}
-              />
-            </div>
+          {selectedTab === "feed" && (
+            <CommunityTemplate type="feed" items={feeds} />
           )}
-          {selectedTab === "feeds" && (
-            <div className={tabContentStyle}>
-              <CommunityTemplate
-                items={items.filter((item) => item.type === "feed")}
-              />
-            </div>
-          )}
-          {selectedTab === "votes" && (
-            <div className={tabContentStyle}>투표 콘텐츠</div>
-          )}
+          {selectedTab === "vote" && <div>투표 콘텐츠</div>}
         </div>
       </div>
+
+      {isCreateCommunityOpen && createType && (
+        <CreateCommunity
+          isOpen={isCreateCommunityOpen}
+          onClose={closeCreateCommunity}
+          type={createType}
+          projectId={projectId}
+        />
+      )}
     </div>
   );
 }

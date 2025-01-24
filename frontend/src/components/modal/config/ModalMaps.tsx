@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { createPortal } from "react-dom";
 import {
   BaseModalProps,

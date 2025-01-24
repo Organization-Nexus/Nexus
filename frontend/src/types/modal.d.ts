@@ -13,6 +13,12 @@ export interface ModalRootProps extends BaseModalProps {
   hasOverlay?: boolean;
 }
 
+// 유형별 모달 인터페이스
+export interface CommunityModalProps extends ModalRootProps {
+  type: string;
+  projectId: string;
+}
+
 // 체크버튼 컴포넌트
 export interface CheckButtonProps extends BaseModalProps {
   checked: boolean;
