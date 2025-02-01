@@ -6,10 +6,12 @@ import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
 import Loading from "../utils/Loading";
 
-export default function ProjectList({ projects }: ProjectListProps) {
-  const { data: project, isLoading, isFetching } = useProjectList(projects);
-  const now = new Date();
+export default function ProjectList({
+  projects: initalProjects,
+}: ProjectListProps) {
+  const { data: project, isFetching } = useProjectList(initalProjects);
 
+  const now = new Date();
   const [inProgress, setInProgress] = useState<Project[]>([]);
   const [completed, setCompleted] = useState<Project[]>([]);
   const [scheduled, setScheduled] = useState<Project[]>([]);

@@ -4,6 +4,8 @@ import { convertToKST } from "@/utils/convertToKST";
 import Image from "next/image";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import FileItem from "@/components/utils/FileItem";
+import { isImageFile } from "@/components/utils/isImageFile";
 
 export default function CommunityTemplate({
   type,
@@ -50,8 +52,9 @@ export default function CommunityTemplate({
           <span className="ml-2">중요 항목 보기</span>
         </div>
       )}
+
       {/* 리스트 렌더링 */}
-      {filteredItems.length > 0 ? (
+      {filteredItems && filteredItems.length > 0 ? (
         filteredItems.map((item, index) => {
           const createdAtKST = convertToKST(
             new Date(item.createdAt).toISOString()
@@ -61,6 +64,10 @@ export default function CommunityTemplate({
             "isImportant" in item && item.isImportant
               ? "border-l-4 border-red-300"
               : "border";
+
+          const files = item.community_files || [];
+          const imageFiles = files.filter((file) => isImageFile(file));
+          const docsFiles = files.filter((file) => !isImageFile(file));
 
           return (
             <div
@@ -112,13 +119,30 @@ export default function CommunityTemplate({
                 </button>
               )}
 
-              {/* 첨부 파일 */}
-              <div>
-                {item.community_files?.map((file, fileIndex) => (
-                  <div key={fileIndex} className="text-sm text-gray-500">
-                    {file}
+              {/* 파일 처리 */}
+              <div className="mt-4">
+                {/* 이미지 파일 */}
+                {imageFiles.map((file, fileIndex) => (
+                  <div key={`image-${fileIndex}`} className="my-2">
+                    <Image
+                      src={file}
+                      alt={`Attachment ${fileIndex + 1}`}
+                      width={200}
+                      height={200}
+                      className="rounded-lg cursor-pointer"
+                      onClick={() => handleImageClick(file)}
+                    />
                   </div>
                 ))}
+
+                {/* 문서 파일 */}
+                {docsFiles.length > 0 && (
+                  <div className="space-y-2 mt-4">
+                    {docsFiles.map((file, index) => (
+                      <FileItem key={index} file={file} />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           );

@@ -2,9 +2,14 @@ import { CommunityModalProps } from "@/types/modal";
 import { Modal } from "./config/ModalMaps";
 import { MapPin, Paperclip, Siren } from "lucide-react";
 import { useState, useRef } from "react";
-import { Community, Notice, Author } from "@/types/community";
-import { validateFile } from "@/utils/fileValdiation";
-import { communityApi } from "@/api/community";
+import type {
+  Notice,
+  Author,
+  CreateCommunity,
+  Community,
+} from "@/types/community";
+import { validateFile } from "@/utils/validators/fileValdiation";
+import { useCreateFeed, useCreateNotice } from "@/query/community/useMutation";
 
 export default function CreateCommunity({
   isOpen,
@@ -12,15 +17,17 @@ export default function CreateCommunity({
   type,
   projectId,
 }: CommunityModalProps) {
-  const [formData, setFormData] = useState<Community | Notice>({
+  const [formData, setFormData] = useState<CreateCommunity | Notice>({
     id: 0,
     title: "",
     content: "",
-    community_files: [] as File[], // 수정: 타입을 File[]로 명확히 정의
+    community_files: [] as File[],
     createdAt: new Date().toISOString(),
     author: {} as Author,
     isImportant: false,
   });
+  const { mutate: createNotice } = useCreateNotice(projectId);
+  const { mutate: createFeed } = useCreateFeed(projectId);
   const [titleError, setTitleError] = useState<string>("");
   const [contentError, setContentError] = useState<string>("");
   const [fileError, setFileError] = useState<string>("");
@@ -62,10 +69,10 @@ export default function CreateCommunity({
       }
       setFileError("");
       setFormData((prev) => {
-        const updatedFiles = Array.from(files); // 파일 객체 배열로 저장
+        const updatedFiles = Array.from(files);
         return {
           ...prev,
-          community_files: updatedFiles, // 수정된 부분: File[]로 저장
+          community_files: updatedFiles,
           isImportant: (prev as Notice).isImportant ?? false,
         };
       });
@@ -92,21 +99,30 @@ export default function CreateCommunity({
         return;
       }
 
-      const formDataToSend = new FormData();
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("content", formData.content);
+      const formDataToSend = {
+        title: formData.title,
+        content: formData.content,
+        community_files: formData.community_files?.map((file) =>
+          typeof file === "string" ? file : URL.createObjectURL(file)
+        ),
+        isImportant: (formData as Notice).isImportant ?? false,
+      };
 
-      // community_files는 FormData로 첨부
-      (formData.community_files ?? []).forEach((file) => {
-        formDataToSend.append("community_files", file);
-      });
-
-      console.log("📄FORM", formData);
-
-      if (type === "피드")
-        await communityApi.createFeedByProjectId(projectId, formDataToSend);
-      else if (type === "공지사항")
-        await communityApi.createNoticeByProjectId(projectId, formDataToSend);
+      if (type === "피드") {
+        createFeed({
+          ...formDataToSend,
+          author: formData.author,
+          id: (formData as Community).id,
+          createdAt: (formData as Community).createdAt,
+        });
+      } else if (type === "공지사항") {
+        createNotice({
+          ...formDataToSend,
+          id: (formData as Notice).id,
+          createdAt: (formData as Notice).createdAt,
+          author: formData.author,
+        });
+      }
       onClose();
     } catch (err) {
       setFileError("커뮤니티 생성에 실패했습니다.");

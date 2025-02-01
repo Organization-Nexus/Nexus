@@ -1,16 +1,16 @@
 import { FileText } from "lucide-react";
-import { isImageFile } from "@/utils/isImageFile";
 import { FileItemProps } from "@/types/utill";
+import { isImageFile } from "./isImageFile";
 
 export default function FileItem({ file }: FileItemProps) {
-  console.log("🪼 file : ", file);
-  const fullFileName = file.name.split("/").pop() || "download";
+  const fullFileName =
+    typeof file === "string" ? file.split("/").pop() || "download" : file.name;
   const fileName = fullFileName.replace(/^\d+-/, "");
   const decodedFileName = decodeURIComponent(fileName);
 
-  return isImageFile(file.name) ? (
+  return isImageFile(file) ? (
     <img
-      src={URL.createObjectURL(file)}
+      src={typeof file === "string" ? file : URL.createObjectURL(file)}
       alt="Attached file"
       className="rounded-md"
     />
@@ -19,7 +19,7 @@ export default function FileItem({ file }: FileItemProps) {
       <div className="flex items-center space-x-2">
         <FileText className="text-blue-500" />
         <a
-          href={URL.createObjectURL(file)}
+          href={typeof file === "string" ? file : URL.createObjectURL(file)}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-600 hover:underline truncate max-w-xs"

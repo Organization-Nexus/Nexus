@@ -17,6 +17,13 @@ export interface Community {
   author: Author;
 }
 
+export interface CreateCommunity {
+  title: string;
+  content: string;
+  community_files?: File[];
+  author: Author;
+}
+
 // Community Author Information
 export interface Author {
   position: string;

@@ -13,6 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import CreateCommunity from "../modal/CreateCommunity";
 import { CommunityClientTapsProps } from "@/types/community";
+import { useFeedList, useNoticeList } from "@/query/community/useQuery";
 
 const tabButtonStyle =
   "flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors";
@@ -27,12 +28,15 @@ const tabs = [
 
 export default function CommunityClientTabs({
   projectId,
-  feeds,
-  notices,
+  feeds: initialFeeds,
+  notices: initialNotices,
 }: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState<string>("all");
   const [isCreateCommunityOpen, setIsCreateCommunityOpen] = useState(false);
   const [createType, setCreateType] = useState<string | null>(null);
+
+  const { data: notices } = useNoticeList(projectId, initialNotices);
+  const { data: feeds } = useFeedList(projectId, initialFeeds);
 
   const handleTabClick = (tabKey: string) => {
     setSelectedTab(tabKey);

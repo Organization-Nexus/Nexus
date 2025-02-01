@@ -105,9 +105,6 @@ export default function CreateProjectModal({
       }
 
       formDataToSend.append("project_image", projectImage);
-
-      // useCreateProject 훅을 사용하여 프로젝트 생성
-      await createProject(formDataToSend);
       onClose();
     } catch (err) {
       setFileError("프로젝트 생성에 실패했습니다.");

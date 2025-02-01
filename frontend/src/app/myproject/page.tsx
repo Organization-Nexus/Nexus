@@ -1,7 +1,7 @@
 import { projectApi } from "@/api/project";
 import ProjectList from "@/components/project/ProjectList";
 import RightNavBar from "@/components/navbar/RightNavBar";
-import MyProjectHeader from "@/components/project/MyprojectHeader";
+import MyProjectHeader from "@/components/project/MyProjectHeader";
 
 const contents = [
   "Project Management",
