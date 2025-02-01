@@ -2,16 +2,14 @@ import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
 import { project_image } from "@/data/project_image";
-import { projectApi } from "@/api/project";
-import { useQueryClient } from "@tanstack/react-query";
 import { Project } from "@/types/project";
+import { useCreateProject } from "@/query/project/useMutation";
 
 export default function CreateProjectModal({
   isOpen,
   onClose,
 }: ModalRootProps) {
-  const queryClient = useQueryClient();
-
+  const { mutate: createProject } = useCreateProject();
   const [formData, setFormData] = useState<Project>({
     id: 0,
     title: "",
@@ -107,9 +105,6 @@ export default function CreateProjectModal({
       }
 
       formDataToSend.append("project_image", projectImage);
-
-      await projectApi.createProject(formDataToSend);
-      queryClient.invalidateQueries({ queryKey: ["projectList"] });
       onClose();
     } catch (err) {
       setFileError("프로젝트 생성에 실패했습니다.");
@@ -294,7 +289,7 @@ export default function CreateProjectModal({
 
           <div className="flex justify-end space-x-2">
             <Modal.Button variant="secondary" onClick={onClose}>
-              취소
+              닫기
             </Modal.Button>
             <Modal.Button variant="primary" onClick={() => handleSubmit()}>
               생성

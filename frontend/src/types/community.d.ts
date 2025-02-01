@@ -1,16 +1,11 @@
-enum Rank {
-  BRONZE = "Bronze",
-  SILVER = "Silver",
-  GOLD = "Gold",
-  PLATINUM = "Platinum",
-  DIAMOND = "Diamond",
-}
+import { UserRank, UserStatus } from "@/enum/user.enum";
 
-enum Status {
-  Active = "Active",
-  Inactive = "Inactive",
-  Banned = "Banned",
-}
+// CommunityTab 타입 정의
+export type CommunityTab = {
+  key: string;
+  icon: React.ReactNode;
+  label: string;
+};
 
 // Community Information
 export interface Community {
@@ -22,15 +17,22 @@ export interface Community {
   author: Author;
 }
 
+export interface CreateCommunity {
+  title: string;
+  content: string;
+  community_files?: File[];
+  author: Author;
+}
+
 // Community Author Information
 export interface Author {
   position: string;
   user: {
     name: string;
     log: {
-      status: Status;
+      status: UserStatus;
       profileImage: string;
-      rank: Rank;
+      rank: UserRank;
     };
   };
 }
@@ -42,16 +44,12 @@ export interface Notice extends Community {
 
 // Props: CommunityClientTaps
 export interface CommunityClientTapsProps {
+  projectId: string;
   feeds: Community[];
   notices: Notice[];
 }
 
-// Props: CommunityTemplateItem
-export type CommunityTemplateItem =
-  | { community: Community; type: "feed" }
-  | { community: Notice; type: "notice" };
-
-// Props: CommunityTemplate
 export interface CommunityTemplateProps {
-  items: CommunityTemplateItem[];
+  type: string;
+  items: (Community | Notice)[];
 }

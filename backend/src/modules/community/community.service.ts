@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/modules/community/entites/community.entity';
-import { Feed } from '../feed/entites/feed.entity';
 import { GetFeedNoticeDto } from './dto/get-feed-notice.dto';
 
 @Injectable()
@@ -75,6 +74,10 @@ export class CommunityService {
     );
 
     feeds.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+    notices.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );

@@ -1,36 +1,49 @@
 "use client";
 
 import { Project, ProjectListProps } from "@/types/project";
-import { useQuery as useReactQuery } from "@tanstack/react-query";
+import { useProjectList } from "@/query/project/useQuery";
 import ProjectCard from "./ProjectCard";
-import { projectApi } from "@/api/project";
+import { useState, useEffect } from "react";
+import Loading from "../utils/Loading";
 
-export default function ProjectList({ projects }: ProjectListProps) {
-  const { data: project } = useReactQuery({
-    queryKey: ["projectList"],
-    queryFn: projectApi.getMyProjects,
-    initialData: projects,
-    initialDataUpdatedAt: Date.now(),
-  });
+export default function ProjectList({
+  projects: initalProjects,
+}: ProjectListProps) {
+  const { data: project, isFetching } = useProjectList(initalProjects);
 
   const now = new Date();
+  const [inProgress, setInProgress] = useState<Project[]>([]);
+  const [completed, setCompleted] = useState<Project[]>([]);
+  const [scheduled, setScheduled] = useState<Project[]>([]);
 
-  const inProgress: Project[] = [];
-  const completed: Project[] = [];
-  const scheduled: Project[] = [];
+  useEffect(() => {
+    if (project) {
+      const inProgressArr: Project[] = [];
+      const completedArr: Project[] = [];
+      const scheduledArr: Project[] = [];
 
-  project?.forEach((proj: Project) => {
-    const startDate = new Date(proj.start_date);
-    const endDate = new Date(proj.end_date);
+      project.forEach((proj: Project) => {
+        const startDate = new Date(proj.start_date);
+        const endDate = new Date(proj.end_date);
 
-    if (startDate > now) {
-      scheduled.push(proj);
-    } else if (endDate >= now) {
-      inProgress.push(proj);
-    } else {
-      completed.push(proj);
+        if (startDate > now) {
+          scheduledArr.push(proj);
+        } else if (endDate >= now) {
+          inProgressArr.push(proj);
+        } else {
+          completedArr.push(proj);
+        }
+      });
+
+      setScheduled(scheduledArr);
+      setInProgress(inProgressArr);
+      setCompleted(completedArr);
     }
-  });
+  }, [project]);
+
+  if (isFetching || isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div className="mx-auto p-4">
