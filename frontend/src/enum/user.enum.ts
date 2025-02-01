@@ -7,7 +7,7 @@ export enum UserRank {
 }
 
 export enum UserStatus {
-  Active = "Active",
-  Inactive = "Inactive",
-  Banned = "Banned",
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+  BANNED = "Banned",
 }
