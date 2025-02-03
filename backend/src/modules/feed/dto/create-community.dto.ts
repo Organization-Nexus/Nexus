@@ -1,6 +1,7 @@
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
-export class CreateFeedNoticeDto {
+export class CreateCommunityDto {
   @IsString()
   title: string;
 
@@ -13,5 +14,6 @@ export class CreateFeedNoticeDto {
 
   @IsOptional()
   @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   isImportant?: boolean;
 }

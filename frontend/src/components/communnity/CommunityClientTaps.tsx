@@ -28,6 +28,7 @@ const tabs = [
 
 export default function CommunityClientTabs({
   projectId,
+  projectUser,
   feeds: initialFeeds,
   notices: initialNotices,
 }: CommunityClientTapsProps) {
@@ -51,14 +52,6 @@ export default function CommunityClientTabs({
     setIsCreateCommunityOpen(false);
     setCreateType(null);
   };
-
-  const items = [
-    ...feeds.map((feed) => ({ community: feed, type: "feed" as "feed" })),
-    ...notices.map((notice) => ({
-      community: notice,
-      type: "notice" as "notice",
-    })),
-  ];
 
   return (
     <div className="flex justify-center w-full p-8">
@@ -94,6 +87,14 @@ export default function CommunityClientTabs({
                   <DropdownMenuItem
                     key={tab.key}
                     onClick={() => openCreateCommunity(tab.label)}
+                    disabled={
+                      tab.label === "공지사항" && !projectUser.is_sub_admin
+                    }
+                    className={
+                      tab.label === "공지사항" && !projectUser.is_sub_admin
+                        ? "text-gray-500"
+                        : ""
+                    }
                   >
                     {tab.icon}
                     {tab.label}

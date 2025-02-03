@@ -67,4 +67,17 @@ export class ProjectUserController {
   async getProjectUsers(@Param('projectId') projectId: number) {
     return await this.projectUserService.getProjectUsers(projectId);
   }
+
+  // GET /api/project-user/get-project-user/:projectId
+  @Get('get-project-user/:projectId')
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  async getProjectUser(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    return await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      req.user.id,
+    );
+  }
 }

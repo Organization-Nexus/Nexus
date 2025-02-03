@@ -1,5 +1,6 @@
 import { communityApi } from "@/app/_api/models/community";
 import { projectApi } from "@/app/_api/models/project";
+import { projectUserApi } from "@/app/_api/models/project-user";
 import CommunityClientTaps from "@/components/communnity/CommunityClientTaps";
 import CommunityInfo from "@/components/communnity/CommunityInfo";
 import { ProjectIdProps } from "@/types/project";
@@ -9,6 +10,7 @@ export default async function Community({ params }: ProjectIdProps) {
   const project = await projectApi.getProjectById(projectId);
   const notices = await communityApi.getNoticesByProjectId(projectId);
   const feeds = await communityApi.getfeedsByProjectId(projectId);
+  const projectUser = await projectUserApi.getProjectUser(projectId);
 
   return (
     <div className="flex justify-center py-8">
@@ -16,6 +18,7 @@ export default async function Community({ params }: ProjectIdProps) {
         <CommunityInfo project={project} />
         <CommunityClientTaps
           projectId={projectId}
+          projectUser={projectUser}
           feeds={feeds}
           notices={notices}
         />
