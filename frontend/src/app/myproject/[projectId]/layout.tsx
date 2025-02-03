@@ -1,4 +1,4 @@
-import LeftNavBar from "@/app/components/navbar/LeftNavBar";
+import LeftNavBar from "@/components/navbar/LeftNavBar";
 import { ProjectIdProps } from "@/types/project";
 import { ReactNode } from "react";
 
