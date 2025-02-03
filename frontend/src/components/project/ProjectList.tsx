@@ -1,7 +1,7 @@
 "use client";
 
 import { Project, ProjectListProps } from "@/types/project";
-import { useProjectList } from "@/query/queries/useQuery";
+import { useProjectList } from "@/query/queries/project";
 import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
 import Loading from "../utils/Loading";
