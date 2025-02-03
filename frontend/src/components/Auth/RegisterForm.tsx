@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { UnderlineInput } from "@/components/ui/underlineInput";
-import { PositionSelect } from "@/components/user/PositionSelect";
 import { useState } from "react";
-import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import { RegisterRequest } from "@/types/auth";
 import { userValidation } from "@/utils/validators/userValidation";
-import { ValidationErrors } from "@/types/user";
+import { ValidationErrors } from "@/types/User";
+import { authApi } from "@/app/_api/models/auth";
+import { UnderlineInput } from "../ui/underlineInput";
+import { PositionSelect } from "../user/PositionSelect";
+import { Button } from "../ui/button";
 
 export default function RegisterFormComponent() {
   const router = useRouter();

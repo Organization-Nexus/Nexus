@@ -1,5 +1,5 @@
-import { projectApi } from "@/api/project";
-import { projectUserApi } from "@/api/project-user";
+import { projectApi } from "@/app/_api/models/project";
+import { projectUserApi } from "@/app/_api/models/project-user";
 import CardSection from "@/components/dashboard/CardSection";
 import ProjectInfo from "@/components/dashboard/ProjectInfo";
 import ProjectUsers from "@/components/dashboard/ProjectUsers";

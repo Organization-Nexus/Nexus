@@ -1,5 +1,5 @@
-import { UpdateUserDto, User } from "@/types/user";
-import { api } from "./config/axios";
+import { UpdateUserDto, User } from "@/types/User";
+import { api } from "../axios";
 
 export const userApi = {
   getUser: async (): Promise<User> => {

@@ -1,4 +1,4 @@
-import api from "./config/axios";
+import api from "../axios";
 
 const getPing = async (): Promise<string> => {
   const response = await api.get<string>("/ping");

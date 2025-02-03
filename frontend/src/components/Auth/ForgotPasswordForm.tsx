@@ -1,16 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authApi } from "@/api/auth";
 import {
   userValidation,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   VALIDATION_CONSTANTS,
 } from "@/utils/validators/userValidation";
+import { authApi } from "@/app/_api/models/auth";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 type Step = 1 | 2 | 3;
 

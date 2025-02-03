@@ -13,7 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import CreateCommunity from "../modal/CreateCommunity";
 import { CommunityClientTapsProps } from "@/types/community";
-import { useFeedList, useNoticeList } from "@/query/community/useQuery";
+import { useFeedList, useNoticeList } from "@/query/queries/community";
 
 const tabButtonStyle =
   "flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors";

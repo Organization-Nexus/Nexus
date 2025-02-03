@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import "../styles/globals.css";
-import NavigationWrapper from "@/components/NavigationWrapper";
 import QueryProvider from "@/provider/queryClient";
+import NavigationWrapper from "@/components/NavigationWrapper";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

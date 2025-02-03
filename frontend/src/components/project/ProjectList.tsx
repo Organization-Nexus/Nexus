@@ -1,15 +1,15 @@
 "use client";
 
 import { Project, ProjectListProps } from "@/types/project";
-import { useProjectList } from "@/query/project/useQuery";
+import { useProjectList } from "@/query/queries/useQuery";
 import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
 import Loading from "../utils/Loading";
 
 export default function ProjectList({
-  projects: initalProjects,
+  projects: initialProjects,
 }: ProjectListProps) {
-  const { data: project, isFetching } = useProjectList(initalProjects);
+  const { data: project, isFetching } = useProjectList(initialProjects);
 
   const now = new Date();
   const [inProgress, setInProgress] = useState<Project[]>([]);

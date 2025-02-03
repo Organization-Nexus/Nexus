@@ -9,7 +9,7 @@ import type {
   Community,
 } from "@/types/community";
 import { validateFile } from "@/utils/validators/fileValdiation";
-import { useCreateFeed, useCreateNotice } from "@/query/community/useMutation";
+import { useCreateFeed, useCreateNotice } from "@/query/mutations/community";
 
 export default function CreateCommunity({
   isOpen,

@@ -1,4 +1,4 @@
-import { communityApi } from "@/api/community";
+import { communityApi } from "@/app/_api/models/community";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { communityKeys } from "../key";
 import { Community, Notice } from "@/types/community";
