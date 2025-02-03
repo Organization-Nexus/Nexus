@@ -1,4 +1,4 @@
-import { UpdateUserDto, User } from "@/types/User";
+import { UpdateUserDto, User } from "@/types/user";
 import { api } from "../axios";
 
 export const userApi = {
