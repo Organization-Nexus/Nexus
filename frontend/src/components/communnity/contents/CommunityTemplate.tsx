@@ -1,9 +1,9 @@
+import { Checkbox } from "@/components/ui/checkbox";
 import FileItem from "@/components/utils/FileItem";
 import ImageModal from "@/components/utils/ImageModal";
 import { isImageFile } from "@/components/utils/isImageFile";
 import { CommunityTemplateProps } from "@/types/community";
 import { convertToKST } from "@/utils/convertToKST";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import Image from "next/image";
 import { useState } from "react";
 

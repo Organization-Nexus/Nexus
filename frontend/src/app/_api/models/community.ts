@@ -1,4 +1,4 @@
-import { Community, Notice } from "@/types/community";
+import { Community, CreateCommunity, Notice } from "@/types/community";
 import api from "../axios";
 
 export const communityApi = {
@@ -16,7 +16,7 @@ export const communityApi = {
 
   createFeedByProjectId: async (
     projectId: string,
-    data: Community | FormData
+    data: CreateCommunity | FormData
   ) => {
     const isFormData = data instanceof FormData;
     return await api.post(`/feed/create-feed/${projectId}`, data, {
@@ -28,7 +28,7 @@ export const communityApi = {
 
   createNoticeByProjectId: async (
     projectId: string,
-    data: Notice | FormData
+    data: CreateCommunity | FormData
   ) => {
     const isFormData = data instanceof FormData;
     return await api.post(`/feed/create-notice/${projectId}`, data, {

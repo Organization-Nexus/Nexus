@@ -1,14 +1,8 @@
 import { CommunityModalProps } from "@/types/modal";
 import { Modal } from "./config/ModalMaps";
-import { MapPin, Paperclip, Siren } from "lucide-react";
-import { useState, useRef } from "react";
-import type {
-  Notice,
-  Author,
-  CreateCommunity,
-  Community,
-} from "@/types/community";
-import { validateFile } from "@/utils/validators/fileValdiation";
+import { useState } from "react";
+import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
+import type { CreateCommunity } from "@/types/community";
 import { useCreateFeed, useCreateNotice } from "@/query/mutations/community";
 
 export default function CreateCommunity({
@@ -17,25 +11,27 @@ export default function CreateCommunity({
   type,
   projectId,
 }: CommunityModalProps) {
-  const [formData, setFormData] = useState<CreateCommunity | Notice>({
-    id: 0,
+  const { mutate: CreateNoitce } = useCreateNotice(projectId);
+  const { mutate: CreateFeed } = useCreateFeed(projectId);
+
+  const [formData, setFormData] = useState<CreateCommunity>({
     title: "",
     content: "",
-    community_files: [] as File[],
-    createdAt: new Date().toISOString(),
-    author: {} as Author,
-    isImportant: false,
+    community_files: [],
+    isImportant: "false",
   });
-  const { mutate: createNotice } = useCreateNotice(projectId);
-  const { mutate: createFeed } = useCreateFeed(projectId);
+
   const [titleError, setTitleError] = useState<string>("");
   const [contentError, setContentError] = useState<string>("");
   const [fileError, setFileError] = useState<string>("");
 
-  // 파일 input 참조
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const toggleIsImportant = () => {
+    setFormData((prev) => ({
+      ...prev,
+      isImportant: prev.isImportant === "true" ? "false" : "true",
+    }));
+  };
 
-  // 제목, 내용 변경 처리
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -57,75 +53,58 @@ export default function CreateCommunity({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 파일 처리
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files[0]) {
-      const file = files[0];
-      const errorMessage = validateFile(file, files);
-      if (errorMessage) {
-        setFileError(errorMessage);
-        return;
-      }
-      setFileError("");
-      setFormData((prev) => {
-        const updatedFiles = Array.from(files);
-        return {
+    if (files) {
+      if (files.length > 10) {
+        setFileError("파일은 10개 이내로 첨부할 수 있습니다.");
+      } else {
+        setFileError("");
+        setFormData((prev) => ({
           ...prev,
-          community_files: updatedFiles,
-          isImportant: (prev as Notice).isImportant ?? false,
-        };
-      });
+          community_files: [...prev.community_files, ...Array.from(files)],
+        }));
+      }
     }
   };
 
-  // 파일 첨부 버튼 클릭
-  const handleFileClick = () => {
-    fileInputRef.current?.click();
+  const handleFileDelete = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      community_files: prev.community_files.filter((_, i) => i !== index),
+    }));
   };
 
-  // 폼 제출
   const handleSubmit = async () => {
     try {
       setTitleError("");
       setContentError("");
-      setFileError("");
-      if (!formData.title || formData.title.length > 50) {
-        setTitleError("제목은 50자 이내로 작성해주세요. 🚨");
+
+      if (!formData.title) {
+        setTitleError("제목은 필수 입력입니다. 🚨");
         return;
       }
-      if (!formData.content || formData.content.length > 2000) {
-        setContentError("설명은 2000자 이내로 작성해주세요. 🚨");
+      if (!formData.content) {
+        setContentError("설명은 필수 입력입니다. 🚨");
         return;
       }
 
-      const formDataToSend = {
-        title: formData.title,
-        content: formData.content,
-        community_files: formData.community_files?.map((file) =>
-          typeof file === "string" ? file : URL.createObjectURL(file)
-        ),
-        isImportant: (formData as Notice).isImportant ?? false,
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("content", formData.content);
+      formData.community_files.forEach((file) =>
+        formDataToSend.append("community_files", file)
+      );
 
-      if (type === "피드") {
-        createFeed({
-          ...formDataToSend,
-          author: formData.author,
-          id: (formData as Community).id,
-          createdAt: (formData as Community).createdAt,
-        });
-      } else if (type === "공지사항") {
-        createNotice({
-          ...formDataToSend,
-          id: (formData as Notice).id,
-          createdAt: (formData as Notice).createdAt,
-          author: formData.author,
-        });
+      if (type === "공지사항") {
+        formDataToSend.append("isImportant", String(formData.isImportant));
+        CreateNoitce(formDataToSend);
+      } else if (type === "피드") {
+        CreateFeed(formDataToSend);
       }
       onClose();
-    } catch (err) {
-      setFileError("커뮤니티 생성에 실패했습니다.");
+    } catch (error) {
+      console.error("Create Error:", error);
     }
   };
 
@@ -142,7 +121,7 @@ export default function CreateCommunity({
       <Modal.Divider />
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 제목 입력 */}
+        {/* 제목 */}
         <div className="flex items-center">
           <label className="block text-lg font-bold text-gray-700 pr-2">
             제목 <span className="text-red-500">*</span>
@@ -154,9 +133,8 @@ export default function CreateCommunity({
         <Modal.Input
           type="text"
           name="title"
-          value={formData.title}
           onChange={handleChange}
-          placeholder="제목을 입력하세요"
+          placeholder="제목을 입력하세요."
           className="placeholder:text-sm placeholder:gray-400"
           required
         />
@@ -164,44 +142,88 @@ export default function CreateCommunity({
           <span className="text-red-500 text-sm">{titleError}</span>
         )}
 
-        {/* 내용 입력 */}
-        <div>
-          <div className="flex items-center">
-            <label className="block text-lg font-bold text-gray-700 pr-2">
-              설명
-            </label>
-            <span className="text-xs text-gray-400">
-              2000자 이내로 작성해주세요. (선택)
-            </span>
-          </div>
-          <Modal.Input
-            type="textarea"
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            className="h-24 resize-none placeholder:text-sm placeholder:gray-400"
-            placeholder="내용을 입력해주세요."
-          />
-          {contentError && (
-            <span className="text-red-500 text-sm">{contentError}</span>
-          )}
+        {/* 내용 */}
+        <div className="flex items-center">
+          <label className="block text-lg font-bold text-gray-700 pr-2">
+            설명 <span className="text-red-500">*</span>
+          </label>
+          <span className="text-xs text-gray-400">
+            2000자 이내로 작성해주세요. (필수)
+          </span>
         </div>
+        <textarea
+          name="content"
+          onChange={handleChange}
+          placeholder="설명을 입력하세요."
+          className="w-full h-52 p-2 border rounded resize-none placeholder:text-sm placeholder:gray-400"
+          required
+        />
+        {contentError && (
+          <span className="text-red-500 text-sm">{contentError}</span>
+        )}
 
-        {/* 파일 첨부 */}
+        {/* 파일 첨부 목록 */}
+        {formData.community_files.length > 0 && (
+          <div className="space-y-2">
+            <span className="block text-lg font-bold text-gray-700 pr-2">
+              첨부 파일
+            </span>
+            <div className="space-y-1">
+              {formData.community_files.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 border rounded"
+                >
+                  <span className="text-sm text-gray-600">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleFileDelete(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Modal.Divider />
+
         <div className="flex justify-between items-center mt-6">
           <div className="flex space-x-4">
-            <button type="button" onClick={handleFileClick}>
+            {/* 파일 첨부 */}
+            <button
+              type="button"
+              onClick={() =>
+                document.getElementById("community_files")?.click()
+              }
+            >
               <Paperclip size={25} />
             </button>
-            <MapPin size={25} />
-            {type === "공지사항" && <Siren size={25} />}
             <input
               type="file"
-              ref={fileInputRef}
               id="community_files"
-              onChange={handleFileChange}
               className="hidden"
+              multiple
+              onChange={handleFileChange}
             />
+
+            {/* 장소 첨부 */}
+            <MapPin size={25} />
+
+            {/* 중요 사항 */}
+            {type === "공지사항" && (
+              <button
+                type="button"
+                onClick={toggleIsImportant}
+                className={`${
+                  formData.isImportant === "true" ? "text-red-500" : ""
+                }`}
+              >
+                <Siren size={25} />
+              </button>
+            )}
           </div>
 
           {/* 제출 버튼 */}

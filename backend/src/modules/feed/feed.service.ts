@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entites/feed.entity';
 import { Repository } from 'typeorm';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
-import { CreateFeedNoticeDto } from './dto/create-feed-notice.dto';
 import { Community } from '../community/entites/community.entity';
 import {
   NoPermissionThisFeedException,
   NotFoundFeedException,
 } from './exception/feed-exception';
+import { CreateCommunityDto } from './dto/create-community.dto';
 
 @Injectable()
 export class FeedService {
@@ -17,26 +17,25 @@ export class FeedService {
     private readonly feedRepository: Repository<Feed>,
   ) {}
 
-  async createFeed(
-    createFeedNoticeDto: CreateFeedNoticeDto,
+  async createCommunity(
+    createCommunityDto: CreateCommunityDto,
     communityFiles: string[],
     communityId: Community,
     projectUser: ProjectUser,
     isNotice?: boolean,
-    isImportant?: boolean,
   ): Promise<Feed> {
+    console.log('createCommunityDto', typeof createCommunityDto.isImportant);
     const feed = this.feedRepository.create({
-      ...createFeedNoticeDto,
+      ...createCommunityDto,
       community_files: communityFiles,
       community: communityId,
       author: projectUser,
       isNotice,
-      isImportant,
     });
     return await this.feedRepository.save(feed);
   }
 
-  async validateFeedOwner(feedId: number, userId: number) {
+  async validateCommunityOwner(feedId: number, userId: number) {
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
       relations: ['author'],
@@ -47,9 +46,9 @@ export class FeedService {
     return feed;
   }
 
-  async updateFeed(
+  async updateCommunity(
     feedId: number,
-    updateFeedDto: CreateFeedNoticeDto,
+    updateCommunityDto: CreateCommunityDto,
     communityFiles: string[],
   ): Promise<Feed> {
     const feed = await this.feedRepository.findOneBy({ id: feedId });
@@ -57,7 +56,7 @@ export class FeedService {
       throw new NotFoundFeedException(feedId);
     }
     const updateFields = {
-      ...updateFeedDto,
+      ...updateCommunityDto,
       imageUrl: communityFiles || feed.community_files,
     };
     Object.assign(feed, updateFields);

@@ -17,11 +17,12 @@ export interface Community {
   author: Author;
 }
 
+// Create Community
 export interface CreateCommunity {
   title: string;
   content: string;
-  community_files?: File[];
-  author: Author;
+  community_files: File[];
+  isImportant?: string;
 }
 
 // Community Author Information
@@ -41,10 +42,10 @@ export interface Author {
 export interface Notice extends Community {
   isImportant: boolean;
 }
-
 // Props: CommunityClientTaps
 export interface CommunityClientTapsProps {
   projectId: string;
+  projectUser: ProjectUser;
   feeds: Community[];
   notices: Notice[];
 }
