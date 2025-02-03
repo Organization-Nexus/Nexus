@@ -1,5 +1,5 @@
 import { Community, Notice } from "@/types/community";
-import api from "./config/axios";
+import api from "../axios";
 
 export const communityApi = {
   getfeedsByProjectId: async (projectId: string): Promise<Community[]> => {

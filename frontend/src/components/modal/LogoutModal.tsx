@@ -1,9 +1,9 @@
 "use client";
 import Cookies from "js-cookie";
 import { Modal } from "./config/ModalMaps";
-import { authApi } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { authApi } from "@/app/_api/models/auth";
 
 interface LogoutModalProps {
   isOpen: boolean;

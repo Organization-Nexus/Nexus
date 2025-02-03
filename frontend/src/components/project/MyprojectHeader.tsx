@@ -1,6 +1,6 @@
 "use client";
 
-import { userApi } from "@/api/user";
+import { userApi } from "@/app/_api/models/user";
 import { useQuery } from "@tanstack/react-query";
 import ModalMain from "../modal/config/ModalMain";
 

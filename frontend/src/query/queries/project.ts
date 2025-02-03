@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { projectApi } from "@/api/project";
+import { projectApi } from "@/app/_api/models/project";
 import { Project } from "@/types/project";
 import { projectKeys } from "../key";
 
 // 프로젝트 목록 가져오기
-export const useProjectList = (initialData: Project[]) => {
+export const useProjectList = (initialProjects: Project[]) => {
   return useQuery({
     queryKey: projectKeys.PROJECT_LIST_KEY,
     queryFn: projectApi.getMyProjects,
-    initialData,
+    initialData: initialProjects,
     initialDataUpdatedAt: Date.now(),
   });
 };

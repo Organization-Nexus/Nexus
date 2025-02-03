@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { userApi } from "@/api/user";
+import { userApi } from "@/app/_api/models/user";
 import { NavBarUserInfo, RightNavBarProps } from "@/types/navbar";
 
 export default function RightNavBar({ contents }: RightNavBarProps) {

@@ -1,6 +1,6 @@
 import { Community, Notice } from "@/types/community";
 import { communityKeys } from "../key";
-import { communityApi } from "@/api/community";
+import { communityApi } from "@/app/_api/models/community";
 import { useQuery } from "@tanstack/react-query";
 
 // 공지사항 목록 가져오기

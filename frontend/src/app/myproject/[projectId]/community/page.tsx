@@ -1,8 +1,8 @@
-import { communityApi } from "@/api/community";
-import { projectApi } from "@/api/project";
-import { ProjectIdProps } from "@/types/project";
-import CommunityInfo from "@/components/communnity/CommunityInfo";
+import { communityApi } from "@/app/_api/models/community";
+import { projectApi } from "@/app/_api/models/project";
 import CommunityClientTaps from "@/components/communnity/CommunityClientTaps";
+import CommunityInfo from "@/components/communnity/CommunityInfo";
+import { ProjectIdProps } from "@/types/project";
 
 export default async function Community({ params }: ProjectIdProps) {
   const projectId = params.projectId;

@@ -1,5 +1,5 @@
 import { Project } from "@/types/project";
-import api from "./config/axios";
+import api from "../axios";
 
 export const projectApi = {
   getMyProjects: async (): Promise<Project[]> => {

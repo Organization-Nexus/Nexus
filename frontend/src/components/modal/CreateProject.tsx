@@ -3,7 +3,7 @@ import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
 import { project_image } from "@/data/project_image";
 import { Project } from "@/types/project";
-import { useCreateProject } from "@/query/project/useMutation";
+import { useCreateProject } from "@/query/mutations/project";
 
 export default function CreateProjectModal({
   isOpen,

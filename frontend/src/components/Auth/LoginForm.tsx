@@ -1,12 +1,12 @@
 "use client";
 
-import { authApi } from "@/api/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { loginValidation } from "@/utils/validators/userValidation";
+import { authApi } from "@/app/_api/models/auth";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 export default function LoginFormComponent() {
   const router = useRouter();

@@ -2,9 +2,9 @@
 
 import { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import TopNavBar from "@/components/navbar/TopNavBar";
-import { userApi } from "@/api/user";
+import { userApi } from "@/app/_api/models/user";
 import { useQuery } from "@tanstack/react-query";
+import TopNavBar from "./navbar/TopNavBar";
 
 export default function NavigationWrapper({
   children,

@@ -4,12 +4,11 @@ import { ModalRootProps } from "@/types/modal";
 import { PencilLine, X } from "lucide-react";
 import { UnderlineInput } from "../ui/underlineInput";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { userApi } from "@/api/user";
-import { UpdateUserDto } from "@/types/user";
+import { userApi } from "@/app/_api/models/user";
 import { userValidation } from "@/utils/validators/userValidation";
-import { ValidationErrors } from "@/types/user";
 import Image from "next/image";
 import { PositionSelect } from "../user/PositionSelect";
+import { UpdateUserDto, ValidationErrors } from "@/types/User";
 
 export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
   const { data: user } = useQuery({
