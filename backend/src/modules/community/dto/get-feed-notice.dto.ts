@@ -34,6 +34,9 @@ export class GetFeedNoticeDto {
 }
 
 class AuthorDto {
+  @IsNumber()
+  projectUserId: number;
+
   @IsString()
   position: string;
 

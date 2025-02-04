@@ -1,15 +1,12 @@
 "use client";
 
-import { Project, ProjectListProps } from "@/types/project";
+import { Project } from "@/types/project";
 import { useProjectList } from "@/query/queries/project";
 import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
-import Loading from "../utils/Loading";
 
-export default function ProjectList({
-  projects: initialProjects,
-}: ProjectListProps) {
-  const { data: project, isFetching } = useProjectList(initialProjects);
+export default function ProjectList() {
+  const { data: project } = useProjectList();
 
   const now = new Date();
   const [inProgress, setInProgress] = useState<Project[]>([]);
@@ -40,10 +37,6 @@ export default function ProjectList({
       setCompleted(completedArr);
     }
   }, [project]);
-
-  if (isFetching || isFetching) {
-    return <Loading />;
-  }
 
   return (
     <div className="mx-auto p-4">

@@ -162,12 +162,18 @@ export default function CreateCommunity({
           <span className="text-red-500 text-sm">{contentError}</span>
         )}
 
+        <div className="flex items-center">
+          <span className="block text-lg font-bold text-gray-700 pr-2">
+            첨부 파일
+          </span>
+          <span className="text-xs text-gray-400">
+            파일은 10개 이내로 첨부할 수 있습니다.
+          </span>
+        </div>
+
         {/* 파일 첨부 목록 */}
         {formData.community_files.length > 0 && (
           <div className="space-y-2">
-            <span className="block text-lg font-bold text-gray-700 pr-2">
-              첨부 파일
-            </span>
             <div className="space-y-1">
               {formData.community_files.map((file, index) => (
                 <div

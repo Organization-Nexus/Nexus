@@ -33,11 +33,6 @@ export interface ProjectIdProps {
   };
 }
 
-// Props : Projects
-export interface ProjectListProps {
-  projects: Project[];
-}
-
 // Props: Project
 export interface ProjectProps {
   project: Project;

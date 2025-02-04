@@ -14,7 +14,7 @@ export default async function Community({ params }: ProjectIdProps) {
 
   return (
     <div className="flex justify-center py-8">
-      <div className="w-2/3 max-w-7xl bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-5xl bg-white rounded-lg shadow-md">
         <CommunityInfo project={project} />
         <CommunityClientTaps
           projectId={projectId}
