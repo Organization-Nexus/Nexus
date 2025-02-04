@@ -109,10 +109,18 @@ export default function CommunityClientTabs({
         <div className="mt-8">
           {selectedTab === "all" && <div>전체보기</div>}
           {selectedTab === "notice" && (
-            <CommunityTemplate type="notice" items={notices} />
+            <CommunityTemplate
+              type="notice"
+              items={notices}
+              projectUser={projectUser}
+            />
           )}
           {selectedTab === "feed" && (
-            <CommunityTemplate type="feed" items={feeds} />
+            <CommunityTemplate
+              type="feed"
+              items={feeds}
+              projectUser={projectUser}
+            />
           )}
           {selectedTab === "vote" && <div>투표 콘텐츠</div>}
         </div>

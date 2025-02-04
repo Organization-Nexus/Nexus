@@ -48,6 +48,7 @@ export class CommunityService {
           isImportant: feed.isImportant,
           createdAt: feed.createdAt,
           author: {
+            projectUserId: feed.author.id,
             position: feed.author.position,
             user: {
               name: feed.author.user.name,

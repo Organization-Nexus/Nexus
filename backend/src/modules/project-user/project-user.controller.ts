@@ -14,7 +14,6 @@ import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { UserPayload } from 'src/types/user-payload';
 import { UserService } from '../user/user.service';
 import { CreatePronectUserDto } from './dto/create-project-user.dto';
-import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('project-user')
@@ -26,7 +25,7 @@ export class ProjectUserController {
 
   // POST /api/project-user/invite/:projectId
   @Post('invite/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async inviteUserToProject(
     @Body() createProjectUserDto: CreatePronectUserDto,
     @Param('projectId') projectId: number,
@@ -63,14 +62,14 @@ export class ProjectUserController {
 
   // GET /api/project-user/get-project-users/:projectId
   @Get('get-project-users/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async getProjectUsers(@Param('projectId') projectId: number) {
     return await this.projectUserService.getProjectUsers(projectId);
   }
 
   // GET /api/project-user/get-project-user/:projectId
   @Get('get-project-user/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async getProjectUser(
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,

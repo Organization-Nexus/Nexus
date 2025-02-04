@@ -1,4 +1,5 @@
 import { UserRank, UserStatus } from "@/enum/user.enum";
+import { ProjectUser } from "./project-user";
 
 // CommunityTab 타입 정의
 export type CommunityTab = {
@@ -27,6 +28,7 @@ export interface CreateCommunity {
 
 // Community Author Information
 export interface Author {
+  projectUserId: number;
   position: string;
   user: {
     name: string;
@@ -53,4 +55,5 @@ export interface CommunityClientTapsProps {
 export interface CommunityTemplateProps {
   type: string;
   items: (Community | Notice)[];
+  projectUser: ProjectUser;
 }

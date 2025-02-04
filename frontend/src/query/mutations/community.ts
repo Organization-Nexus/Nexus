@@ -10,7 +10,7 @@ export const useCreateNotice = (projectId: string) => {
       return communityApi.createNoticeByProjectId(projectId, noticeData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: communityKeys.NOTICE_LIST_KEY,
       });
     },
@@ -27,7 +27,7 @@ export const useCreateFeed = (projectId: string) => {
     mutationFn: (feedData: FormData) =>
       communityApi.createFeedByProjectId(projectId, feedData),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: communityKeys.FEED_LIST_KEY,
       });
     },
