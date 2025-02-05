@@ -9,7 +9,7 @@ export default function CreateProjectModal({
   isOpen,
   onClose,
 }: ModalRootProps) {
-  const { mutate: createProject, isPending } = useCreateProject();
+  const createProjectMutation = useCreateProject();
   const [formData, setFormData] = useState<CreateProject>({
     title: "",
     description: "",
@@ -124,7 +124,7 @@ export default function CreateProjectModal({
       }
 
       formDataToSend.append("project_image", projectImage);
-      createProject(formDataToSend);
+      createProjectMutation.mutate(formDataToSend);
       onClose();
     } catch (error) {
       console.error("Error creating project:", error);
@@ -314,9 +314,9 @@ export default function CreateProjectModal({
             <Modal.Button
               variant="primary"
               onClick={() => handleSubmit()}
-              disabled={isPending}
+              disabled={createProjectMutation.isPending}
             >
-              {isPending ? "생성 중..." : "생성"}
+              {createProjectMutation.isPending ? "생성 중..." : "생성"}
             </Modal.Button>
           </div>
         </form>

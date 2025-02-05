@@ -20,6 +20,11 @@ export class FileService {
     if (!category) {
       throw new BadRequestException('Invalid category');
     }
+    if (files.length > 10) {
+      throw new BadRequestException(
+        '첨부 파일은 10개 이내로 업로드할 수 있습니다.',
+      );
+    }
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded');
     }

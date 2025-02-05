@@ -1,4 +1,4 @@
-import { Community, CreateCommunity, Notice } from "@/types/community";
+import { Community, CommunityFormData, Notice } from "@/types/community";
 import api from "../axios";
 
 export const communityApi = {
@@ -16,7 +16,7 @@ export const communityApi = {
 
   createFeedByProjectId: async (
     projectId: string,
-    data: CreateCommunity | FormData
+    data: CommunityFormData | FormData
   ) => {
     const isFormData = data instanceof FormData;
     return await api.post(`/feed/create-feed/${projectId}`, data, {
@@ -28,10 +28,23 @@ export const communityApi = {
 
   createNoticeByProjectId: async (
     projectId: string,
-    data: CreateCommunity | FormData
+    data: CommunityFormData | FormData
   ) => {
     const isFormData = data instanceof FormData;
     return await api.post(`/feed/create-notice/${projectId}`, data, {
+      headers: {
+        "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+      },
+    });
+  },
+
+  updateCommunityByFeedIdAndProjectId: async (
+    feedId: string,
+    projectId: string,
+    data: CommunityFormData | FormData
+  ) => {
+    const isFormData = data instanceof FormData;
+    return await api.post(`/feed/update-feed/${feedId}/${projectId}`, data, {
       headers: {
         "Content-Type": isFormData ? "multipart/form-data" : "application/json",
       },

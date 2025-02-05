@@ -10,7 +10,7 @@ export type CommunityTab = {
 
 // Community Information
 export interface Community {
-  id: number;
+  id: string;
   title: string;
   content: string;
   community_files?: string[];
@@ -19,10 +19,10 @@ export interface Community {
 }
 
 // Create Community
-export interface CreateCommunity {
+interface CommunityFormData {
   title: string;
   content: string;
-  community_files: File[];
+  community_files: (File | string)[];
   isImportant?: string;
 }
 
@@ -53,7 +53,11 @@ export interface CommunityClientTapsProps {
 }
 
 export interface CommunityTemplateProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onEdit?: (label: string) => void;
   type: string;
   items: (Community | Notice)[];
   projectUser: ProjectUser;
+  projectId: string;
 }

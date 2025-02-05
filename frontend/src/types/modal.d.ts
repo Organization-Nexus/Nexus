@@ -18,6 +18,14 @@ export interface ModalRootProps extends BaseModalProps {
 export interface CommunityModalProps extends ModalRootProps {
   type: string;
   projectId: string;
+  mode?: "create" | "update";
+  feedId?: string;
+  updateData?: {
+    title: string;
+    content: string;
+    community_files?: (string | File)[];
+    isImportant?: string;
+  };
 }
 
 // 체크버튼 컴포넌트

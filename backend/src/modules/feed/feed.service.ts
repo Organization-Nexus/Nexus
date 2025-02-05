@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Feed } from './entites/feed.entity';
 import { Repository } from 'typeorm';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
-import { Community } from '../community/entites/community.entity';
 import {
   NoPermissionThisFeedException,
   NotFoundFeedException,
@@ -19,16 +18,15 @@ export class FeedService {
 
   async createCommunity(
     createCommunityDto: CreateCommunityDto,
-    communityFiles: string[],
-    communityId: Community,
     projectUser: ProjectUser,
+    communityId: number,
+    communityFiles: string[],
     isNotice?: boolean,
   ): Promise<Feed> {
-    console.log('createCommunityDto', typeof createCommunityDto.isImportant);
     const feed = this.feedRepository.create({
       ...createCommunityDto,
       community_files: communityFiles,
-      community: communityId,
+      community: { id: communityId },
       author: projectUser,
       isNotice,
     });
@@ -40,6 +38,9 @@ export class FeedService {
       where: { id: feedId },
       relations: ['author'],
     });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
     if (feed.author.id !== userId) {
       throw new NoPermissionThisFeedException(userId);
     }
@@ -47,8 +48,8 @@ export class FeedService {
   }
 
   async updateCommunity(
-    feedId: number,
     updateCommunityDto: CreateCommunityDto,
+    feedId: number,
     communityFiles: string[],
   ): Promise<Feed> {
     const feed = await this.feedRepository.findOneBy({ id: feedId });

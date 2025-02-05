@@ -37,7 +37,7 @@ export class Feed {
   @ManyToOne(() => ProjectUser, (projectUser) => projectUser.feeds, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'author_id' })
+  @JoinColumn({ name: 'author' })
   author: ProjectUser;
 
   @CreateDateColumn()
