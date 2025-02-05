@@ -6,18 +6,8 @@ import { userValidation } from "@/utils/validators/userValidation";
 import Image from "next/image";
 import { PositionSelect } from "../user/PositionSelect";
 import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useUpdateUser } from "@/query/mutations/user";
+import { CustomAlertDialog } from "./CustomAlertDialog";
 
 export interface MyPageModalProps {
   isOpen: boolean;
@@ -228,7 +218,13 @@ export default function MyPageModal({
             <Modal.Title className="text-2xl font-bold mb-0">
               마이페이지
             </Modal.Title>
-            <X onClick={handleClose} className="cursor-pointer mr-4" />
+            <CustomAlertDialog
+              onConfirm={handleClose}
+              title="창을 닫을까요?"
+              description="확인 버튼을 누르시면 수정사항이 저장되지 않습니다."
+            >
+              <X className="cursor-pointer mr-4" />
+            </CustomAlertDialog>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 p-6 mr-4">
@@ -416,27 +412,15 @@ export default function MyPageModal({
             </div>
 
             <div className="flex justify-end p-4 pb-0 gap-2">
-              <AlertDialog>
-                <AlertDialogTrigger>
-                  <Modal.Button variant="secondary" className="m-1 w-20">
-                    취소
-                  </Modal.Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>정말로 취소하시겠어요?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      확인 버튼을 누르시면 수정사항이 저장되지 않습니다.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>취소</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleClose}>
-                      확인
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <CustomAlertDialog
+                onConfirm={handleClose}
+                title="정말로 취소하시겠어요?"
+                description="확인 버튼을 누르시면 수정사항이 저장되지 않습니다."
+              >
+                <Modal.Button variant="secondary" className="m-1 w-20">
+                  취소
+                </Modal.Button>
+              </CustomAlertDialog>
 
               <Modal.Button type="submit" className="m-1 w-20">
                 수정
