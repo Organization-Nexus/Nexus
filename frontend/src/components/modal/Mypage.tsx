@@ -7,7 +7,7 @@ import Image from "next/image";
 import { PositionSelect } from "../user/PositionSelect";
 import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
 import { useUpdateUser } from "@/query/mutations/user";
-import { CustomAlertDialog } from "./CustomAlertDialog";
+import { CustomAlertDialog } from "../common/CustomAlertDialog";
 
 export interface MyPageModalProps {
   isOpen: boolean;
