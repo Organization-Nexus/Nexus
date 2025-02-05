@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,12 +50,16 @@ export class UserService {
   }
 
   // 유저 정보 수정
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    const { profileImage, status, rank, ...userFields } = updateUserDto;
+  async update(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+    avatarImage?: string,
+  ): Promise<User> {
+    const user = await this.findOne(userId);
+    const { profileImageUrl, status, rank, ...userFields } = updateUserDto;
 
     // UserLog 필드 업데이트
-    if (profileImage !== undefined) user.log.profileImage = profileImage;
+    if (avatarImage) user.log.profileImage = avatarImage;
     if (status !== undefined) {
       if (!this.ALLOWED_STATUS.includes(status)) {
         throw new NotAllowedStatusException();

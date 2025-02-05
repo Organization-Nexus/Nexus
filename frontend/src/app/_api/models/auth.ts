@@ -1,5 +1,6 @@
 import {
   AuthResponse,
+  ChangePasswordRequest,
   LoginRequest,
   PasswordResetRequest,
   RegisterRequest,
@@ -25,4 +26,7 @@ export const authApi = {
 
   resetPassword: (data: ResetPasswordRequest) =>
     api.post("/auth/password-reset", data),
+
+  changePassword: (data: ChangePasswordRequest) =>
+    api.put("/auth/change-password", data),
 };

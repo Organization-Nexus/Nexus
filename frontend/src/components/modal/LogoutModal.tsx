@@ -4,6 +4,7 @@ import { Modal } from "./config/ModalMaps";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/app/_api/models/auth";
+import { userKeys } from "@/query/key";
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -27,7 +28,9 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
       Cookies.remove("access_token");
       Cookies.remove("refresh_token");
 
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.refetchQueries({
+        queryKey: userKeys.MYPAGE_USER_INFO_KEY,
+      });
       onClose();
       // router.refresh();
       router.push("/login");

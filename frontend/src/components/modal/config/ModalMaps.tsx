@@ -29,10 +29,12 @@ function ModalRoot({
   children,
   className,
   hasOverlay = true,
+  closeOnOutsideClick = true, // false일때 밖을 클릭해도 닫히지 않음
 }: ModalRootProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleOverlayClick = (e: React.MouseEvent) => {
+    if (!closeOnOutsideClick) return;
     const overlay = e.currentTarget;
     const clickedElement = e.target as HTMLElement;
 
@@ -182,7 +184,7 @@ function ModalButton({
   type = "button",
 }: ButtonProps) {
   const variantClasses = {
-    primary: "bg-[#50E161] hover:bg-[#45c14f] text-white",
+    primary: "bg-[#50E161] hover:bg-[#45c14f]  text-white",
     secondary:
       "bg-white text-black border border-gray-300 hover:bg-gray-300 hover:text-white",
     danger: "bg-red-500 hover:bg-red-700 text-white",

@@ -1,19 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
-import { userApi } from "@/app/_api/models/user";
-import { NavBarUserInfo, RightNavBarProps } from "@/types/navbar";
+import { RightNavBarProps } from "@/types/navbar";
+import { useUserInfo } from "@/query/queries/user";
 
 export default function RightNavBar({ contents }: RightNavBarProps) {
-  const { data: user, isLoading } = useQuery<NavBarUserInfo>({
-    queryKey: ["user"],
-    queryFn: userApi.getUser,
-  });
-
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
+  const { data: user } = useUserInfo();
 
   if (!user) {
     return <div>사용자 정보를 불러올 수 없습니다.</div>;
@@ -25,11 +17,11 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
           <div className="w-12 h-12 rounded-2xl">
             <div className="relative w-[48px] h-[48px] rounded-2xl">
               <Image
-                src={user.log.profileImage}
+                src={user.log.profileImage as string}
                 alt="Profile Image"
                 width={48}
                 height={48}
-                className="object-cover rounded-2xl"
+                className="object-cover rounded-2xl max-w-[48px] max-h-[48px]"
                 priority
               />
             </div>

@@ -14,7 +14,6 @@ import { plainToClass } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
 import { RedisService } from '../redis/redis.service';
 import { UserNotFoundException } from '../user/exception/user.exception';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ResetPasswordDto } from './dto/change-password.dto';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../mailer/email.service';
@@ -157,7 +156,8 @@ export class AuthService {
       throw new BadRequestException('비밀번호가 일치하지 않습니다.');
     }
     user.password = await bcrypt.hash(newPassword, 10);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+    return { message: '비밀번호가 성공적으로 변경되었습니다.' };
   }
 
   // 비밀번호 재설정 코드 전송

@@ -1,4 +1,3 @@
-// src/user/dto/update-user.dto.ts
 import {
   IsEmail,
   IsNumber,
@@ -39,7 +38,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  profileImage?: string;
+  profileImageUrl?: string; // 기존 이미지 URL을 위한 필드
 
   @IsOptional()
   @IsString()

@@ -1,14 +1,10 @@
 "use client";
 
-import { userApi } from "@/app/_api/models/user";
-import { useQuery } from "@tanstack/react-query";
 import ModalMain from "../modal/config/ModalMain";
+import { useUserInfo } from "@/query/queries/user";
 
 export default function MyProjectHeader() {
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: userApi.getUser,
-  });
+  const { data: user, isLoading } = useUserInfo();
 
   if (!user) return null;
   return (

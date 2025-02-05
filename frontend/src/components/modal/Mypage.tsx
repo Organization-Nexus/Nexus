@@ -1,43 +1,53 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
-import { ModalRootProps } from "@/types/modal";
 import { PencilLine, X } from "lucide-react";
 import { UnderlineInput } from "../ui/underlineInput";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { userApi } from "@/app/_api/models/user";
 import { userValidation } from "@/utils/validators/userValidation";
 import Image from "next/image";
 import { PositionSelect } from "../user/PositionSelect";
-import { UpdateUserDto, ValidationErrors } from "@/types/User";
+import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useUpdateUser } from "@/query/mutations/user";
 
-export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: userApi.getUser,
-  });
+export interface MyPageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user: User;
+}
 
-  const queryClient = useQueryClient();
+export default function MyPageModal({
+  isOpen,
+  onClose,
+  user,
+}: MyPageModalProps) {
+  const { mutate: updateUser } = useUpdateUser();
 
   const [formData, setFormData] = useState<UpdateUserDto>({
-    name: "",
-    mainPosition: "",
-    githubUrl: null,
-    profileImage: "",
+    name: user.name,
+    mainPosition: user.mainPosition,
+    githubUrl: user.githubUrl,
+    profileImageUrl: user.log.profileImage,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [fileError, setFileError] = useState<string>("");
 
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name,
-        mainPosition: user.mainPosition,
-        githubUrl: user.githubUrl,
-        profileImage: user.log.profileImage,
-      });
-    }
-  }, [user]);
+  const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,8 +102,12 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
         return;
       }
       setFileError("");
-      const fileUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, profileImage: fileUrl });
+
+      setFormData({
+        ...formData,
+        profileImage: file,
+        profileImageUrl: undefined,
+      });
     }
   };
 
@@ -106,13 +120,25 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
     }
 
     try {
-      console.log("전송 데이터 상세:", {
-        formData,
-      });
-      await userApi.updateUser(formData);
-      await queryClient.invalidateQueries({ queryKey: ["user"] });
-      console.log("수정완료");
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("mainPosition", formData.mainPosition);
+
+      if (formData.githubUrl) {
+        formDataToSend.append("githubUrl", formData.githubUrl);
+      }
+
+      // 새 이미지 file형식으로 전송
+      if (formData.profileImage) {
+        formDataToSend.append("profileImage", formData.profileImage);
+      } else if (formData.profileImageUrl) {
+        // 기존 이미지 URL형식으로 전송
+        formDataToSend.append("profileImageUrl", formData.profileImageUrl);
+      }
+      updateUser(formDataToSend);
+
       onClose();
+      alert("수정이 완료되었습니다.");
     } catch (err) {
       console.error("Update Error:", err);
       setErrors((prev) => ({
@@ -122,25 +148,61 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
     }
   };
 
+  const handleClose = () => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        mainPosition: user.mainPosition,
+        githubUrl: user.githubUrl,
+        profileImageUrl: user.log.profileImage,
+      });
+    }
+
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+
+    // 비밀번호 재설정 모달 상태 초기화
+    setIsPasswordResetOpen(false);
+
+    // 에러 상태들 초기화
+    setErrors({});
+    setFileError("");
+
+    // 모달 닫기
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="p-0 px-0 py-0">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      closeOnOutsideClick={false}
+      className="p-0 px-0 py-0"
+    >
       <div className="flex">
         <div className="basis-1/4">
           <div className=" h-20 bg-custom-gray rounded-tl-2xl p-6">
             <div className="relative ml-6 mr-10">
-              {formData.profileImage && (
+              {formData.profileImage ? (
                 <Image
-                  src={
-                    typeof formData.profileImage === "string"
-                      ? formData.profileImage
-                      : ""
-                  }
+                  src={URL.createObjectURL(formData.profileImage)}
                   alt="프로필"
                   width={150}
                   height={150}
-                  className="justify-self-center w-20 h-20 rounded-2xl bg-custom-main"
+                  className="justify-self-center w-20 h-20 min-w-20 min-h-20 rounded-2xl bg-custom-main"
                 />
-              )}
+              ) : formData.profileImageUrl ? (
+                <Image
+                  src={formData.profileImageUrl}
+                  alt="프로필"
+                  width={150}
+                  height={150}
+                  className="justify-self-center w-20 h-20 min-w-20 min-h-20 rounded-2xl bg-custom-main"
+                />
+              ) : null}
               <label
                 htmlFor="profile-image-input"
                 className="absolute right-0 top-3/4 border-2 border-white h-8 w-8 rounded-full bg-custom-smallText flex items-center justify-center cursor-pointer hover:bg-gray-600"
@@ -166,10 +228,10 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
             <Modal.Title className="text-2xl font-bold mb-0">
               마이페이지
             </Modal.Title>
-            <X onClick={onClose} className="cursor-pointer" />
+            <X onClick={handleClose} className="cursor-pointer mr-4" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 p-6 mr-4">
             <div>
               <label className="block text-md font-bold text-gray-700 pr-2">
                 이메일
@@ -212,20 +274,6 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
                   onChange={handleChange}
                   className="p-0"
                 />
-                {/* {formData.githubUrl && formData.githubUrl !== "" && (
-                  <ExternalLink
-                    className="w-5 h-5 cursor-pointer text-gray-500 hover:text-custom-point"
-                    onClick={() => {
-                      if (formData.githubUrl) {
-                        window.open(
-                          formData.githubUrl,
-                          "_blank",
-                          "noopener,noreferrer"
-                        );
-                      }
-                    }}
-                  />
-                )} */}
               </div>
               {errors.githubUrl && (
                 <p className="text-red-500 text-sm mt-1">{errors.githubUrl}</p>
@@ -248,26 +296,147 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
                 </p>
               )}
             </div>
-            <div className="justify-items-start">
-              <label className="block text-md font-bold text-gray-700 pr-2">
-                비밀번호
-              </label>
-              <Modal.Button
-                onClick={() => {}}
-                variant="secondary"
-                className="m-2 text-custom-smallText text-sm"
+
+            <div>
+              <div className="justify-items-start">
+                <label className="block text-md font-bold text-gray-700 pr-2">
+                  비밀번호
+                </label>
+                {!isPasswordResetOpen && (
+                  <Modal.Button
+                    onClick={() => setIsPasswordResetOpen(!isPasswordResetOpen)}
+                    variant="secondary"
+                    className="m-2 text-custom-smallText text-sm"
+                  >
+                    비밀번호 재설정
+                  </Modal.Button>
+                )}
+              </div>
+              {/* 비밀번호 재설정 폼 */}
+              <div
+                className={`
+                  grid overflow-hidden transition-all duration-500 ease-in-out
+                  ${
+                    isPasswordResetOpen
+                      ? "grid-rows-[1fr] max-h-[550px] opacity-100"
+                      : "grid-rows-[0fr] max-h-0 opacity-0"
+                  }
+                `}
               >
-                비밀번호 재설정
-              </Modal.Button>
+                <div className="space-y-4">
+                  <p className="text-xs text-gray-500 mt-3">
+                    8~20자 영문, 숫자, 특수문자 조합
+                  </p>
+                  <div className="grid grid-cols-6">
+                    <div className="  self-center">
+                      <label className="text-sm font-bold text-gray-700">
+                        현재 비밀번호
+                      </label>
+                    </div>
+                    <div className="col-span-5">
+                      <UnderlineInput
+                        type="password"
+                        name="currentPassword"
+                        value={passwordForm.currentPassword}
+                        onChange={(e) =>
+                          setPasswordForm((prev) => ({
+                            ...prev,
+                            currentPassword: e.target.value,
+                          }))
+                        }
+                        placeholder="현재 비밀번호를 입력해주세요"
+                        className="p-0"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-6">
+                    <div className=" self-center">
+                      <label className="text-sm font-bold text-gray-700">
+                        새 비밀번호
+                      </label>
+                    </div>
+                    <div className="col-span-5">
+                      <UnderlineInput
+                        type="password"
+                        name="newPassword"
+                        value={passwordForm.newPassword}
+                        onChange={(e) =>
+                          setPasswordForm((prev) => ({
+                            ...prev,
+                            newPassword: e.target.value,
+                          }))
+                        }
+                        placeholder="새 비밀번호를 입력해주세요"
+                        className="p-0"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-6">
+                    <div className="self-center">
+                      <label className="text-sm font-bold text-gray-700">
+                        비밀번호 확인
+                      </label>
+                    </div>
+                    <div className="col-span-5">
+                      <UnderlineInput
+                        type="password"
+                        name="confirmPassword"
+                        value={passwordForm.confirmPassword}
+                        onChange={(e) =>
+                          setPasswordForm((prev) => ({
+                            ...prev,
+                            confirmPassword: e.target.value,
+                          }))
+                        }
+                        placeholder="비밀번호를 다시 입력해주세요"
+                        className="p-0"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Modal.Button
+                      variant="secondary"
+                      onClick={() => setIsPasswordResetOpen(false)}
+                      className="text-sm"
+                    >
+                      취소
+                    </Modal.Button>
+                    <Modal.Button
+                      onClick={() => {
+                        // 비밀번호 변경 로직 구현
+                        console.log("비밀번호 변경");
+                      }}
+                      className="text-sm"
+                    >
+                      확인
+                    </Modal.Button>
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="flex justify-end p-4 pb-0 gap-2">
-              <Modal.Button
-                variant="secondary"
-                onClick={onClose}
-                className="m-1 w-20"
-              >
-                취소
-              </Modal.Button>
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Modal.Button variant="secondary" className="m-1 w-20">
+                    취소
+                  </Modal.Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>정말로 취소하시겠어요?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      확인 버튼을 누르시면 수정사항이 저장되지 않습니다.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>취소</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleClose}>
+                      확인
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               <Modal.Button type="submit" className="m-1 w-20">
                 수정

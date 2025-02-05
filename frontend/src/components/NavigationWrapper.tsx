@@ -2,9 +2,8 @@
 
 import { ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { userApi } from "@/app/_api/models/user";
-import { useQuery } from "@tanstack/react-query";
 import TopNavBar from "./navbar/TopNavBar";
+import { useUserInfo } from "@/query/queries/user";
 
 export default function NavigationWrapper({
   children,
@@ -15,11 +14,8 @@ export default function NavigationWrapper({
   const pathname = usePathname();
   const hideNavBarPaths = ["/login", "/register", "/forgot-password"];
 
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: userApi.getUser,
+  const { data: user, isLoading } = useUserInfo({
     enabled: !hideNavBarPaths.includes(pathname),
-    retry: false,
   });
 
   // 인증이 필요한 페이지에서 유저 정보가 없는 경우

@@ -11,6 +11,7 @@ export interface ModalRootProps extends BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   hasOverlay?: boolean;
+  closeOnOutsideClick?: boolean;
 }
 
 // 유형별 모달 인터페이스
