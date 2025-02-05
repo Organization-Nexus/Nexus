@@ -9,14 +9,10 @@ import {
 } from "../ui/dropdown-menu";
 import LogoutModal from "../modal/LogoutModal";
 import MyPageModal from "../modal/Mypage";
+import { User } from "@/types/user";
 
 interface ProfileDropdownProps {
-  user: {
-    name: string;
-    log: {
-      profileImage: string;
-    };
-  };
+  user: User;
 }
 
 export default function ProfileDropdown({ user }: ProfileDropdownProps) {
@@ -28,11 +24,11 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
       <DropdownMenu>
         <DropdownMenuTrigger className="outline-none">
           <Image
-            src={user.log.profileImage}
+            src={user.log.profileImage as string}
             alt="Profile"
             width={20}
             height={20}
-            className="rounded-full object-cover"
+            className="rounded-full object-cover max-w-[20px] max-h-[20px]"
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -41,7 +37,7 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
         >
           <div className="flex items-center gap-2">
             <Image
-              src={user.log.profileImage}
+              src={user.log.profileImage as string}
               alt="Profile Image"
               width={40}
               height={40}
@@ -77,6 +73,7 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
       <MyPageModal
         isOpen={isMyPageOpen}
         onClose={() => setIsMyPageOpen(false)}
+        user={user}
       />
       <LogoutModal
         isOpen={isLogoutOpen}

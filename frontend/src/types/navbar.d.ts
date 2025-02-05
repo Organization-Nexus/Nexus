@@ -23,10 +23,5 @@ export interface RightNavBarProps {
 }
 
 export interface TopNavBarProps {
-  user: {
-    name: string;
-    log: {
-      profileImage: string;
-    };
-  };
+  user: User;
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -7,6 +8,7 @@ import {
   Param,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,11 +19,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RoleGuard } from '../auth/guard/role.guard';
 import { Roles } from '../auth/decorator/role.decorator';
 import { UserLog } from './entities/user-log.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserPayload } from 'src/types/user-payload';
+import { FileService } from '../file/file.service';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly fileService: FileService,
+  ) {}
 
   // 모든 사용자 조회, ADMIN
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -46,10 +55,34 @@ export class UserController {
   }
 
   // 본인 정보 변경
-  @UseGuards(JwtAuthGuard)
   @Put()
-  async updateUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(req.user.id, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('profileImage'))
+  async updateUser(
+    @Req() req: UserPayload,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    const userId = req.user.id;
+    if (file && !file.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Only image files are allowed');
+    }
+    let avatarImage = null;
+
+    // 새 파일이 업로드된 경우
+    if (file) {
+      avatarImage = await this.fileService.handleFileUpload({
+        files: [file],
+        userId,
+        category: Category.AVATAR,
+      });
+    }
+    // 기존 이미지 URL을 유지하는 경우
+    else if (updateUserDto.profileImageUrl) {
+      avatarImage = [updateUserDto.profileImageUrl];
+    }
+
+    return this.userService.update(userId, updateUserDto, avatarImage?.[0]);
   }
 
   // 유저 정보 변경, ADMIN

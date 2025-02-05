@@ -1,14 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
-import { ModalRootProps } from "@/types/modal";
 import { PencilLine, X } from "lucide-react";
 import { UnderlineInput } from "../ui/underlineInput";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { userApi } from "@/app/_api/models/user";
 import { userValidation } from "@/utils/validators/userValidation";
 import Image from "next/image";
 import { PositionSelect } from "../user/PositionSelect";
-import { UpdateUserDto, ValidationErrors } from "@/types/user";
+import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,20 +17,26 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useUpdateUser } from "@/query/mutations/user";
 
-export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: userApi.getUser,
-  });
+export interface MyPageModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user: User;
+}
 
-  const queryClient = useQueryClient();
+export default function MyPageModal({
+  isOpen,
+  onClose,
+  user,
+}: MyPageModalProps) {
+  const { mutate: updateUser } = useUpdateUser();
 
   const [formData, setFormData] = useState<UpdateUserDto>({
-    name: "",
-    mainPosition: "",
-    githubUrl: null,
-    profileImage: "",
+    name: user.name,
+    mainPosition: user.mainPosition,
+    githubUrl: user.githubUrl,
+    profileImageUrl: user.log.profileImage,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -45,17 +48,6 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
     newPassword: "",
     confirmPassword: "",
   });
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name,
-        mainPosition: user.mainPosition,
-        githubUrl: user.githubUrl,
-        profileImage: user.log.profileImage,
-      });
-    }
-  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -110,8 +102,12 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
         return;
       }
       setFileError("");
-      const fileUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, profileImage: fileUrl });
+
+      setFormData({
+        ...formData,
+        profileImage: file,
+        profileImageUrl: undefined,
+      });
     }
   };
 
@@ -124,8 +120,23 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
     }
 
     try {
-      await userApi.updateUser(formData);
-      await queryClient.invalidateQueries({ queryKey: ["user"] });
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("mainPosition", formData.mainPosition);
+
+      if (formData.githubUrl) {
+        formDataToSend.append("githubUrl", formData.githubUrl);
+      }
+
+      // file형식으로 전송
+      if (formData.profileImage) {
+        formDataToSend.append("profileImage", formData.profileImage);
+      } else if (formData.profileImageUrl) {
+        // URL형식으로 전송
+        formDataToSend.append("profileImageUrl", formData.profileImageUrl);
+      }
+      updateUser(formDataToSend);
+
       onClose();
       alert("수정이 완료되었습니다.");
     } catch (err) {
@@ -143,7 +154,7 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
         name: user.name,
         mainPosition: user.mainPosition,
         githubUrl: user.githubUrl,
-        profileImage: user.log.profileImage,
+        profileImageUrl: user.log.profileImage,
       });
     }
 
@@ -175,19 +186,23 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
         <div className="basis-1/4">
           <div className=" h-20 bg-custom-gray rounded-tl-2xl p-6">
             <div className="relative ml-6 mr-10">
-              {formData.profileImage && (
+              {formData.profileImage ? (
                 <Image
-                  src={
-                    typeof formData.profileImage === "string"
-                      ? formData.profileImage
-                      : ""
-                  }
+                  src={URL.createObjectURL(formData.profileImage)}
                   alt="프로필"
                   width={150}
                   height={150}
-                  className="justify-self-center w-20 h-20 rounded-2xl bg-custom-main"
+                  className="justify-self-center w-20 h-20 min-w-20 min-h-20 rounded-2xl bg-custom-main"
                 />
-              )}
+              ) : formData.profileImageUrl ? (
+                <Image
+                  src={formData.profileImageUrl}
+                  alt="프로필"
+                  width={150}
+                  height={150}
+                  className="justify-self-center w-20 h-20 min-w-20 min-h-20 rounded-2xl bg-custom-main"
+                />
+              ) : null}
               <label
                 htmlFor="profile-image-input"
                 className="absolute right-0 top-3/4 border-2 border-white h-8 w-8 rounded-full bg-custom-smallText flex items-center justify-center cursor-pointer hover:bg-gray-600"
@@ -213,7 +228,7 @@ export default function MyPageModal({ isOpen, onClose }: ModalRootProps) {
             <Modal.Title className="text-2xl font-bold mb-0">
               마이페이지
             </Modal.Title>
-            <X onClick={onClose} className="cursor-pointer mr-4" />
+            <X onClick={handleClose} className="cursor-pointer mr-4" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 p-6 mr-4">
