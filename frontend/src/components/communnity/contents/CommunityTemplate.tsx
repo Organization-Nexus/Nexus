@@ -1,3 +1,4 @@
+import CommunityForm from "@/components/modal/CommunityForm";
 import {
   Carousel,
   CarouselContent,
@@ -9,15 +10,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import FileItem from "@/components/utils/FileItem";
 import ImageModal from "@/components/utils/ImageModal";
 import { isImageFile } from "@/components/utils/isImageFile";
-import { CommunityTemplateProps } from "@/types/community";
+import { Community, CommunityTemplateProps, Notice } from "@/types/community";
 import { convertToKST } from "@/utils/convertToKST";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function CommunityTemplate({
+  onClose,
   type,
   items,
   projectUser,
+  projectId,
 }: CommunityTemplateProps) {
   const [expandedFeed, setExpandedFeed] = useState<null | string | number>(
     null
@@ -25,6 +28,9 @@ export default function CommunityTemplate({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [showImportantOnly, setShowImportantOnly] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<
+    Community | Notice | undefined
+  >(undefined);
 
   const handleToggleExpand = (itemId: string | number) => {
     setExpandedFeed((prev) => (prev === itemId ? null : itemId));
@@ -47,6 +53,11 @@ export default function CommunityTemplate({
   const filteredItems = showImportantOnly
     ? items.filter((item) => "isImportant" in item && item.isImportant)
     : items;
+
+  const handleEditClick = (item: Community | Notice) => {
+    setSelectedItem(item);
+    onClose();
+  };
 
   return (
     <div>
@@ -102,9 +113,13 @@ export default function CommunityTemplate({
                     </div>
                     {projectUser.id === item.author.projectUserId && (
                       <div className="flex space-x-2">
-                        <button className="text-gray-500 hover:underline text-sm">
+                        <button
+                          className="text-gray-500 hover:underline text-sm"
+                          onClick={() => handleEditClick(item)}
+                        >
                           수정
                         </button>
+
                         <button className="text-gray-500 hover:underline text-sm">
                           삭제
                         </button>
@@ -196,6 +211,28 @@ export default function CommunityTemplate({
         imageUrl={selectedImage}
         onClose={handleCloseModal}
       />
+
+      {selectedItem && (
+        <CommunityForm
+          isOpen={true}
+          onClose={() => setSelectedItem(undefined)}
+          type={type}
+          feedId={selectedItem.id}
+          projectId={projectId}
+          mode="update"
+          updateData={{
+            title: selectedItem.title,
+            content: selectedItem.content,
+            community_files: selectedItem.community_files,
+            isImportant:
+              "isImportant" in selectedItem
+                ? selectedItem.isImportant
+                  ? "true"
+                  : "false"
+                : undefined,
+          }}
+        />
+      )}
     </div>
   );
 }

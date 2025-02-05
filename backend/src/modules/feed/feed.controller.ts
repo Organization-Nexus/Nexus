@@ -19,7 +19,6 @@ import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
 import { ProjectUserService } from '../project-user/project-user.service';
 import { CommunityService } from '../community/community.service';
-import { NoPermissionForNoticeException } from './exception/feed-exception';
 import { CreateCommunityDto } from './dto/create-community.dto';
 
 @Controller('feed')
@@ -42,14 +41,12 @@ export class FeedController {
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
     const userId = req.user.id;
-    const projectUser =
-      await this.projectUserService.validateProjectMemberByUserId(
-        projectId,
-        userId,
-      );
-    const community =
+    const projectUser = await this.projectUserService.getProjectUser(
+      projectId,
+      userId,
+    );
+    const communityId =
       await this.communityService.getCommunityByProjectId(projectId);
-
     let communityFiles = null;
     if (files && files.length > 0) {
       communityFiles = await this.fileService.handleFileUpload({
@@ -59,11 +56,15 @@ export class FeedController {
         category: Category.COMMUNITY,
       });
     }
+
+    const isNotice = false;
+
     return await this.feedService.createCommunity(
       createCommunityDto,
-      communityFiles,
-      community,
       projectUser,
+      communityId,
+      communityFiles,
+      isNotice,
     );
   }
 
@@ -79,11 +80,13 @@ export class FeedController {
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
     const userId = req.user.id;
-    const { id: projectUserId } =
+
+    const projectUserId =
       await this.projectUserService.validateProjectMemberByUserId(
-        userId,
         projectId,
+        userId,
       );
+
     await this.feedService.validateCommunityOwner(feedId, projectUserId);
     let communityFiles = null;
     if (files && files.length > 0) {
@@ -95,8 +98,8 @@ export class FeedController {
       });
     }
     return await this.feedService.updateCommunity(
-      feedId,
       updateCommunityDto,
+      feedId,
       communityFiles,
     );
   }
@@ -110,12 +113,12 @@ export class FeedController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    const { id: projectUserId } =
-      await this.projectUserService.validateProjectMemberByUserId(
-        userId,
-        projectId,
-      );
-    await this.feedService.validateCommunityOwner(feedId, projectUserId);
+
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+
     await this.feedService.deleteFeed(feedId);
     return {
       message: `Feed with ID ${feedId} has been successfully deleted.👋`,
@@ -123,43 +126,43 @@ export class FeedController {
   }
 
   // POST /api/feed/create-notice/:projectId
-  @Post('create-notice/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  @UseInterceptors(FilesInterceptor('community_files'))
-  async createNotice(
-    @Body() createCommunityDto: CreateCommunityDto,
-    @Param('projectId') projectId: number,
-    @Req() req: UserPayload,
-    @UploadedFiles() files?: Express.Multer.File[],
-  ) {
-    const userId = req.user.id;
-    const projectUser =
-      await this.projectUserService.validateProjectMemberByUserId(
-        projectId,
-        userId,
-      );
-    if (projectUser.position !== 'PM' && !projectUser.is_sub_admin) {
-      throw new NoPermissionForNoticeException();
-    }
-    const community =
-      await this.communityService.getCommunityByProjectId(projectId);
-    let community_file = null;
-    if (files && files.length > 0) {
-      community_file = await this.fileService.handleFileUpload({
-        files,
-        userId: req.user.id,
-        projectId,
-        category: Category.COMMUNITY,
-      });
-    }
-    const isNotice = true;
+  // @Post('create-notice/:projectId')
+  // @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  // @UseInterceptors(FilesInterceptor('community_files'))
+  // async createNotice(
+  //   @Body() createCommunityDto: CreateCommunityDto,
+  //   @Param('projectId') projectId: number,
+  //   @Req() req: UserPayload,
+  //   @UploadedFiles() files?: Express.Multer.File[],
+  // ) {
+  //   const userId = req.user.id;
+  //   const projectUser =
+  //     await this.projectUserService.validateProjectMemberByUserId(
+  //       projectId,
+  //       userId,
+  //     );
+  //   if (projectUser.position !== 'PM' && !projectUser.is_sub_admin) {
+  //     throw new NoPermissionForNoticeException();
+  //   }
+  //   const community =
+  //     await this.communityService.getCommunityByProjectId(projectId);
+  //   let community_file = null;
+  //   if (files && files.length > 0) {
+  //     community_file = await this.fileService.handleFileUpload({
+  //       files,
+  //       userId: req.user.id,
+  //       projectId,
+  //       category: Category.COMMUNITY,
+  //     });
+  //   }
+  //   const isNotice = true;
 
-    return await this.feedService.createCommunity(
-      createCommunityDto,
-      community_file,
-      community,
-      projectUser,
-      isNotice,
-    );
-  }
+  //   return await this.feedService.createCommunity(
+  //     createCommunityDto,
+  //     community_file,
+  //     community,
+  //     projectUser,
+  //     isNotice,
+  //   );
+  // }
 }
