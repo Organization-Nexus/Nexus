@@ -1,4 +1,5 @@
 import { UserRank, UserStatus } from "@/enum/user.enum";
+import { ProjectUser } from "./project-user";
 
 // CommunityTab 타입 정의
 export type CommunityTab = {
@@ -9,7 +10,7 @@ export type CommunityTab = {
 
 // Community Information
 export interface Community {
-  id: number;
+  id: string;
   title: string;
   content: string;
   community_files?: string[];
@@ -17,15 +18,17 @@ export interface Community {
   author: Author;
 }
 
-export interface CreateCommunity {
+// Create Community
+interface CommunityFormData {
   title: string;
   content: string;
-  community_files?: File[];
-  author: Author;
+  community_files: (File | string)[];
+  isImportant?: string;
 }
 
 // Community Author Information
 export interface Author {
+  projectUserId: number;
   position: string;
   user: {
     name: string;
@@ -41,15 +44,20 @@ export interface Author {
 export interface Notice extends Community {
   isImportant: boolean;
 }
-
 // Props: CommunityClientTaps
 export interface CommunityClientTapsProps {
   projectId: string;
+  projectUser: ProjectUser;
   feeds: Community[];
   notices: Notice[];
 }
 
 export interface CommunityTemplateProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onEdit?: (label: string) => void;
   type: string;
   items: (Community | Notice)[];
+  projectUser: ProjectUser;
+  projectId: string;
 }

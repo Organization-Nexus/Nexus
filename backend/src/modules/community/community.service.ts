@@ -18,11 +18,12 @@ export class CommunityService {
     return await this.communityRepository.save(community);
   }
 
-  async getCommunityByProjectId(projectId: number): Promise<Community> {
+  // 👋 단순 존재 여부 확인 -> community.id
+  async getCommunityByProjectId(projectId: number): Promise<number> {
     const community = await this.communityRepository.findOneBy({
       id: projectId,
     });
-    return community;
+    return community.id;
   }
 
   async getFeedsOrNoticesByProjectId(
@@ -48,6 +49,7 @@ export class CommunityService {
           isImportant: feed.isImportant,
           createdAt: feed.createdAt,
           author: {
+            projectUserId: feed.author.id,
             position: feed.author.position,
             user: {
               name: feed.author.user.name,

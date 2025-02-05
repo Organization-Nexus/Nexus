@@ -8,7 +8,7 @@ import { ProjectIdProps } from "@/types/project";
 export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const projects = await projectApi.getProjectById(projectId);
-  const projectUsers = await projectUserApi.getProjectUser(projectId);
+  const projectUsers = await projectUserApi.getProjectUsers(projectId);
 
   return (
     <div className="h-full flex justify-center items-center">

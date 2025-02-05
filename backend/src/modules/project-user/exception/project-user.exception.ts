@@ -16,7 +16,7 @@ export class UserNotFoundException extends CustomHttpException {
 export class YourNotProjectMemberException extends CustomHttpException {
   constructor(userId: number, projectId: number) {
     super(
-      `사용자 ${userId}은/는 프로젝트 ${projectId}의 멤버가 아닙니다. 🥲`,
+      `사용자 ${userId}은 프로젝트 ${projectId}의 멤버가 아닙니다. 🥲`,
       HttpStatus.FORBIDDEN,
     );
   }

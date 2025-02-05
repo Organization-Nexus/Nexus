@@ -6,12 +6,10 @@ import { ProjectUser } from './entites/project-user.entity';
 import { Project } from '../project/entities/project.entity';
 import { User } from '../user/entities/user.entity';
 import {
-  AlreadyProjectMemberException,
   ProjectNotFoundException,
   UserNotFoundException,
   YourNotProjectMemberException,
 } from './exception/project-user.exception';
-import { Bool } from 'aws-sdk/clients/clouddirectory';
 
 @Injectable()
 export class ProjectUserService {
@@ -29,53 +27,78 @@ export class ProjectUserService {
   async createProjectUser(
     projectUserDto: ProjectUserDto,
   ): Promise<ProjectUser> {
-    const { projectId, userId, position, is_sub_admin } = projectUserDto;
-    const project = await this.projectRepository.findOneBy({ id: projectId });
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!project) {
-      throw new ProjectNotFoundException(projectId);
-    }
-    if (!user) {
-      throw new UserNotFoundException(userId);
-    }
+    const { projectId, userId } = projectUserDto;
+
+    const [project, user] = await Promise.all([
+      this.projectRepository.findOne({ where: { id: projectId } }),
+      this.userRepository.findOne({ where: { id: userId } }),
+    ]);
+
+    if (!project) throw new ProjectNotFoundException(projectId);
+    if (!user) throw new UserNotFoundException(userId);
+
     return this.projectUserRepository.save({
+      ...projectUserDto,
       project,
       user,
-      position,
-      is_sub_admin,
     });
   }
 
+  // 👋 단순 존재 여부 확인 -> projectUser.id
   async validateProjectMemberByUserId(
     projectId: number,
     userId: number,
-  ): Promise<ProjectUser> {
+  ): Promise<number> {
     const projectUser = await this.projectUserRepository.findOne({
       where: { project: { id: projectId }, user: { id: userId } },
     });
     if (!projectUser) {
       throw new YourNotProjectMemberException(userId, projectId);
     }
-    return projectUser;
+    return projectUser.id;
   }
 
-  async validateProjectMemberByEmail(
+  // 프로젝트 멤버인지 확인 -> True면 에러
+  async validateIsUserAleadyMember(
     projectId: number,
-    email: string,
-  ): Promise<Boolean> {
-    const projectUser = await this.projectUserRepository.findOne({
-      where: { user: { email }, project: { id: projectId } },
+    userId: number,
+  ): Promise<void> {
+    const existingProjectUser = await this.projectUserRepository.findOne({
+      where: { project: { id: projectId }, user: { id: userId } },
     });
-    if (projectUser) {
-      throw new AlreadyProjectMemberException(email, projectId);
+    if (existingProjectUser) {
+      throw new Error('이 사용자는 이미 프로젝트 멤버입니다.');
     }
-    return true;
   }
 
+  // 👋 상세 정보 -> ProjectUser
+  async getProjectUser(
+    projectId: number,
+    userId: number,
+  ): Promise<ProjectUser> {
+    const projectUserId = await this.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.projectUserRepository.findOneBy({ id: projectUserId });
+  }
+
+  // 프로젝트의 모든 멤버 -> ProjectUser[]
   async getProjectUsers(projectId: number): Promise<ProjectUser[]> {
     return await this.projectUserRepository.find({
       where: { project: { id: projectId } },
       relations: ['user', 'user.log'],
     });
+  }
+
+  // 관리자 권한 확인
+  async checkAdminPermissions(
+    projectId: number,
+    userId: number,
+  ): Promise<void> {
+    const projectUser = await this.getProjectUser(projectId, userId);
+    if (!projectUser.is_sub_admin) {
+      throw new Error('권한이 없습니다.');
+    }
   }
 }

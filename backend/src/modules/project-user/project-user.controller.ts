@@ -11,10 +11,9 @@ import {
 } from '@nestjs/common';
 import { ProjectUserService } from './project-user.service';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
-import { UserPayload } from 'src/types/user-payload';
 import { UserService } from '../user/user.service';
-import { CreatePronectUserDto } from './dto/create-project-user.dto';
-import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
+import { UserPayload } from 'src/types/user-payload';
+import { ProjectUserDto } from './dto/project-user.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('project-user')
@@ -26,45 +25,55 @@ export class ProjectUserController {
 
   // POST /api/project-user/invite/:projectId
   @Post('invite/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async inviteUserToProject(
-    @Body() createProjectUserDto: CreatePronectUserDto,
+    @Body() projectUserDto: Omit<ProjectUserDto, 'projectId' | 'userId'>,
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
   ) {
+    // 권한 확인
     const organizerId = req.user.id;
-    const projectUser =
-      await this.projectUserService.validateProjectMemberByUserId(
-        organizerId,
-        projectId,
-      );
-    if (!projectUser.is_sub_admin) {
-      throw new Error('권한이 없습니다.');
-    }
-    await this.projectUserService.validateProjectMemberByEmail(
+    await this.projectUserService.checkAdminPermissions(projectId, organizerId);
+
+    // 초대 시작
+    const invitedUser = await this.userService.findByEmail(
+      projectUserDto.email,
+    );
+    await this.projectUserService.validateIsUserAleadyMember(
       projectId,
-      createProjectUserDto.email,
+      invitedUser.id,
     );
-    let invitedUser = await this.userService.findByEmail(
-      createProjectUserDto.email,
-    );
+
+    // 저장
     const newProjectUser = await this.projectUserService.createProjectUser({
+      ...projectUserDto,
       projectId,
       userId: invitedUser.id,
-      position: createProjectUserDto.position,
-      is_sub_admin: createProjectUserDto.is_sub_admin,
     });
 
     return {
-      message: `User with ID ${invitedUser.id} has been successfully invited to project with ID ${projectId}.`,
+      message: `User with ID ${invitedUser.id} has been successfully invited to project with ID ${projectId}. 🎉`,
       projectUser: newProjectUser,
     };
   }
 
   // GET /api/project-user/get-project-users/:projectId
   @Get('get-project-users/:projectId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async getProjectUsers(@Param('projectId') projectId: number) {
     return await this.projectUserService.getProjectUsers(projectId);
+  }
+
+  // GET /api/project-user/get-project-user/:projectId
+  @Get('get-project-user/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getProjectUser(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    return await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      req.user.id,
+    );
   }
 }

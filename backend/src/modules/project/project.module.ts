@@ -7,11 +7,13 @@ import { ProjectUserModule } from '../project-user/project-user.module';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
 import { CommunityModule } from '../community/community.module';
 import { FileModule } from '../file/file.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Project, ProjectUser]),
     CommunityModule,
+    UserModule,
     FileModule,
     ProjectUserModule,
   ],

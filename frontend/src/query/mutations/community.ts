@@ -1,16 +1,16 @@
 import { communityApi } from "@/app/_api/models/community";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { communityKeys } from "../key";
-import { Community, Notice } from "@/types/community";
 
-// 공지사항 생성 후 목록 다시 불러오기
+// 공지사항 생성
 export const useCreateNotice = (projectId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (noticeData: Notice) =>
-      communityApi.createNoticeByProjectId(projectId, noticeData),
+    mutationFn: (noticeData: FormData) => {
+      return communityApi.createNoticeByProjectId(projectId, noticeData);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: communityKeys.NOTICE_LIST_KEY,
       });
     },
@@ -20,19 +20,41 @@ export const useCreateNotice = (projectId: string) => {
   });
 };
 
-// 피드 생성 후 목록 다시 불러오기
+// 피드 생성
 export const useCreateFeed = (projectId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (feedData: Community) =>
+    mutationFn: (feedData: FormData) =>
       communityApi.createFeedByProjectId(projectId, feedData),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.refetchQueries({
         queryKey: communityKeys.FEED_LIST_KEY,
       });
     },
     onError: (error) => {
       console.error("피드 생성 실패", error);
+    },
+  });
+};
+
+// 커뮤니티 수정
+export const useUpdateCommunity = (feedId: string, projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (communityData: FormData) =>
+      communityApi.updateCommunityByFeedIdAndProjectId(
+        feedId,
+        projectId,
+        communityData
+      ),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: communityKeys.NOTICE_LIST_KEY,
+      });
+    },
+    onError: (error: any) => {
+      console.error("공지사항 수정 실패", error.response?.data || error);
+      alert(`서버 에러: ${JSON.stringify(error.response?.data)}`);
     },
   });
 };

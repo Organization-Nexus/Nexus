@@ -2,22 +2,20 @@ import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
 import { project_image } from "@/data/project_image";
-import { Project } from "@/types/project";
+import { CreateProject } from "@/types/project";
 import { useCreateProject } from "@/query/mutations/project";
 
 export default function CreateProjectModal({
   isOpen,
   onClose,
 }: ModalRootProps) {
-  const { mutate: createProject } = useCreateProject();
-  const [formData, setFormData] = useState<Project>({
-    id: 0,
+  const createProjectMutation = useCreateProject();
+  const [formData, setFormData] = useState<CreateProject>({
     title: "",
     description: "",
     start_date: new Date().toISOString().split("T")[0],
     end_date: "",
     project_image: project_image[0],
-    projectUsers: [],
   });
 
   const [titleError, setTitleError] = useState<string>("");
@@ -45,6 +43,27 @@ export default function CreateProjectModal({
       }
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+      let updatedData = { ...prev, [name]: value };
+      if (name === "start_date") {
+        if (new Date(value) > new Date(prev.end_date)) {
+          updatedData.end_date = value;
+        }
+      }
+      if (name === "end_date") {
+        if (new Date(value) < new Date(prev.start_date)) {
+          return prev;
+        }
+      }
+      return updatedData;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +124,7 @@ export default function CreateProjectModal({
       }
 
       formDataToSend.append("project_image", projectImage);
-      createProject(formDataToSend);
+      createProjectMutation.mutate(formDataToSend);
       onClose();
     } catch (error) {
       console.error("Error creating project:", error);
@@ -188,7 +207,7 @@ export default function CreateProjectModal({
                 type="date"
                 name="start_date"
                 value={formData.start_date}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 required
               />
             </div>
@@ -204,7 +223,7 @@ export default function CreateProjectModal({
                 type="date"
                 name="end_date"
                 value={formData.end_date}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 min={formData.start_date}
                 required
               />
@@ -292,8 +311,12 @@ export default function CreateProjectModal({
             <Modal.Button variant="secondary" onClick={onClose}>
               닫기
             </Modal.Button>
-            <Modal.Button variant="primary" onClick={() => handleSubmit()}>
-              생성
+            <Modal.Button
+              variant="primary"
+              onClick={() => handleSubmit()}
+              disabled={createProjectMutation.isPending}
+            >
+              {createProjectMutation.isPending ? "생성 중..." : "생성"}
             </Modal.Button>
           </div>
         </form>

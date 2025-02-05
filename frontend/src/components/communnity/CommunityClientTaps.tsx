@@ -11,9 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import CreateCommunity from "../modal/CreateCommunity";
 import { CommunityClientTapsProps } from "@/types/community";
 import { useFeedList, useNoticeList } from "@/query/queries/community";
+import CommunityForm from "../modal/CommunityForm";
 
 const tabButtonStyle =
   "flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors";
@@ -28,11 +28,12 @@ const tabs = [
 
 export default function CommunityClientTabs({
   projectId,
+  projectUser,
   feeds: initialFeeds,
   notices: initialNotices,
 }: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState<string>("all");
-  const [isCreateCommunityOpen, setIsCreateCommunityOpen] = useState(false);
+  const [isCommunityFormOpen, setisCommunityFormOpen] = useState(false);
   const [createType, setCreateType] = useState<string | null>(null);
 
   const { data: notices } = useNoticeList(projectId, initialNotices);
@@ -42,23 +43,15 @@ export default function CommunityClientTabs({
     setSelectedTab(tabKey);
   };
 
-  const openCreateCommunity = (key: string) => {
+  const openCommunityForm = (key: string) => {
     setCreateType(key);
-    setIsCreateCommunityOpen(true);
+    setisCommunityFormOpen(true);
   };
 
-  const closeCreateCommunity = () => {
-    setIsCreateCommunityOpen(false);
+  const closeCommunityForm = () => {
+    setisCommunityFormOpen(false);
     setCreateType(null);
   };
-
-  const items = [
-    ...feeds.map((feed) => ({ community: feed, type: "feed" as "feed" })),
-    ...notices.map((notice) => ({
-      community: notice,
-      type: "notice" as "notice",
-    })),
-  ];
 
   return (
     <div className="flex justify-center w-full p-8">
@@ -93,7 +86,15 @@ export default function CommunityClientTabs({
                 .map((tab) => (
                   <DropdownMenuItem
                     key={tab.key}
-                    onClick={() => openCreateCommunity(tab.label)}
+                    onClick={() => openCommunityForm(tab.label)}
+                    disabled={
+                      tab.label === "공지사항" && !projectUser.is_sub_admin
+                    }
+                    className={
+                      tab.label === "공지사항" && !projectUser.is_sub_admin
+                        ? "text-gray-500"
+                        : ""
+                    }
                   >
                     {tab.icon}
                     {tab.label}
@@ -108,21 +109,38 @@ export default function CommunityClientTabs({
         <div className="mt-8">
           {selectedTab === "all" && <div>전체보기</div>}
           {selectedTab === "notice" && (
-            <CommunityTemplate type="notice" items={notices} />
+            <CommunityTemplate
+              isOpen={isCommunityFormOpen}
+              onClose={closeCommunityForm}
+              type="공지사항"
+              items={notices}
+              projectUser={projectUser}
+              projectId={projectId}
+              onEdit={openCommunityForm}
+            />
           )}
           {selectedTab === "feed" && (
-            <CommunityTemplate type="feed" items={feeds} />
+            <CommunityTemplate
+              isOpen={isCommunityFormOpen}
+              onClose={closeCommunityForm}
+              type="피드"
+              items={feeds}
+              projectUser={projectUser}
+              projectId={projectId}
+              onEdit={openCommunityForm}
+            />
           )}
           {selectedTab === "vote" && <div>투표 콘텐츠</div>}
         </div>
       </div>
 
-      {isCreateCommunityOpen && createType && (
-        <CreateCommunity
-          isOpen={isCreateCommunityOpen}
-          onClose={closeCreateCommunity}
+      {isCommunityFormOpen && createType && (
+        <CommunityForm
+          isOpen={isCommunityFormOpen}
+          onClose={closeCommunityForm}
           type={createType}
           projectId={projectId}
+          mode="create"
         />
       )}
     </div>
