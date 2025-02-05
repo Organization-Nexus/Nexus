@@ -128,11 +128,11 @@ export default function MyPageModal({
         formDataToSend.append("githubUrl", formData.githubUrl);
       }
 
-      // file형식으로 전송
+      // 새 이미지 file형식으로 전송
       if (formData.profileImage) {
         formDataToSend.append("profileImage", formData.profileImage);
       } else if (formData.profileImageUrl) {
-        // URL형식으로 전송
+        // 기존 이미지 URL형식으로 전송
         formDataToSend.append("profileImageUrl", formData.profileImageUrl);
       }
       updateUser(formDataToSend);
