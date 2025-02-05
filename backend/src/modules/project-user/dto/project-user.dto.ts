@@ -9,7 +9,7 @@ import { ProjectPosition } from '../entites/project-user.entity';
 
 export class ProjectUserDto {
   @IsString()
-  projectId?: number;
+  projectId: number;
 
   @IsString()
   userId: number;
