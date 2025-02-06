@@ -63,6 +63,16 @@ export default function ForgotPasswordForm() {
     return () => clearInterval(timer);
   }, [codeTimeout]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (message.text) {
+      timer = setTimeout(() => {
+        setMessage({ type: "", text: "" });
+      }, 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [message.text]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -76,11 +86,13 @@ export default function ForgotPasswordForm() {
     if (!message.text) return null;
     return (
       <div
-        className={`p-3 rounded-lg text-sm whitespace-pre-line ${
-          message.type === "error"
-            ? "bg-red-50 text-red-500"
-            : "bg-green-50 text-green-500"
-        }`}
+        className={`p-3 rounded-lg text-sm whitespace-pre-line 
+                  transition-opacity duration-300 ease-in-out
+                  ${
+                    message.type === "error"
+                      ? "bg-red-50 text-red-500"
+                      : "bg-green-50 text-green-500"
+                  }`}
       >
         {message.text}
       </div>
@@ -129,7 +141,7 @@ export default function ForgotPasswordForm() {
         text: SUCCESS_MESSAGES.CODE_SENT,
       });
       setResendTimeout(VALIDATION_CONSTANTS.RESEND_TIMEOUT); // 재전송 제한 1분
-      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 인증코드 유효시간 3분
+      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 인증코드 유효시간 5분
       setStep(2);
     } catch (error: any) {
       if (error.response?.status === 429) {
@@ -162,7 +174,7 @@ export default function ForgotPasswordForm() {
         type: "success",
         text: SUCCESS_MESSAGES.CODE_RESENT,
       });
-      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 3분
+      setCodeTimeout(VALIDATION_CONSTANTS.CODE_TIMEOUT); // 5분
       setResendTimeout(VALIDATION_CONSTANTS.RESEND_TIMEOUT); // 1분
     } catch (error) {
       setMessage({

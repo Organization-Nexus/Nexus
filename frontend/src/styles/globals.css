@@ -77,4 +77,13 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none !important; /* 강제 적용 */
   }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 5000s;
+    -webkit-text-fill-color: inherit !important;
+    background-color: transparent !important;
+  }
 }

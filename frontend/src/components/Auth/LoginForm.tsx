@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { loginValidation } from "@/utils/validators/userValidation";
 import { authApi } from "@/app/_api/models/auth";
@@ -18,11 +18,20 @@ export default function LoginFormComponent() {
   const [errors, setErrors] = useState({
     email: "",
     password: "",
-    global: "",
   });
+  const [serverError, setServerError] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (serverError) {
+      const timer = setTimeout(() => {
+        setServerError("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [serverError]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -52,7 +61,7 @@ export default function LoginFormComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({ email: "", password: "", global: "" });
+    setErrors({ email: "", password: "" });
 
     if (!validateForm()) {
       return;
@@ -73,10 +82,7 @@ export default function LoginFormComponent() {
       const serverErrorMessage =
         error.response?.data?.message || "로그인에 실패했습니다.";
 
-      setErrors((prev) => ({
-        ...prev,
-        global: serverErrorMessage,
-      }));
+      setServerError(serverErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +91,15 @@ export default function LoginFormComponent() {
   return (
     <form onSubmit={handleSubmit}>
       <div className="space-y-6">
-        {errors.global && (
-          <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm">
-            {errors.global}
+        {serverError && (
+          <div
+            className="bg-red-50 text-red-500 p-3  rounded-lg text-sm 
+                  transition-all duration-500 ease-in-out 
+                  opacity-100 animate-in fade-in "
+          >
+            {serverError}
           </div>
         )}
-
         <div className="space-y-2">
           <Input
             id="email"

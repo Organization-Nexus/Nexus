@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterRequest } from "@/types/auth";
 import { userValidation } from "@/utils/validators/userValidation";
-import { ValidationErrors } from "@/types/User";
+import { ValidationErrors } from "@/types/user";
 import { authApi } from "@/app/_api/models/auth";
 import { UnderlineInput } from "../ui/underlineInput";
 import { PositionSelect } from "../user/PositionSelect";
@@ -23,6 +23,7 @@ export default function RegisterFormComponent() {
   });
   const [selectedPositions, setSelectedPositions] = useState<string>("");
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [serverError, setServerError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const registerValidation = {
@@ -32,6 +33,16 @@ export default function RegisterFormComponent() {
     phoneNumber: userValidation.phoneNumber,
     githubUrl: userValidation.githubUrl,
   } as const;
+
+  useEffect(() => {
+    if (serverError) {
+      const timer = setTimeout(() => {
+        setServerError("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [serverError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,6 +58,10 @@ export default function RegisterFormComponent() {
       ...prev,
       [name]: validationError,
     }));
+  };
+  const handlePositionSelect = (position: string) => {
+    setSelectedPositions(position);
+    setErrors((prev) => ({ ...prev, mainPosition: undefined }));
   };
 
   const validateForm = (): boolean => {
@@ -79,15 +94,13 @@ export default function RegisterFormComponent() {
         mainPosition: selectedPositions,
       };
 
-      const response = await authApi.register(signupData);
+      await authApi.register(signupData);
       alert("회원가입이 완료되었습니다.");
       router.push("/login");
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        submit:
-          error instanceof Error ? error.message : "회원가입에 실패했습니다.",
-      }));
+    } catch (error: any) {
+      const serverErrorMessage =
+        error.response?.data?.message || "회원가입에 실패했습니다.";
+      setServerError(serverErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -95,6 +108,15 @@ export default function RegisterFormComponent() {
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
+      {serverError && (
+        <div
+          className="bg-red-50 text-red-500 p-3  rounded-lg text-sm 
+                  transition-all duration-500 ease-in-out 
+                  opacity-100 animate-in fade-in "
+        >
+          {serverError}
+        </div>
+      )}
       <div>
         <UnderlineInput
           placeholder="이름"
@@ -162,7 +184,7 @@ export default function RegisterFormComponent() {
         <p className="mb-3 px-3 text-muted-foreground text-base md:text-sm">
           주포지션 선택
         </p>
-        <PositionSelect onSelectPosition={setSelectedPositions} />
+        <PositionSelect onSelectPosition={handlePositionSelect} />
         {errors.mainPosition && (
           <p className="text-red-500 text-sm mt-1">{errors.mainPosition}</p>
         )}

@@ -10,7 +10,7 @@ export const VALIDATION_CONSTANTS = {
   CODE: {
     LENGTH: 6,
   },
-  CODE_TIMEOUT: 180,
+  CODE_TIMEOUT: 300,
   RESEND_TIMEOUT: 60,
   REGEX: {
     EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,

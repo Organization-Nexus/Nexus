@@ -7,7 +7,11 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import {
   EmailAlreadyExistsException,
+  InvalidEmailFormatException,
+  InvalidGithubUrlException,
+  InvalidPhoneNumberException,
   LoginFailedException,
+  NameLengthException,
 } from './exception/auth.exception';
 import { UserLog } from '../user/entities/user-log.entity';
 import { plainToClass } from 'class-transformer';
@@ -31,7 +35,7 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async LoginValidate(email: string, password: string): Promise<any> {
     const user = await this.userRepository.findOneBy({ email });
 
     // 이메일 or 비밀번호 불일치
@@ -119,10 +123,34 @@ export class AuthService {
       githubUrl,
       role = 'USER', // 기본값 설정
     } = dto;
-    const existingUser = await this.userRepository.findOneBy({ email });
 
+    // 이메일 중복 체크
+    const existingUser = await this.userRepository.findOneBy({ email });
     if (existingUser) {
       throw new EmailAlreadyExistsException(email);
+    }
+    // 이메일 형식 검증
+    if (!InvalidEmailFormatException.isValid(email)) {
+      throw new InvalidEmailFormatException();
+    }
+    // // 비밀번호 형식 검증
+    // if (!InvalidPasswordFormatException.isValid(password)) {
+    //   throw new InvalidPasswordFormatException();
+    // }
+    // 이름 길이 검증
+    if (
+      name.length < NameLengthException.getMinLength() ||
+      name.length > NameLengthException.getMaxLength()
+    ) {
+      throw new NameLengthException();
+    }
+    // 전화번호 형식 검증
+    if (!InvalidPhoneNumberException.isValid(phoneNumber)) {
+      throw new InvalidPhoneNumberException();
+    }
+    // Github URL 검증 (있는 경우에만)
+    if (githubUrl && !InvalidGithubUrlException.isValid(githubUrl)) {
+      throw new InvalidGithubUrlException();
     }
 
     dto.password = await bcrypt.hash(password, 10);
