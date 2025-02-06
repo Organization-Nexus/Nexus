@@ -130,39 +130,34 @@ export default function CommunityForm({
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
 
-      if (newFiles.length > 0) {
-        newFiles.forEach((file) => {
-          formDataToSend.append("community_files", file as Blob);
-        });
-      }
+      // 새 파일 업로드
+      newFiles.forEach((file) => {
+        formDataToSend.append("community_files", file as Blob);
+      });
+
+      // 기존 파일 URL을 유지하는 경우
+      existingFiles.forEach((file) => {
+        if (typeof file === "string") {
+          formDataToSend.append("community_files", file);
+        }
+      });
 
       if (mode === "update") {
-      }
-
-      if (type === "공지사항") {
-        formDataToSend.append(
-          "isImportant",
-          formData.isImportant ? "true" : "false"
-        );
-      }
-
-      console.log("✅ Form Data to Send:");
-      for (let pair of formDataToSend.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
-      }
-
-      console.log("✅ Type", type);
-
-      if (mode === "create") {
-        type === "공지사항"
-          ? createNoticeMutation.mutate(formDataToSend)
-          : createFeedMutation.mutate(formDataToSend);
-      } else {
         updateCommunityMutation.mutate(formDataToSend, {
           onError: (error: any) => {
-            console.error("공지사항 수정 실패", error.response?.data || error);
+            console.error("수정 실패", error.response?.data || error);
           },
         });
+      } else {
+        if (type === "공지사항") {
+          formDataToSend.append(
+            "isImportant",
+            formData.isImportant ? "true" : "false"
+          );
+          createNoticeMutation.mutate(formDataToSend);
+        } else {
+          createFeedMutation.mutate(formDataToSend);
+        }
       }
 
       onClose();
@@ -269,7 +264,6 @@ export default function CommunityForm({
                       height={170}
                       className="rounded-lg cursor-pointer object-cover max-w-[170px] max-h-[170px]"
                     />
-                    {/* 삭제 버튼 */}
                     <button
                       onClick={() => handleFileDelete(index)}
                       className="absolute top-2 right-2 bg-white bg-opacity-50 p-1 rounded-full text-red-500"

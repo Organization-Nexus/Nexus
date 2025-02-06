@@ -86,4 +86,18 @@ export class S3ConfigService {
       throw new S3UploadFailedException(error.message);
     }
   }
+
+  async deleteFiles(fileUrls: string[]): Promise<void> {
+    const keys = fileUrls.map((url) => {
+      const urlParts = new URL(url);
+      return urlParts.pathname.slice(1);
+    });
+    const deleteParams = {
+      Bucket: this.configService.get('AWS_BUCKET_NAME'),
+      Delete: {
+        Objects: keys.map((key) => ({ Key: key })),
+      },
+    };
+    await this.s3.deleteObjects(deleteParams).promise();
+  }
 }

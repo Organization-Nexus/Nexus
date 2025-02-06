@@ -56,4 +56,9 @@ export class FileService {
       throw new S3UploadFailedException(error.message);
     }
   }
+
+  async deleteFiles(fileUrls: string[]): Promise<void> {
+    const filesToDelete = Array.isArray(fileUrls) ? fileUrls : [fileUrls];
+    await this.s3ConfigService.deleteFiles(filesToDelete);
+  }
 }

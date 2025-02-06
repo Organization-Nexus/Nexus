@@ -62,7 +62,7 @@ export default function CommunityTemplate({
   return (
     <div>
       {/* 중요한 공지 필터 */}
-      {type === "notice" && (
+      {type === "공지사항" && (
         <div className="flex items-center my-4 justify-end">
           <Checkbox
             checked={showImportantOnly}
@@ -132,7 +132,7 @@ export default function CommunityTemplate({
               {/* 제목 */}
               <hr className="my-4" />
               <div className="flex items-center">
-                {type === "notice" &&
+                {type === "공지사항" &&
                   "isImportant" in item &&
                   item.isImportant && (
                     <p className="mr-2 text-red-500">(중요)</p>
