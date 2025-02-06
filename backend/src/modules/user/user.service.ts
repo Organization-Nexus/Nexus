@@ -59,13 +59,11 @@ export class UserService {
   ): Promise<User> {
     const user = await this.findOne(userId);
     const { status, rank, ...userFields } = updateUserDto;
-
-    // UserLog 필드 업데이트
     const previousImageUrl = user.log.profileImage;
     let newImageUrl: string | null = null;
 
+    // 새 파일이 업로드된 경우
     if (file) {
-      // 새 이미지 업로드
       const uploadResult = await this.fileService.handleFileUpload({
         files: [file],
         userId,
@@ -76,8 +74,9 @@ export class UserService {
       // 이전 이미지 삭제
       if (previousImageUrl) {
         console.log('이전 이미지 삭제:', previousImageUrl);
-        // await this.fileService.deleteFile(previousImageUrl);
+        await this.fileService.deleteFiles([previousImageUrl]);
       }
+      // 기존 이미지 URL을 유지하는 경우
     } else if (updateUserDto.profileImageUrl) {
       newImageUrl = updateUserDto.profileImageUrl;
     }
