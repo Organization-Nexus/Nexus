@@ -71,9 +71,6 @@ export class ProjectUserController {
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
   ) {
-    return await this.projectUserService.validateProjectMemberByUserId(
-      projectId,
-      req.user.id,
-    );
+    return await this.projectUserService.getProjectUser(projectId, req.user.id);
   }
 }
