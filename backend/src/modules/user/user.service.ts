@@ -8,6 +8,8 @@ import {
   NotAllowedStatusException,
   UserNotFoundException,
 } from './exception/user.exception';
+import { FileService } from '../file/file.service';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Injectable()
 export class UserService {
@@ -16,7 +18,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
+    private readonly fileService: FileService,
     @InjectRepository(UserLog)
     private readonly userLogRepository: Repository<UserLog>,
   ) {}
@@ -53,13 +55,34 @@ export class UserService {
   async update(
     userId: number,
     updateUserDto: UpdateUserDto,
-    avatarImage?: string,
+    file?: Express.Multer.File,
   ): Promise<User> {
     const user = await this.findOne(userId);
-    const { profileImageUrl, status, rank, ...userFields } = updateUserDto;
+    const { status, rank, ...userFields } = updateUserDto;
+    const previousImageUrl = user.log.profileImage;
+    let newImageUrl: string | null = null;
 
-    // UserLog 필드 업데이트
-    if (avatarImage) user.log.profileImage = avatarImage;
+    // 새 파일이 업로드된 경우
+    if (file) {
+      const uploadResult = await this.fileService.handleFileUpload({
+        files: [file],
+        userId,
+        category: Category.AVATAR,
+      });
+      newImageUrl = uploadResult[0]; // 업로드된 파일의 URL
+
+      // 이전 이미지 삭제
+      if (previousImageUrl) {
+        console.log('이전 이미지 삭제:', previousImageUrl);
+        await this.fileService.deleteFiles([previousImageUrl]);
+      }
+      // 기존 이미지 URL을 유지하는 경우
+    } else if (updateUserDto.profileImageUrl) {
+      newImageUrl = updateUserDto.profileImageUrl;
+    }
+
+    user.log.profileImage = newImageUrl;
+
     if (status !== undefined) {
       if (!this.ALLOWED_STATUS.includes(status)) {
         throw new NotAllowedStatusException();
