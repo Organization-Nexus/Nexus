@@ -8,6 +8,7 @@ import {
   NotFoundFeedException,
 } from './exception/feed-exception';
 import { CreateCommunityDto } from './dto/create-community.dto';
+import { UpdateCommunityDto } from './dto/update-community-dto';
 
 @Injectable()
 export class FeedService {
@@ -33,6 +34,17 @@ export class FeedService {
     return await this.feedRepository.save(feed);
   }
 
+  async getFeedById(feedId: number): Promise<Feed> {
+    const feed = await this.feedRepository.findOne({
+      where: { id: feedId },
+      // relations: ['author', 'author.user', 'author.user.log'],
+    });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
+    return feed;
+  }
+
   async validateCommunityOwner(feedId: number, userId: number) {
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
@@ -48,20 +60,28 @@ export class FeedService {
   }
 
   async updateCommunity(
-    updateCommunityDto: CreateCommunityDto,
+    updateCommunityDto: UpdateCommunityDto,
     feedId: number,
-    communityFiles: string[],
+    finalFiles: string[],
   ): Promise<Feed> {
+    const MAX_FILES = 10;
     const feed = await this.feedRepository.findOneBy({ id: feedId });
     if (!feed) {
       throw new NotFoundFeedException(feedId);
     }
-    const updateFields = {
-      ...updateCommunityDto,
-      imageUrl: communityFiles || feed.community_files,
-    };
-    Object.assign(feed, updateFields);
+    const existingFiles = feed.community_files || [];
+    const newTotalFiles = existingFiles.length + finalFiles.length;
+    if (newTotalFiles > MAX_FILES) {
+      throw new Error('첨부 파일은 10개 이내로 업로드할 수 있어요.');
+    }
+    feed.community_files = finalFiles;
+    Object.assign(feed, updateCommunityDto);
     return await this.feedRepository.save(feed);
+  }
+
+  async getCommunityFiles(feedId: number): Promise<string[]> {
+    const feed = await this.feedRepository.findOne({ where: { id: feedId } });
+    return feed.community_files || [];
   }
 
   async deleteFeed(feedId: number): Promise<void> {

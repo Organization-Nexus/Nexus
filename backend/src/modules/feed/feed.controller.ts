@@ -20,6 +20,7 @@ import { Category } from 'src/types/enum/file-category.enum';
 import { ProjectUserService } from '../project-user/project-user.service';
 import { CommunityService } from '../community/community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
+import { UpdateCommunityDto } from './dto/update-community-dto';
 
 @Controller('feed')
 export class FeedController {
@@ -75,7 +76,7 @@ export class FeedController {
   async updateFeed(
     @Param('feedId') feedId: number,
     @Param('projectId') projectId: number,
-    @Body() updateCommunityDto: CreateCommunityDto,
+    @Body() updateCommunityDto: UpdateCommunityDto,
     @Req() req: UserPayload,
     @UploadedFiles() files?: Express.Multer.File[],
   ) {
@@ -88,19 +89,34 @@ export class FeedController {
       );
 
     await this.feedService.validateCommunityOwner(feedId, projectUserId);
-    let communityFiles = null;
+
+    let communityFiles = [];
+    let uploadedFiles = [];
     if (files && files.length > 0) {
-      communityFiles = await this.fileService.handleFileUpload({
+      uploadedFiles = await this.fileService.handleFileUpload({
         files,
-        userId: req.user.id,
+        userId,
         projectId,
         category: Category.COMMUNITY,
       });
     }
+    const existingFiles = await this.feedService.getCommunityFiles(feedId);
+    if (
+      updateCommunityDto.deleted_files &&
+      updateCommunityDto.deleted_files.length > 0
+    ) {
+      await this.fileService.deleteFiles(updateCommunityDto.deleted_files);
+      communityFiles = existingFiles.filter(
+        (file) => !updateCommunityDto.deleted_files.includes(file),
+      );
+    }
+
+    const finalFiles = [...uploadedFiles, ...communityFiles];
+
     return await this.feedService.updateCommunity(
       updateCommunityDto,
       feedId,
-      communityFiles,
+      finalFiles,
     );
   }
 
@@ -126,43 +142,41 @@ export class FeedController {
   }
 
   // POST /api/feed/create-notice/:projectId
-  // @Post('create-notice/:projectId')
-  // @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
-  // @UseInterceptors(FilesInterceptor('community_files'))
-  // async createNotice(
-  //   @Body() createCommunityDto: CreateCommunityDto,
-  //   @Param('projectId') projectId: number,
-  //   @Req() req: UserPayload,
-  //   @UploadedFiles() files?: Express.Multer.File[],
-  // ) {
-  //   const userId = req.user.id;
-  //   const projectUser =
-  //     await this.projectUserService.validateProjectMemberByUserId(
-  //       projectId,
-  //       userId,
-  //     );
-  //   if (projectUser.position !== 'PM' && !projectUser.is_sub_admin) {
-  //     throw new NoPermissionForNoticeException();
-  //   }
-  //   const community =
-  //     await this.communityService.getCommunityByProjectId(projectId);
-  //   let community_file = null;
-  //   if (files && files.length > 0) {
-  //     community_file = await this.fileService.handleFileUpload({
-  //       files,
-  //       userId: req.user.id,
-  //       projectId,
-  //       category: Category.COMMUNITY,
-  //     });
-  //   }
-  //   const isNotice = true;
+  @Post('create-notice/:projectId')
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseInterceptors(FilesInterceptor('community_files'))
+  async createNotice(
+    @Body() createCommunityDto: CreateCommunityDto,
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+    @UploadedFiles() files?: Express.Multer.File[],
+  ) {
+    const userId = req.user.id;
+    await this.projectUserService.checkAdminPermissions(projectId, userId);
+    const projectUser = await this.projectUserService.getProjectUser(
+      projectId,
+      userId,
+    );
+    const communityId =
+      await this.communityService.getCommunityByProjectId(projectId);
 
-  //   return await this.feedService.createCommunity(
-  //     createCommunityDto,
-  //     community_file,
-  //     community,
-  //     projectUser,
-  //     isNotice,
-  //   );
-  // }
+    let community_file = null;
+    if (files && files.length > 0) {
+      community_file = await this.fileService.handleFileUpload({
+        files,
+        userId: req.user.id,
+        projectId,
+        category: Category.COMMUNITY,
+      });
+    }
+    const isNotice = true;
+
+    return await this.feedService.createCommunity(
+      createCommunityDto,
+      projectUser,
+      communityId,
+      community_file,
+      isNotice,
+    );
+  }
 }
