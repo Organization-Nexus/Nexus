@@ -22,7 +22,6 @@ import { UserLog } from './entities/user-log.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserPayload } from 'src/types/user-payload';
 import { FileService } from '../file/file.service';
-import { Category } from 'src/types/enum/file-category.enum';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
@@ -63,26 +62,11 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const userId = req.user.id;
     if (file && !file.mimetype.startsWith('image/')) {
       throw new BadRequestException('Only image files are allowed');
     }
-    let avatarImage = null;
 
-    // 새 파일이 업로드된 경우
-    if (file) {
-      avatarImage = await this.fileService.handleFileUpload({
-        files: [file],
-        userId,
-        category: Category.AVATAR,
-      });
-    }
-    // 기존 이미지 URL을 유지하는 경우
-    else if (updateUserDto.profileImageUrl) {
-      avatarImage = [updateUserDto.profileImageUrl];
-    }
-
-    return this.userService.update(userId, updateUserDto, avatarImage?.[0]);
+    return this.userService.update(req.user.id, updateUserDto, file);
   }
 
   // 유저 정보 변경, ADMIN
