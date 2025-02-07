@@ -8,6 +8,7 @@ import { PositionSelect } from "../user/PositionSelect";
 import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
 import { useUpdateUser } from "@/query/mutations/user";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import PasswordChangeForm from "../auth/PasswordChangeForm";
 
 export interface MyPageModalProps {
   isOpen: boolean;
@@ -33,11 +34,11 @@ export default function MyPageModal({
   const [fileError, setFileError] = useState<string>("");
 
   const [isPasswordResetOpen, setIsPasswordResetOpen] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  // const [passwordForm, setPasswordForm] = useState({
+  //   currentPassword: "",
+  //   newPassword: "",
+  //   confirmPassword: "",
+  // });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -149,11 +150,11 @@ export default function MyPageModal({
       });
     }
 
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    // setPasswordForm({
+    //   currentPassword: "",
+    //   newPassword: "",
+    //   confirmPassword: "",
+    // });
 
     // 비밀번호 재설정 모달 상태 초기화
     setIsPasswordResetOpen(false);
@@ -296,7 +297,7 @@ export default function MyPageModal({
 
             <div>
               <div className="justify-items-start">
-                <label className="block text-md font-bold text-gray-700 pr-2">
+                <label className="block text-md font-bold text-gray-700 pr-2 mb-1">
                   비밀번호
                 </label>
                 {!isPasswordResetOpen && (
@@ -320,94 +321,12 @@ export default function MyPageModal({
                   }
                 `}
               >
-                <div className="space-y-4">
-                  <p className="text-xs text-gray-500 mt-3">
-                    8~20자 영문, 숫자, 특수문자 조합
-                  </p>
-                  <div className="grid grid-cols-6">
-                    <div className="  self-center">
-                      <label className="text-sm font-bold text-gray-700">
-                        현재 비밀번호
-                      </label>
-                    </div>
-                    <div className="col-span-5">
-                      <UnderlineInput
-                        type="password"
-                        name="currentPassword"
-                        value={passwordForm.currentPassword}
-                        onChange={(e) =>
-                          setPasswordForm((prev) => ({
-                            ...prev,
-                            currentPassword: e.target.value,
-                          }))
-                        }
-                        placeholder="현재 비밀번호를 입력해주세요"
-                        className="p-0"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-6">
-                    <div className=" self-center">
-                      <label className="text-sm font-bold text-gray-700">
-                        새 비밀번호
-                      </label>
-                    </div>
-                    <div className="col-span-5">
-                      <UnderlineInput
-                        type="password"
-                        name="newPassword"
-                        value={passwordForm.newPassword}
-                        onChange={(e) =>
-                          setPasswordForm((prev) => ({
-                            ...prev,
-                            newPassword: e.target.value,
-                          }))
-                        }
-                        placeholder="새 비밀번호를 입력해주세요"
-                        className="p-0"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-6">
-                    <div className="self-center">
-                      <label className="text-sm font-bold text-gray-700">
-                        비밀번호 확인
-                      </label>
-                    </div>
-                    <div className="col-span-5">
-                      <UnderlineInput
-                        type="password"
-                        name="confirmPassword"
-                        value={passwordForm.confirmPassword}
-                        onChange={(e) =>
-                          setPasswordForm((prev) => ({
-                            ...prev,
-                            confirmPassword: e.target.value,
-                          }))
-                        }
-                        placeholder="비밀번호를 다시 입력해주세요"
-                        className="p-0"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Modal.Button
-                      variant="secondary"
-                      onClick={() => setIsPasswordResetOpen(false)}
-                      className="text-sm"
-                    >
-                      취소
-                    </Modal.Button>
-                    <Modal.Button
-                      onClick={() => {
-                        // 비밀번호 변경 로직 구현
-                        console.log("비밀번호 변경");
-                      }}
-                      className="text-sm"
-                    >
-                      확인
-                    </Modal.Button>
-                  </div>
+                <div className="min-h-0">
+                  {isPasswordResetOpen && (
+                    <PasswordChangeForm
+                      onClose={() => setIsPasswordResetOpen(false)}
+                    />
+                  )}
                 </div>
               </div>
             </div>

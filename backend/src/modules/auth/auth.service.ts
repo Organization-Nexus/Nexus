@@ -181,7 +181,7 @@ export class AuthService {
     }
     const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isPasswordMatch) {
-      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+      throw new BadRequestException('현재 비밀번호가 일치하지 않습니다.');
     }
     user.password = await bcrypt.hash(newPassword, 10);
     await this.userRepository.save(user);
