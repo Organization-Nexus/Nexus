@@ -10,12 +10,14 @@ import {
 import LogoutModal from "../modal/LogoutModal";
 import MyPageModal from "../modal/Mypage";
 import { User } from "@/types/user";
+import MyProfile from "../modal/MyProfile";
 
 interface ProfileDropdownProps {
   user: User;
 }
 
 export default function ProfileDropdown({ user }: ProfileDropdownProps) {
+  const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
@@ -47,7 +49,10 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
             <span className="text-xl font-bold mb-2">{user.name}</span>
           </div>
           <div className="pl-2">
-            <DropdownMenuItem className="cursor-pointer ">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => setIsMyProfileOpen(true)}
+            >
               <UserRound className=" h-4 w-4" />내 프로필
             </DropdownMenuItem>
 
@@ -70,6 +75,12 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <MyProfile
+        isOpen={isMyProfileOpen}
+        onClose={() => setIsMyProfileOpen(false)}
+        user={user}
+        onEditClick={() => setIsMyPageOpen(true)}
+      />
       <MyPageModal
         isOpen={isMyPageOpen}
         onClose={() => setIsMyPageOpen(false)}
