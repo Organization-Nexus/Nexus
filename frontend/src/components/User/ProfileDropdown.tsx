@@ -28,7 +28,7 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
             alt="Profile"
             width={20}
             height={20}
-            className="rounded-full object-cover max-w-[20px] max-h-[20px]"
+            className="rounded-full object-cover max-w-[20px] max-h-[20px] min-w-[20px] min-h-[20px]"
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -41,7 +41,7 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
               alt="Profile Image"
               width={40}
               height={40}
-              className="object-cover rounded-2xl mr-2 mb-2"
+              className="object-cover rounded-2xl mr-2 mb-2 max-w-[40px] max-h-[40px] min-w-[40px] min-h-[40px]"
               priority
             />
             <span className="text-xl font-bold mb-2">{user.name}</span>

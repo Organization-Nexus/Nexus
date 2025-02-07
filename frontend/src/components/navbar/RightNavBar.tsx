@@ -21,7 +21,7 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
                 alt="Profile Image"
                 width={48}
                 height={48}
-                className="object-cover rounded-2xl max-w-[48px] max-h-[48px]"
+                className="object-cover rounded-2xl max-w-[48px] max-h-[48px] min-w-[48px] min-h-[48px]"
                 priority
               />
             </div>

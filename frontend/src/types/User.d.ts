@@ -18,6 +18,9 @@ export interface ValidationErrors {
   phoneNumber?: string;
   githubUrl?: string;
   mainPosition?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
 }
 
 export interface UpdateUserDto {
