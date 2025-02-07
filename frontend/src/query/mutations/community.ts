@@ -38,7 +38,7 @@ export const useCreateFeed = (projectId: string) => {
 };
 
 // 커뮤니티 수정
-export const useUpdateCommunity = (feedId: string, projectId: string) => {
+export const useUpdateCommunity = (projectId: string, feedId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (communityData: FormData) =>

@@ -1,62 +1,35 @@
-import { CommunityModalProps } from "@/types/modal";
-import { Modal } from "./config/ModalMaps";
-import { useEffect, useState } from "react";
+import { useCreateFeed, useCreateNotice } from "@/query/mutations/community";
+import { CreateCommunityForm } from "@/types/community";
+import { CreateCommunity } from "@/types/modal";
+import { useState } from "react";
+import { isImageFile } from "../../utils/isImageFile";
+import { Modal } from "../config/ModalMaps";
 import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
-import type { CommunityFormData } from "@/types/community";
-import {
-  useCreateFeed,
-  useCreateNotice,
-  useUpdateCommunity,
-} from "@/query/mutations/community";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../ui/carousel";
+} from "../../ui/carousel";
 import Image from "next/image";
-import FileItem from "../utils/FileItem";
-import { isImageFile } from "../utils/isImageFile";
+import FileItem from "../../utils/FileItem";
 
-export default function CommunityForm({
+export default function CreateCommunityModal({
   isOpen,
   onClose,
-  type,
+  type, // "feed" | "notice"
   projectId,
-  feedId,
-  mode, // 'create' | 'update'
-  updateData,
-}: CommunityModalProps) {
+}: CreateCommunity) {
   const createNoticeMutation = useCreateNotice(projectId);
   const createFeedMutation = useCreateFeed(projectId);
-  const updateCommunityMutation = useUpdateCommunity(projectId, feedId!);
 
-  const [formData, setFormData] = useState<CommunityFormData>({
+  const [formData, setFormData] = useState<CreateCommunityForm>({
     title: "",
     content: "",
     community_files: [],
     isImportant: "false",
   });
-
-  useEffect(() => {
-    if (mode === "update" && updateData) {
-      setFormData({
-        title: updateData.title,
-        content: updateData.content,
-        community_files: updateData.community_files as File[] | string[],
-        isImportant: updateData.isImportant || "false",
-      });
-    }
-  }, [mode, updateData]);
-
-  const existingFiles =
-    mode === "update" && updateData?.community_files
-      ? updateData.community_files.filter((file) => typeof file === "string")
-      : [];
-  const newFiles = Array.isArray(formData.community_files)
-    ? formData.community_files.filter((file) => file instanceof File)
-    : [];
 
   const [titleError, setTitleError] = useState<string>("");
   const [contentError, setContentError] = useState<string>("");
@@ -68,30 +41,19 @@ export default function CommunityForm({
   const docsFiles = Array.isArray(formData.community_files)
     ? formData.community_files.filter((file) => !isImageFile(file))
     : [];
-  const toggleIsImportant = () => {
-    setFormData((prev) => ({
-      ...prev,
-      isImportant: prev.isImportant === "true" ? "false" : "true",
-    }));
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === "title") {
-      if (value.length > 50) {
-        setTitleError("제목은 50자 이내로 작성해주세요.");
-      } else {
-        setTitleError("");
-      }
-    }
-    if (name === "content") {
-      if (value.length > 2000) {
-        setContentError("설명은 2000자 이내로 작성해주세요.");
-      } else {
-        setContentError("");
-      }
+
+    if (name === "title" && value.length > 50) {
+      setTitleError("제목은 50자 이내로 작성해주세요.");
+    } else if (name === "content" && value.length > 2000) {
+      setContentError("설명은 2000자 이내로 작성해주세요.");
+    } else {
+      if (name === "title") setTitleError("");
+      if (name === "content") setContentError("");
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -99,85 +61,80 @@ export default function CommunityForm({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newFiles = Array.from(files);
-      const totalFiles = formData.community_files.length + newFiles.length;
-
+      const selectedFiles = Array.from(files);
+      const totalFiles =
+        (formData.community_files?.length || 0) + selectedFiles.length;
       if (totalFiles > 10) {
         setFileError("파일은 최대 10개까지 첨부할 수 있습니다.");
         return;
       }
-
       setFileError("");
       setFormData((prev) => ({
         ...prev,
-        community_files: [...(prev.community_files as File[]), ...newFiles],
+        community_files: [...(prev.community_files || []), ...selectedFiles],
       }));
     }
+    setFileError("");
   };
 
   const handleFileDelete = (index: number) => {
+    const updatedFiles =
+      formData.community_files?.filter(
+        (file, fileIndex) => fileIndex !== index
+      ) || [];
     setFormData((prev) => ({
       ...prev,
-      community_files: (prev.community_files as File[]).filter(
-        (_, i) => i !== index
-      ),
+      community_files: updatedFiles,
+    }));
+    setFileError("");
+  };
+
+  const toggleIsImportant = () => {
+    setFormData((prev) => ({
+      ...prev,
+      isImportant: prev.isImportant === "true" ? "false" : "true",
     }));
   };
 
   const handleSubmit = async () => {
+    if (!formData.title.trim()) {
+      setTitleError("제목을 입력해주세요.");
+    }
+    if (!formData.content.trim()) {
+      setContentError("내용을 입력해주세요.");
+    }
+    if (!formData.title.trim() || !formData.content.trim()) {
+      return;
+    }
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
-
-      // 새 파일 업로드
-      newFiles.forEach((file) => {
-        formDataToSend.append("community_files", file as Blob);
+      formData.community_files?.forEach((file) => {
+        formDataToSend.append("community_files", file);
       });
-
-      // 기존 파일 URL을 유지하는 경우
-      existingFiles.forEach((file) => {
-        if (typeof file === "string") {
-          formDataToSend.append("community_files", file);
-        }
-      });
-
-      if (mode === "update") {
-        updateCommunityMutation.mutate(formDataToSend, {
-          onError: (error: any) => {
-            console.error("수정 실패", error.response?.data || error);
-          },
-        });
-      } else {
-        if (type === "공지사항") {
-          formDataToSend.append(
-            "isImportant",
-            formData.isImportant ? "true" : "false"
-          );
-          createNoticeMutation.mutate(formDataToSend);
-        } else {
-          createFeedMutation.mutate(formDataToSend);
-        }
+      if (type === "공지사항") {
+        formDataToSend.append("isImportant", formData.isImportant || "");
+        createNoticeMutation.mutate(formDataToSend);
+      } else if (type === "피드") {
+        createFeedMutation.mutate(formDataToSend);
       }
-
       onClose();
-    } catch (error) {
-      console.error("Submit Error:", error);
+    } catch (err) {
+      console.error("Create Error:", err);
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex justify-between items-center">
-        <Modal.Title>
-          {type} {mode === "create" ? "생성" : "수정"}
-        </Modal.Title>
+        <Modal.Title>{type} 생성</Modal.Title>
         <Modal.Button variant="nothing" onClick={onClose}>
           X
         </Modal.Button>
       </div>
       <Modal.Divider />
-      <Modal.Subtitle>{type}을 등록해주세요. 👋</Modal.Subtitle>
+      <Modal.Subtitle>{type}을 생성해주세요. 🤟</Modal.Subtitle>
       <Modal.Divider />
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -233,28 +190,24 @@ export default function CommunityForm({
             <span className="text-xs text-gray-400">
               파일은 10개 이내로 첨부할 수 있습니다. (
               <span className="text-blue-500 font-semibold">
-                {formData.community_files.length}
+                {formData.community_files?.length || 0}
               </span>
               /10)
             </span>
-            {formData.community_files.length === 10 && fileError && (
+            {formData.community_files?.length === 10 && fileError && (
               <span className="ml-2 text-red-500 text-sm">
                 🚨 {fileError} 🚨
               </span>
             )}
           </div>
         </div>
-
         {/* 파일 첨부 목록 */}
         {imageFiles.length > 0 && (
           <div className="w-full flex justify-center">
             <Carousel className="w-[95%]">
               <CarouselContent className="flex">
                 {imageFiles.map((file, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="relative flex items-center justify-center flex-none w-[170px]"
-                  >
+                  <CarouselItem key={index} className="relative flex-none">
                     <Image
                       src={
                         file instanceof File ? URL.createObjectURL(file) : file
@@ -262,7 +215,7 @@ export default function CommunityForm({
                       alt={`Attachment ${index + 1}`}
                       width={170}
                       height={170}
-                      className="rounded-lg cursor-pointer object-cover max-w-[170px] max-h-[170px]"
+                      className="rounded-lg max-w-[170px] max-h-[170px]"
                     />
                     <button
                       onClick={() => handleFileDelete(index)}
@@ -293,9 +246,6 @@ export default function CommunityForm({
             ))}
           </div>
         )}
-
-        <Modal.Divider />
-
         <div className="flex justify-between items-center mt-6">
           <div className="flex space-x-4">
             {/* 파일 첨부 */}
@@ -338,7 +288,7 @@ export default function CommunityForm({
               닫기
             </Modal.Button>
             <Modal.Button variant="primary" onClick={handleSubmit}>
-              {mode === "create" ? "생성" : "수정"}
+              생성
             </Modal.Button>
           </div>
         </div>

@@ -13,7 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import { CommunityClientTapsProps } from "@/types/community";
 import { useFeedList, useNoticeList } from "@/query/queries/community";
-import CommunityForm from "../modal/CommunityForm";
+import CreateCommunityModal from "../modal/community/CreateCommunityModal";
 
 const tabs = [
   { key: "all", label: "전체보기", icon: <Users size={20} /> },
@@ -73,7 +73,6 @@ export default function CommunityClientTabs({
               </button>
             ))}
           </div>
-
           {/* 커뮤니티 생성 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -115,13 +114,10 @@ export default function CommunityClientTabs({
                 ) : (
                   <CommunityTemplate
                     key={key}
-                    isOpen={isCommunityFormOpen}
-                    onClose={closeCommunityForm}
                     type={label}
                     items={contentData[key] || []}
                     projectUser={projectUser}
                     projectId={projectId}
-                    onEdit={openCommunityForm}
                   />
                 )
               ) : null
@@ -132,12 +128,11 @@ export default function CommunityClientTabs({
 
       {/* 커뮤니티 생성 모달 */}
       {isCommunityFormOpen && communityFormType && (
-        <CommunityForm
+        <CreateCommunityModal
           isOpen={isCommunityFormOpen}
           onClose={closeCommunityForm}
           type={communityFormType}
           projectId={projectId}
-          mode="create"
         />
       )}
     </div>
