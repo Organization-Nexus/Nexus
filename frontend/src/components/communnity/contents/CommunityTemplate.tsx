@@ -1,4 +1,3 @@
-import CommunityForm from "@/components/modal/CommunityForm";
 import {
   Carousel,
   CarouselContent,
@@ -14,9 +13,10 @@ import { Community, CommunityTemplateProps, Notice } from "@/types/community";
 import { convertToKST } from "@/utils/convertToKST";
 import Image from "next/image";
 import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import UpdateCommunityModal from "@/components/modal/community/UpdateCommunityModal";
 
 export default function CommunityTemplate({
-  onClose,
   type,
   items,
   projectUser,
@@ -54,11 +54,6 @@ export default function CommunityTemplate({
     ? items.filter((item) => "isImportant" in item && item.isImportant)
     : items;
 
-  const handleEditClick = (item: Community | Notice) => {
-    setSelectedItem(item);
-    onClose();
-  };
-
   return (
     <div>
       {/* 중요한 공지 필터 */}
@@ -78,6 +73,9 @@ export default function CommunityTemplate({
           const createdAtKST = convertToKST(
             new Date(item.createdAt).toISOString()
           );
+          const timeAgo = formatDistanceToNow(createdAtKST, {
+            addSuffix: true,
+          });
           const isExpanded = expandedFeed === item.id;
           const borderClass =
             "isImportant" in item && item.isImportant
@@ -113,10 +111,7 @@ export default function CommunityTemplate({
                     </div>
                     {projectUser.id === item.author.projectUserId && (
                       <div className="flex space-x-2">
-                        <button
-                          className="text-gray-500 hover:underline text-sm"
-                          onClick={() => handleEditClick(item)}
-                        >
+                        <button className="text-gray-500 hover:underline text-sm">
                           수정
                         </button>
 
@@ -158,11 +153,6 @@ export default function CommunityTemplate({
                 </button>
               )}
 
-              {/* 작성일 */}
-              <p className="flex w-full justify-end text-sm text-gray-400 my-4">
-                {createdAtKST}
-              </p>
-
               {/* 파일 처리 */}
               <div className="mt-4">
                 {/* 이미지 파일 */}
@@ -197,6 +187,11 @@ export default function CommunityTemplate({
                     ))}
                   </div>
                 )}
+                {/* 작성일 */}
+                <div className="flex items-center justify-between mt-8">
+                  <p className="text-sm text-gray-400">좋아요</p>
+                  <p className="text-sm text-gray-400">{timeAgo}</p>
+                </div>
               </div>
             </div>
           );
@@ -213,24 +208,13 @@ export default function CommunityTemplate({
       />
 
       {selectedItem && (
-        <CommunityForm
-          isOpen={true}
-          onClose={() => setSelectedItem(undefined)}
+        <UpdateCommunityModal
           type={type}
-          feedId={selectedItem.id}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
           projectId={projectId}
-          mode="update"
-          updateData={{
-            title: selectedItem.title,
-            content: selectedItem.content,
-            community_files: selectedItem.community_files,
-            isImportant:
-              "isImportant" in selectedItem
-                ? selectedItem.isImportant
-                  ? "true"
-                  : "false"
-                : undefined,
-          }}
+          feedId={selectedItem.id}
+          updateData={selectedItem}
         />
       )}
     </div>

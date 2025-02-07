@@ -17,14 +17,31 @@ export interface ModalRootProps extends BaseModalProps {
 // 유형별 모달 인터페이스
 export interface CommunityModalProps extends ModalRootProps {
   type: string;
-  projectId: string;
   mode?: "create" | "update";
+  projectId: string;
   feedId?: string;
   updateData?: {
     title: string;
     content: string;
-    community_files?: (string | File)[];
+    community_files?: string[];
     isImportant?: string;
+  };
+}
+
+export interface CreateCommunity extends ModalRootProps {
+  type: string;
+  projectId: string;
+}
+
+export interface UpdateCommunity extends ModalRootProps {
+  type: string;
+  projectId: string;
+  feedId: string;
+  updateData: {
+    title: string;
+    content: string;
+    community_files?: string[];
+    isImportant?: string | boolean;
   };
 }
 

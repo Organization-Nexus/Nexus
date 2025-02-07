@@ -18,11 +18,19 @@ export interface Community {
   author: Author;
 }
 
-// Create Community
-interface CommunityFormData {
+// Create Community Form
+export interface CreateCommunityForm {
   title: string;
   content: string;
-  community_files: (File | string)[];
+  community_files?: File[];
+  isImportant?: string;
+}
+
+export interface UpdateCommunityForm {
+  title?: string;
+  content?: string;
+  community_files?: File[];
+  delete_files?: string[];
   isImportant?: string;
 }
 
@@ -53,9 +61,6 @@ export interface CommunityClientTapsProps {
 }
 
 export interface CommunityTemplateProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onEdit?: (label: string) => void;
   type: string;
   items: (Community | Notice)[];
   projectUser: ProjectUser;
