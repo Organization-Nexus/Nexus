@@ -1,0 +1,60 @@
+import { Project } from 'src/modules/project/entities/project.entity';
+import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { MinutesParticipant } from './minutes-participant.entity';
+
+@Entity('minutes')
+export class Minutes {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @JoinColumn({ name: 'author_id' })
+  author: ProjectUser;
+
+  @Column({ length: 50 })
+  title: string;
+
+  @Column({ type: 'date' })
+  meeting_date: Date;
+
+  @Column({ type: 'time' })
+  meeting_time: string;
+
+  @Column({ length: 100 })
+  agenda: string;
+
+  @Column({ length: 255 })
+  topic: string;
+
+  @Column({ length: 3000 })
+  content: string;
+
+  @Column({ length: 255, nullable: true })
+  decisions: string;
+
+  @Column({ length: 255, nullable: true })
+  notes: string;
+
+  @ManyToOne(() => Project, (project) => project.minutes, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'project_id' })
+  project: Project;
+
+  @ManyToOne(() => ProjectUser, (projectUser) => projectUser.minutes, {
+    onDelete: 'CASCADE',
+  })
+  @OneToMany(() => MinutesParticipant, (participant) => participant.minutes)
+  participants: MinutesParticipant[];
+
+  @CreateDateColumn()
+  created_at: Date;
+}
