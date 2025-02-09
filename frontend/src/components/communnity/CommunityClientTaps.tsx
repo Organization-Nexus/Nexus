@@ -13,7 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import { CommunityClientTapsProps } from "@/types/community";
 import { useFeedList, useNoticeList } from "@/query/queries/community";
-import CommunityForm from "../modal/CommunityForm";
+import CreateCommunityModal from "../modal/community/CreateCommunityModal";
 
 const tabs = [
   { key: "all", label: "전체보기", icon: <Users size={20} /> },
@@ -29,7 +29,7 @@ export default function CommunityClientTabs({
   notices: initialNotices,
 }: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState("all");
-  const [isCommunityFormOpen, setIsCommunityFormOpen] = useState(false);
+  const [openCreateCommunityForm, setOpenCreateCommunityForm] = useState(false);
   const [communityFormType, setCommunityFormType] = useState<string | null>(
     null
   );
@@ -41,14 +41,14 @@ export default function CommunityClientTabs({
 
   const handleTabClick = (tabKey: string) => setSelectedTab(tabKey);
 
-  const openCommunityForm = (key: string) => {
+  const handleCreateModalOpen = (key: string) => {
     const tab = tabs.find((t) => t.key === key);
     setCommunityFormType(tab?.label || key);
-    setIsCommunityFormOpen(true);
+    setOpenCreateCommunityForm(true);
   };
 
-  const closeCommunityForm = () => {
-    setIsCommunityFormOpen(false);
+  const handleCreateModalClose = () => {
+    setOpenCreateCommunityForm(false);
     setCommunityFormType(null);
   };
 
@@ -73,7 +73,6 @@ export default function CommunityClientTabs({
               </button>
             ))}
           </div>
-
           {/* 커뮤니티 생성 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -88,7 +87,7 @@ export default function CommunityClientTabs({
                 .map(({ key, label, icon }) => (
                   <DropdownMenuItem
                     key={key}
-                    onClick={() => openCommunityForm(key)}
+                    onClick={() => handleCreateModalOpen(key)}
                     disabled={key === "notice" && !projectUser.is_sub_admin}
                     className={
                       key === "notice" && !projectUser.is_sub_admin
@@ -115,13 +114,10 @@ export default function CommunityClientTabs({
                 ) : (
                   <CommunityTemplate
                     key={key}
-                    isOpen={isCommunityFormOpen}
-                    onClose={closeCommunityForm}
                     type={label}
                     items={contentData[key] || []}
                     projectUser={projectUser}
                     projectId={projectId}
-                    onEdit={openCommunityForm}
                   />
                 )
               ) : null
@@ -131,13 +127,12 @@ export default function CommunityClientTabs({
       </div>
 
       {/* 커뮤니티 생성 모달 */}
-      {isCommunityFormOpen && communityFormType && (
-        <CommunityForm
-          isOpen={isCommunityFormOpen}
-          onClose={closeCommunityForm}
+      {openCreateCommunityForm && communityFormType && (
+        <CreateCommunityModal
+          isOpen={openCreateCommunityForm}
+          onClose={handleCreateModalClose}
           type={communityFormType}
           projectId={projectId}
-          mode="create"
         />
       )}
     </div>

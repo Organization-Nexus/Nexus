@@ -1,6 +1,7 @@
 import { ProjectUserListProps } from "@/types/project-user";
 
 export default function ProjectUsers({ projectUsers }: ProjectUserListProps) {
+  console.log(projectUsers);
   return (
     <div className="flex flex-wrap gap-4">
       {projectUsers.map((projectUser) => (
