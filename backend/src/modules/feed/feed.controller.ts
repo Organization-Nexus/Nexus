@@ -109,9 +109,10 @@ export class FeedController {
       communityFiles = existingFiles.filter(
         (file) => !updateCommunityDto.deleted_files.includes(file),
       );
+    } else {
+      communityFiles = existingFiles;
     }
-
-    const finalFiles = [...uploadedFiles, ...communityFiles];
+    const finalFiles = [...communityFiles, ...uploadedFiles];
 
     return await this.feedService.updateCommunity(
       updateCommunityDto,
