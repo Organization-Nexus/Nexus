@@ -38,7 +38,11 @@ export const useCreateFeed = (projectId: string) => {
 };
 
 // 커뮤니티 수정
-export const useUpdateCommunity = (projectId: string, feedId: string) => {
+export const useUpdateCommunity = (
+  projectId: string,
+  feedId: string,
+  type: string
+) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (communityData: FormData) =>
@@ -48,9 +52,15 @@ export const useUpdateCommunity = (projectId: string, feedId: string) => {
         communityData
       ),
     onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: communityKeys.NOTICE_LIST_KEY,
-      });
+      if (type === "공지사항") {
+        queryClient.invalidateQueries({
+          queryKey: communityKeys.NOTICE_LIST_KEY,
+        });
+      } else if (type === "피드") {
+        queryClient.invalidateQueries({
+          queryKey: communityKeys.FEED_LIST_KEY,
+        });
+      }
     },
     onError: (error: any) => {
       console.error("공지사항 수정 실패", error.response?.data || error);

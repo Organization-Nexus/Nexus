@@ -246,6 +246,8 @@ export default function CreateCommunityModal({
             ))}
           </div>
         )}
+
+        <Modal.Divider />
         <div className="flex justify-between items-center mt-6">
           <div className="flex space-x-4">
             {/* 파일 첨부 */}

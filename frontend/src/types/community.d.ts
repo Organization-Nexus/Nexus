@@ -29,9 +29,9 @@ export interface CreateCommunityForm {
 export interface UpdateCommunityForm {
   title?: string;
   content?: string;
-  community_files?: File[];
-  delete_files?: string[];
-  isImportant?: string;
+  community_files?: (string | File)[];
+  deleted_files?: string[];
+  isImportant?: string | boolean;
 }
 
 // Community Author Information

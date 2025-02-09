@@ -26,7 +26,8 @@ export default function CommunityTemplate({
     null
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [showImportantOnly, setShowImportantOnly] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<
     Community | Notice | undefined
@@ -38,16 +39,26 @@ export default function CommunityTemplate({
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
-    setIsModalOpen(true);
+    setIsImageModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseImageModal = () => {
+    setIsImageModalOpen(false);
     setSelectedImage(null);
   };
 
   const toggleImportantOnly = () => {
     setShowImportantOnly((prev) => !prev);
+  };
+
+  const handleUpdateModalOpen = (item: Community | Notice) => {
+    setSelectedItem(item);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateModalClose = () => {
+    setSelectedItem(undefined);
+    setIsUpdateModalOpen(false);
   };
 
   const filteredItems = showImportantOnly
@@ -111,7 +122,10 @@ export default function CommunityTemplate({
                     </div>
                     {projectUser.id === item.author.projectUserId && (
                       <div className="flex space-x-2">
-                        <button className="text-gray-500 hover:underline text-sm">
+                        <button
+                          onClick={() => handleUpdateModalOpen(item)}
+                          className="text-gray-500 hover:underline text-sm"
+                        >
                           수정
                         </button>
 
@@ -157,12 +171,12 @@ export default function CommunityTemplate({
               <div className="mt-4">
                 {/* 이미지 파일 */}
                 {imageFiles.length > 0 && (
-                  <Carousel className="w-full">
+                  <Carousel className="w-[95%]">
                     <CarouselContent className="flex">
                       {imageFiles.map((file, fileIndex) => (
                         <CarouselItem
                           key={`image-${fileIndex}`}
-                          className="flex basis-1/4"
+                          className="relative flex-none"
                         >
                           <Image
                             src={file}
@@ -189,7 +203,9 @@ export default function CommunityTemplate({
                 )}
                 {/* 작성일 */}
                 <div className="flex items-center justify-between mt-8">
-                  <p className="text-sm text-gray-400">좋아요</p>
+                  <button className="text-gray-500 hover:underline text-sm">
+                    <p className="text-sm text-gray-400">좋아요</p>
+                  </button>
                   <p className="text-sm text-gray-400">{timeAgo}</p>
                 </div>
               </div>
@@ -202,16 +218,16 @@ export default function CommunityTemplate({
 
       {/* 이미지 모달 */}
       <ImageModal
-        isOpen={isModalOpen}
+        isOpen={isImageModalOpen}
         imageUrl={selectedImage}
-        onClose={handleCloseModal}
+        onClose={handleCloseImageModal}
       />
 
       {selectedItem && (
         <UpdateCommunityModal
           type={type}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
+          isOpen={isUpdateModalOpen}
+          onClose={handleUpdateModalClose}
           projectId={projectId}
           feedId={selectedItem.id}
           updateData={selectedItem}
