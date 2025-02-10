@@ -1,4 +1,3 @@
-import CommunityForm from "@/components/modal/CommunityForm";
 import {
   Carousel,
   CarouselContent,
@@ -14,9 +13,10 @@ import { Community, CommunityTemplateProps, Notice } from "@/types/community";
 import { convertToKST } from "@/utils/convertToKST";
 import Image from "next/image";
 import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import UpdateCommunityModal from "@/components/modal/community/UpdateCommunityModal";
 
 export default function CommunityTemplate({
-  onClose,
   type,
   items,
   projectUser,
@@ -26,7 +26,8 @@ export default function CommunityTemplate({
     null
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
   const [showImportantOnly, setShowImportantOnly] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<
     Community | Notice | undefined
@@ -38,11 +39,11 @@ export default function CommunityTemplate({
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
-    setIsModalOpen(true);
+    setIsImageModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseImageModal = () => {
+    setIsImageModalOpen(false);
     setSelectedImage(null);
   };
 
@@ -50,14 +51,19 @@ export default function CommunityTemplate({
     setShowImportantOnly((prev) => !prev);
   };
 
+  const handleUpdateModalOpen = (item: Community | Notice) => {
+    setSelectedItem(item);
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateModalClose = () => {
+    setSelectedItem(undefined);
+    setIsUpdateModalOpen(false);
+  };
+
   const filteredItems = showImportantOnly
     ? items.filter((item) => "isImportant" in item && item.isImportant)
     : items;
-
-  const handleEditClick = (item: Community | Notice) => {
-    setSelectedItem(item);
-    onClose();
-  };
 
   return (
     <div>
@@ -78,6 +84,9 @@ export default function CommunityTemplate({
           const createdAtKST = convertToKST(
             new Date(item.createdAt).toISOString()
           );
+          const timeAgo = formatDistanceToNow(createdAtKST, {
+            addSuffix: true,
+          });
           const isExpanded = expandedFeed === item.id;
           const borderClass =
             "isImportant" in item && item.isImportant
@@ -114,8 +123,8 @@ export default function CommunityTemplate({
                     {projectUser.id === item.author.projectUserId && (
                       <div className="flex space-x-2">
                         <button
+                          onClick={() => handleUpdateModalOpen(item)}
                           className="text-gray-500 hover:underline text-sm"
-                          onClick={() => handleEditClick(item)}
                         >
                           수정
                         </button>
@@ -158,21 +167,16 @@ export default function CommunityTemplate({
                 </button>
               )}
 
-              {/* 작성일 */}
-              <p className="flex w-full justify-end text-sm text-gray-400 my-4">
-                {createdAtKST}
-              </p>
-
               {/* 파일 처리 */}
               <div className="mt-4">
                 {/* 이미지 파일 */}
                 {imageFiles.length > 0 && (
-                  <Carousel className="w-full">
+                  <Carousel className="w-[95%]">
                     <CarouselContent className="flex">
                       {imageFiles.map((file, fileIndex) => (
                         <CarouselItem
                           key={`image-${fileIndex}`}
-                          className="flex basis-1/4"
+                          className="relative flex-none"
                         >
                           <Image
                             src={file}
@@ -197,6 +201,13 @@ export default function CommunityTemplate({
                     ))}
                   </div>
                 )}
+                {/* 작성일 */}
+                <div className="flex items-center justify-between mt-8">
+                  <button className="text-gray-500 hover:underline text-sm">
+                    <p className="text-sm text-gray-400">좋아요</p>
+                  </button>
+                  <p className="text-sm text-gray-400">{timeAgo}</p>
+                </div>
               </div>
             </div>
           );
@@ -207,30 +218,19 @@ export default function CommunityTemplate({
 
       {/* 이미지 모달 */}
       <ImageModal
-        isOpen={isModalOpen}
+        isOpen={isImageModalOpen}
         imageUrl={selectedImage}
-        onClose={handleCloseModal}
+        onClose={handleCloseImageModal}
       />
 
       {selectedItem && (
-        <CommunityForm
-          isOpen={true}
-          onClose={() => setSelectedItem(undefined)}
+        <UpdateCommunityModal
           type={type}
-          feedId={selectedItem.id}
+          isOpen={isUpdateModalOpen}
+          onClose={handleUpdateModalClose}
           projectId={projectId}
-          mode="update"
-          updateData={{
-            title: selectedItem.title,
-            content: selectedItem.content,
-            community_files: selectedItem.community_files,
-            isImportant:
-              "isImportant" in selectedItem
-                ? selectedItem.isImportant
-                  ? "true"
-                  : "false"
-                : undefined,
-          }}
+          feedId={selectedItem.id}
+          updateData={selectedItem}
         />
       )}
     </div>
