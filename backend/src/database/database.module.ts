@@ -8,6 +8,9 @@ import { Project } from 'src/modules/project/entities/project.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { Feed } from 'src/modules/feed/entites/feed.entity';
+import { Vote } from 'src/modules/vote/entities/vote.entity';
+import { VoteOption } from 'src/modules/vote/entities/vote-options.entity';
+import { VoteResponse } from 'src/modules/vote/entities/vote-response.entity';
 
 @Module({
   imports: [
@@ -22,7 +25,17 @@ import { Feed } from 'src/modules/feed/entites/feed.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, UserLog, Project, ProjectUser, Community, Feed],
+        entities: [
+          User,
+          UserLog,
+          Project,
+          ProjectUser,
+          Community,
+          Feed,
+          Vote,
+          VoteOption,
+          VoteResponse,
+        ],
         synchronize: true,
         namingStrategy: new SnakeNamingStrategy(),
       }),

@@ -20,4 +20,10 @@ export class CommunityController {
       await this.communityService.getFeedsOrNoticesByProjectId(projectId);
     return notices;
   }
+
+  // GET /api/community/vote/:projectId
+  @Get('votes/:projectId')
+  async getVoteByProjectId(@Param('projectId') projectId: number) {
+    return await this.communityService.getVoteByProjectId(projectId);
+  }
 }

@@ -52,7 +52,7 @@ export class FeedController {
     if (files && files.length > 0) {
       communityFiles = await this.fileService.handleFileUpload({
         files,
-        userId: req.user.id,
+        userId,
         projectId,
         category: Category.COMMUNITY,
       });

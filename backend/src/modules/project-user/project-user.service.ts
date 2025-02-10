@@ -71,7 +71,7 @@ export class ProjectUserService {
     }
   }
 
-  // 👋 상세 정보 -> ProjectUser
+  // 👋 상세 정보 -> ProjectUser, ProjectUser인지 판별과 함께
   async getProjectUser(
     projectId: number,
     userId: number,

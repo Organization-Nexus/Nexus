@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateCommunityDto {
   @IsString()
@@ -13,7 +13,6 @@ export class CreateCommunityDto {
   community_files?: string[];
 
   @IsOptional()
-  @IsBoolean()
   @Transform(({ value }) => value === 'true')
   isImportant?: boolean;
 }
