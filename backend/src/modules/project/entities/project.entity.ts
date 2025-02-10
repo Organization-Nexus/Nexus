@@ -1,4 +1,4 @@
-import { Minutes } from 'src/minutes/entities/minutes.entity';
+import { Minutes } from 'src/modules/minutes/entities/minutes.entity';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import {

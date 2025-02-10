@@ -13,7 +13,7 @@ import { CommunityModule } from './modules/community/community.module';
 import { VoteModule } from './modules/vote/vote.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { MailModule } from './modules/mailer/mailer.module';
-import { MinutesModule } from './minutes/minutes.module';
+import { MinutesModule } from './modules/minutes/minutes.module';
 
 @Module({
   imports: [

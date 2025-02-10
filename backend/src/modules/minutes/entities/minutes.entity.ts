@@ -16,9 +16,6 @@ export class Minutes {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @JoinColumn({ name: 'author_id' })
-  author: ProjectUser;
-
   @Column({ length: 50 })
   title: string;
 
@@ -43,16 +40,22 @@ export class Minutes {
   @Column({ length: 255, nullable: true })
   notes: string;
 
+  @ManyToOne(() => ProjectUser, (projectUser) => projectUser.minutes, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'author_id' })
+  author: ProjectUser;
+
   @ManyToOne(() => Project, (project) => project.minutes, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  @ManyToOne(() => ProjectUser, (projectUser) => projectUser.minutes, {
+  @OneToMany(() => MinutesParticipant, (participant) => participant.minutes, {
     onDelete: 'CASCADE',
   })
-  @OneToMany(() => MinutesParticipant, (participant) => participant.minutes)
   participants: MinutesParticipant[];
 
   @CreateDateColumn()

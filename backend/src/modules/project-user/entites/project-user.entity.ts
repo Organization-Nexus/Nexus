@@ -1,5 +1,5 @@
-import { MinutesParticipant } from 'src/minutes/entities/minutes-participant.entity';
-import { Minutes } from 'src/minutes/entities/minutes.entity';
+import { MinutesParticipant } from 'src/modules/minutes/entities/minutes-participant.entity';
+import { Minutes } from 'src/modules/minutes/entities/minutes.entity';
 import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
 import { User } from 'src/modules/user/entities/user.entity';
