@@ -7,7 +7,9 @@ import { Project } from '../project/entities/project.entity';
 import { User } from '../user/entities/user.entity';
 import {
   ProjectNotFoundException,
+  ThisBroIsAlreadyProjectMemberException,
   UserNotFoundException,
+  YouCanNotAccessGetOutException,
   YourNotProjectMemberException,
 } from './exception/project-user.exception';
 
@@ -67,7 +69,7 @@ export class ProjectUserService {
       where: { project: { id: projectId }, user: { id: userId } },
     });
     if (existingProjectUser) {
-      throw new Error('이 사용자는 이미 프로젝트 멤버입니다.');
+      throw new ThisBroIsAlreadyProjectMemberException(userId);
     }
   }
 
@@ -98,7 +100,7 @@ export class ProjectUserService {
   ): Promise<void> {
     const projectUser = await this.getProjectUser(projectId, userId);
     if (!projectUser.is_sub_admin) {
-      throw new Error('권한이 없습니다.');
+      throw new YouCanNotAccessGetOutException(userId);
     }
   }
 }

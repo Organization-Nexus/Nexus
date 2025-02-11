@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Vote } from '../entities/vote.entity';
 import { CreateVoteDto } from '../dto/create-vote.dto';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
+import { VoteNotFoundException } from '../exception/vote.exception';
 
 @Injectable()
 export class VoteService {
@@ -30,5 +31,13 @@ export class VoteService {
     });
 
     return await this.voteRepository.save(vote);
+  }
+
+  async getVoteByVoteId(voteId: number): Promise<Vote> {
+    const vote = await this.voteRepository.findOneBy({ id: voteId });
+    if (!vote) {
+      throw new VoteNotFoundException(voteId);
+    }
+    return vote;
   }
 }

@@ -48,15 +48,16 @@ export class FeedController {
     );
     const communityId =
       await this.communityService.getCommunityByProjectId(projectId);
-    let communityFiles = null;
-    if (files && files.length > 0) {
-      communityFiles = await this.fileService.handleFileUpload({
-        files,
-        userId,
-        projectId,
-        category: Category.COMMUNITY,
-      });
-    }
+
+    const communityFiles =
+      files && files.length > 0
+        ? await this.fileService.handleFileUpload({
+            files,
+            userId,
+            projectId,
+            category: Category.COMMUNITY,
+          })
+        : null;
 
     const isNotice = false;
 

@@ -1,9 +1,15 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { CommunityService } from './community.service';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { UserPayload } from 'src/types/user-payload';
+import { ProjectUserService } from '../project-user/project-user.service';
 
 @Controller('community')
 export class CommunityController {
-  constructor(private readonly communityService: CommunityService) {}
+  constructor(
+    private readonly communityService: CommunityService,
+    private readonly projectUserService: ProjectUserService,
+  ) {}
 
   // GET /api/community/feeds/:projectId
   @Get('feeds/:projectId')
@@ -23,7 +29,18 @@ export class CommunityController {
 
   // GET /api/community/vote/:projectId
   @Get('votes/:projectId')
-  async getVoteByProjectId(@Param('projectId') projectId: number) {
-    return await this.communityService.getVoteByProjectId(projectId);
+  @UseGuards(JwtAuthGuard)
+  async getVoteByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const projectUser = await this.projectUserService.getProjectUser(
+      projectId,
+      req.user.id,
+    );
+    return await this.communityService.getVoteByProjectId(
+      projectId,
+      projectUser.id,
+    );
   }
 }

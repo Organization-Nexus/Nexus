@@ -9,15 +9,16 @@ import { VoteOption } from './entities/vote-options.entity';
 import { FileModule } from '../file/file.module';
 import { ProjectUserModule } from '../project-user/project-user.module';
 import { CommunityModule } from '../community/community.module';
+import { VoteResponseService } from './services/vote-response.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Vote, VoteResponse, VoteOption]),
+    TypeOrmModule.forFeature([Vote, VoteOption, VoteResponse]),
     FileModule,
     ProjectUserModule,
     CommunityModule,
   ],
   controllers: [VoteController],
-  providers: [VoteService, VoteOptionService],
+  providers: [VoteService, VoteOptionService, VoteResponseService],
 })
 export class VoteModule {}

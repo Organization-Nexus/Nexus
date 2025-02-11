@@ -78,10 +78,14 @@ export class CommunityService {
     };
   }
 
-  async getVoteByProjectId(projectId: number) {
+  async getVoteByProjectId(projectId: number, projectUserId: number) {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: ['votes', 'votes.author.user.log'],
+      relations: [
+        'votes',
+        'votes.author.user.log',
+        'votes.options.response_users.projectUser',
+      ],
     });
 
     const votes = community.votes.map((vote) => ({
@@ -105,10 +109,18 @@ export class CommunityService {
           },
         },
       },
-      options: vote.options.map((option) => ({
-        id: option.id,
-        content: option.content,
-      })),
+      voteOptions: vote.options.map((option) => {
+        const voteCount = option.response_users.length;
+        const isSelectedByUser = option.response_users.some(
+          (response) => response.projectUser.id === projectUserId,
+        );
+        return {
+          id: option.id,
+          content: option.content,
+          voteCount,
+          isSelectedByUser,
+        };
+      }),
     }));
 
     return SortByCreateAtDesc(votes);

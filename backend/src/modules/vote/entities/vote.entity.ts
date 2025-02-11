@@ -40,7 +40,6 @@ export class Vote {
 
   @OneToMany(() => VoteOption, (option) => option.vote, {
     cascade: true,
-    eager: true,
   })
   options: VoteOption[];
 
