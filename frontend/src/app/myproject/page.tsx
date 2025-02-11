@@ -20,7 +20,7 @@ export default async function MyProject() {
             <hr className="my-4" />
             <ProjectList />
           </div>
-          <div className="w-[400px] bg-white px-6 py-3 rounded-2xl shadow-xl h-[400px] overflow-y-auto">
+          <div className="">
             <RightNavBar contents={contents} />
           </div>
         </div>

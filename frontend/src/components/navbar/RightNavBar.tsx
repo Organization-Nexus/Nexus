@@ -4,19 +4,33 @@ import Image from "next/image";
 import { RightNavBarProps } from "@/types/navbar";
 import { useUserInfo } from "@/query/queries/user";
 import MyProfile from "../modal/MyProfile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MyPageModal from "../modal/Mypage";
 
 export default function RightNavBar({ contents }: RightNavBarProps) {
-  const { data: user } = useUserInfo();
+  const { data: user, isLoading } = useUserInfo();
   const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <div>로딩중...</div>;
+  }
 
   if (!user) {
     return <div>사용자 정보를 불러올 수 없습니다.</div>;
   }
+
   return (
-    <>
+    <div className="w-[400px] bg-white px-6 py-3 rounded-2xl shadow-xl h-[400px] overflow-y-auto">
       <div className="p-4 bg-white rounded-lg">
         <div className="flex mb-4">
           <div className="flex gap-4 w-full h-full items-center">
@@ -70,6 +84,6 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
         onClose={() => setIsMyPageOpen(false)}
         user={user}
       />
-    </>
+    </div>
   );
 }
