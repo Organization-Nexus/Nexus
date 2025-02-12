@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/modules/community/entites/community.entity';
-import { GetFeedNoticeDto } from './dto/get-feed-notice.dto';
+import { GetCommunityContentsDto } from './dto/get-community-contents.dto';
+import { SortByCreateAtDesc } from 'src/utils/SortByCreateAtDesc';
 
 @Injectable()
 export class CommunityService {
@@ -26,21 +27,18 @@ export class CommunityService {
     return community.id;
   }
 
-  async getFeedsOrNoticesByProjectId(
-    projectId: number,
-  ): Promise<{ feeds: GetFeedNoticeDto[]; notices: GetFeedNoticeDto[] }> {
+  async getFeedsOrNoticesByProjectId(projectId: number): Promise<{
+    feeds: GetCommunityContentsDto[];
+    notices: GetCommunityContentsDto[];
+  }> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: [
-        'feeds',
-        'feeds.author',
-        'feeds.author.user',
-        'feeds.author.user.log',
-      ],
+      relations: ['feeds', 'feeds.author.user.log'],
     });
+
     const { feeds, notices } = community.feeds.reduce(
       (result, feed) => {
-        const transformedFeed: GetFeedNoticeDto = {
+        const transformedFeed: GetCommunityContentsDto = {
           id: feed.id,
           title: feed.title,
           content: feed.content,
@@ -70,20 +68,61 @@ export class CommunityService {
         return result;
       },
       { feeds: [], notices: [] } as {
-        feeds: GetFeedNoticeDto[];
-        notices: GetFeedNoticeDto[];
+        feeds: GetCommunityContentsDto[];
+        notices: GetCommunityContentsDto[];
       },
     );
+    return {
+      feeds: SortByCreateAtDesc(feeds),
+      notices: SortByCreateAtDesc(notices),
+    };
+  }
 
-    feeds.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-    notices.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+  async getVoteByProjectId(projectId: number, projectUserId: number) {
+    const community = await this.communityRepository.findOne({
+      where: { project: { id: projectId } },
+      relations: [
+        'votes',
+        'votes.author.user.log',
+        'votes.options.response_users.projectUser',
+      ],
+    });
 
-    return { feeds, notices };
+    const votes = community.votes.map((vote) => ({
+      id: vote.id,
+      title: vote.title,
+      content: vote.content,
+      isMultipleChoice: vote.isMultipleChoice,
+      isAnonymous: vote.isAnonymous,
+      createdAt: vote.createdAt,
+      deadline: vote.deadline,
+      community_files: vote.community_files,
+      author: {
+        projectUserId: vote.author.id,
+        position: vote.author.position,
+        user: {
+          name: vote.author.user.name,
+          log: {
+            status: vote.author.user.log.status,
+            profileImage: vote.author.user.log.profileImage,
+            rank: vote.author.user.log.rank,
+          },
+        },
+      },
+      voteOptions: vote.options.map((option) => {
+        const voteCount = option.response_users.length;
+        const isSelectedByUser = option.response_users.some(
+          (response) => response.projectUser.id === projectUserId,
+        );
+        return {
+          id: option.id,
+          content: option.content,
+          voteCount,
+          isSelectedByUser,
+        };
+      }),
+    }));
+
+    return SortByCreateAtDesc(votes);
   }
 }

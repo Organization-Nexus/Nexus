@@ -1,8 +1,8 @@
 import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
+import { Vote } from 'src/modules/vote/entities/vote.entity';
 // import { Vote } from 'src/modules/vote/entites/vote.entity';
 import {
-  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -28,6 +28,6 @@ export class Community {
   @OneToMany(() => Feed, (feed) => feed.community)
   feeds: Feed[];
 
-  //   @OneToMany(() => Vote, (vote) => vote.community)
-  //   votes: Vote[];
+  @OneToMany(() => Vote, (vote) => vote.community)
+  votes: Vote[];
 }

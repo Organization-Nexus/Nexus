@@ -7,7 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class GetFeedNoticeDto {
+export class GetCommunityContentsDto {
   @IsNumber()
   id: number;
 
@@ -25,9 +25,11 @@ export class GetFeedNoticeDto {
   createdAt: Date;
 
   @IsBoolean()
+  @IsOptional()
   isNotice: boolean;
 
   @IsBoolean()
+  @IsOptional()
   isImportant: boolean;
 
   author: AuthorDto;

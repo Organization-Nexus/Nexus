@@ -30,3 +30,18 @@ export class AlreadyProjectMemberException extends CustomHttpException {
     );
   }
 }
+
+export class ThisBroIsAlreadyProjectMemberException extends CustomHttpException {
+  constructor(userId: number) {
+    super(
+      `${userId}번 사용자는 이미 프로젝트 멤버입니다. 🥲`,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+}
+
+export class YouCanNotAccessGetOutException extends CustomHttpException {
+  constructor(userId: number) {
+    super(`${userId}번 사용자는 접근 권한이 없어요. 🥲`, HttpStatus.FORBIDDEN);
+  }
+}
