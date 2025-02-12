@@ -126,7 +126,7 @@ export default function CreateCommunityModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div className="flex justify-between items-center">
         <Modal.Title>{type} 생성</Modal.Title>
         <Modal.Button variant="nothing" onClick={onClose}>

@@ -132,7 +132,7 @@ export default function CreateProjectModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div>
         <div className="flex justify-between items-center">
           <Modal.Title>프로젝트 생성</Modal.Title>

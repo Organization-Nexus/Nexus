@@ -14,6 +14,7 @@ import {
 import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
 import FileItem from "@/components/utils/FileItem";
 import Image from "next/image";
+import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
 
 export default function UpdateCommunityModal({
   type,
@@ -148,7 +149,7 @@ export default function UpdateCommunityModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div className="flex justify-between items-center">
         <Modal.Title>{type} 수정</Modal.Title>
         <Modal.Button variant="nothing" onClick={onClose}>
@@ -305,9 +306,13 @@ export default function UpdateCommunityModal({
             )}
           </div>
           <div className="flex space-x-2">
-            <Modal.Button variant="secondary" onClick={onClose}>
-              닫기
-            </Modal.Button>
+            <CustomAlertDialog
+              onConfirm={onClose}
+              title="정말 취소하시겠습니까?"
+              description="공지사항의 정보를 정말 취소하시겠습니다."
+            >
+              <Modal.Button variant="secondary">닫기</Modal.Button>
+            </CustomAlertDialog>
             <Modal.Button variant="primary" onClick={handleSubmit}>
               생성
             </Modal.Button>
