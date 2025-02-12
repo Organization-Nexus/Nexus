@@ -10,10 +10,8 @@ export default function NavBarBtn({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center w-full ${padding} mt-1 rounded-md ${
-        isActive
-          ? "bg-blue-400 text-white"
-          : "hover:bg-blue-400 hover:text-white"
+      className={`flex items-center w-full ${padding} rounded-md ${
+        isActive ? "bg-[#c2d6ff] text-white" : "hover hover:text-[#c2d6ff]"
       } transition-colors`}
     >
       {icon} {label}

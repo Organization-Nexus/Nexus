@@ -1,20 +1,20 @@
 "use client";
 
-import {
-  FaHome,
-  FaTasks,
-  FaUsers,
-  FaCalendarAlt,
-  FaCommentDots,
-  FaClipboardList,
-  FaBookmark,
-  FaCodeBranch,
-} from "react-icons/fa";
 import { LogoutButton } from "../button/LogoutButton";
 import { usePathname, useRouter } from "next/navigation";
 import { LeftNavBarProps } from "@/types/navbar";
 import NavBarBtn from "./NavBarBtn";
-
+import {
+  Bookmark,
+  CalendarDays,
+  ClipboardList,
+  House,
+  LayoutDashboard,
+  MessageSquareText,
+  Milestone,
+  Waypoints,
+} from "lucide-react";
+import { PiUsersThreeBold } from "react-icons/pi";
 export default function LeftNavBar({ projectId }: LeftNavBarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -35,7 +35,7 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Project Home */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject`)}
-            icon={<FaHome className="mr-3" />}
+            icon={<House className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="내 프로젝트"
             padding="p-4"
           />
@@ -43,7 +43,9 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Dashboard */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/dashboard`)}
-            icon={<FaTasks className="mr-3" />}
+            icon={
+              <LayoutDashboard className="mr-3 w-[1.125rem] h-[1.125rem]" />
+            }
             label="대시보드"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/dashboard`)}
@@ -54,7 +56,9 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Community */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/community`)}
-            icon={<FaUsers className="mr-3" />}
+            icon={
+              <PiUsersThreeBold className="mr-3 w-[1.125rem] h-[1.125rem]" />
+            }
             label="커뮤니티"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/community`)}
@@ -63,7 +67,7 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Calendar */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}
-            icon={<FaCalendarAlt className="mr-3" />}
+            icon={<CalendarDays className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="달력"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/calendar`)}
@@ -72,7 +76,7 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Milestones */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/milestones`)}
-            icon={<FaClipboardList className="mr-3" />}
+            icon={<Milestone className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="마일스톤"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/milestones`)}
@@ -81,10 +85,19 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Issues */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/issues`)}
-            icon={<FaCodeBranch className="mr-3" />}
+            icon={<Waypoints className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="이슈"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/issues`)}
+          />
+
+          {/* Minutes */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/minutes`)}
+            icon={<ClipboardList className="mr-3 w-[1.125rem] h-[1.125rem]" />}
+            label="회의록"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/minutes`)}
           />
 
           <hr className="my-4" />
@@ -94,7 +107,9 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             onClick={() =>
               navigateTo(`/myproject/${projectId}/my-posts-comments`)
             }
-            icon={<FaCommentDots className="mr-3" />}
+            icon={
+              <MessageSquareText className="mr-3 w-[1.125rem] h-[1.125rem]" />
+            }
             label="내가 쓴 글/댓글"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/my-posts-comments`)}
@@ -103,7 +118,7 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
           {/* Bookmarks */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/bookmarks`)}
-            icon={<FaBookmark className="mr-3" />}
+            icon={<Bookmark className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="나의 북마크"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/bookmarks`)}
