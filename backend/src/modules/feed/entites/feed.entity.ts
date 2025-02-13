@@ -1,4 +1,5 @@
 import { Community } from 'src/modules/community/entites/community.entity';
+import { Like } from 'src/modules/like/entities/like.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -28,6 +30,9 @@ export class Feed {
 
   @Column({ default: false })
   isImportant: boolean;
+
+  @OneToMany(() => Like, (like) => like.feed)
+  likes: Like[];
 
   @ManyToOne(() => Community, (community) => community.feeds, {
     onDelete: 'CASCADE',

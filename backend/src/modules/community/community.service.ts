@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { GetCommunityContentsDto } from './dto/get-community-contents.dto';
-import { SortByCreateAtDesc } from 'src/utils/SortByCreateAtDesc';
 
 @Injectable()
 export class CommunityService {
@@ -33,7 +32,12 @@ export class CommunityService {
   }> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: ['feeds', 'feeds.author.user.log'],
+      relations: ['feeds', 'feeds.author.user.log', 'feeds.likes'],
+      order: {
+        feeds: {
+          createdAt: 'DESC',
+        },
+      },
     });
 
     const { feeds, notices } = community.feeds.reduce(
@@ -46,6 +50,7 @@ export class CommunityService {
           isNotice: feed.isNotice,
           isImportant: feed.isImportant,
           createdAt: feed.createdAt,
+          likeCount: feed.likes.length,
           author: {
             projectUserId: feed.author.id,
             position: feed.author.position,
@@ -73,8 +78,8 @@ export class CommunityService {
       },
     );
     return {
-      feeds: SortByCreateAtDesc(feeds),
-      notices: SortByCreateAtDesc(notices),
+      feeds,
+      notices,
     };
   }
 
@@ -85,7 +90,13 @@ export class CommunityService {
         'votes',
         'votes.author.user.log',
         'votes.options.response_users.projectUser',
+        'votes.likes',
       ],
+      order: {
+        votes: {
+          createdAt: 'DESC',
+        },
+      },
     });
 
     const votes = community.votes.map((vote) => ({
@@ -97,6 +108,7 @@ export class CommunityService {
       createdAt: vote.createdAt,
       deadline: vote.deadline,
       community_files: vote.community_files,
+      likeCount: vote.likes.length,
       author: {
         projectUserId: vote.author.id,
         position: vote.author.position,
@@ -123,6 +135,6 @@ export class CommunityService {
       }),
     }));
 
-    return SortByCreateAtDesc(votes);
+    return votes;
   }
 }

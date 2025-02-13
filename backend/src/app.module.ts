@@ -14,6 +14,7 @@ import { VoteModule } from './modules/vote/vote.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { MailModule } from './modules/mailer/mailer.module';
 import { MinutesModule } from './modules/minutes/minutes.module';
+import { LikeModule } from './modules/like/like.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { MinutesModule } from './modules/minutes/minutes.module';
     VoteModule,
     MailModule,
     MinutesModule,
+    LikeModule,
   ],
 })
 export class AppModule {

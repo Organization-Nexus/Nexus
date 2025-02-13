@@ -28,6 +28,9 @@ export class GetCommunityContentsDto {
   @IsOptional()
   isNotice: boolean;
 
+  @IsNumber()
+  likeCount: number;
+
   @IsBoolean()
   @IsOptional()
   isImportant: boolean;
