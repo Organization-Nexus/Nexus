@@ -1,4 +1,3 @@
-// MinutesContainer.tsx
 "use client";
 
 import { useState } from "react";
@@ -50,7 +49,6 @@ export function MinutesContainer({ projectId }: { projectId: string }) {
         >
           <SquarePlus className="mr-2" /> 회의록 생성
         </Button>
-
         <MinutesList projectId={projectId} />
       </div>
 
@@ -64,6 +62,7 @@ export function MinutesContainer({ projectId }: { projectId: string }) {
             <CreateMinutesForm
               isOpen={isCreating}
               onClose={() => setIsCreating(false)}
+              projectId={projectId}
             />
           </div>
         )}

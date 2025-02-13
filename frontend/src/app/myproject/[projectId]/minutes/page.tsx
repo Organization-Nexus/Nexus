@@ -11,19 +11,11 @@ export default async function Minutes({ params }: ProjectIdProps) {
     description: "회의 내용을 기록하고 공유하는 공간입니다. 📝",
   };
 
-  const contents = [
-    "Project Management",
-    "Task Management",
-    "Team Management",
-    "Calendar",
-    "Chat",
-  ];
   return (
     <div className="mx-20">
       <PageInfo project={project} menuType={minutesMenuType} />
       <div className="flex justify-between py-8">
         <MinutesContainer projectId={projectId} />
-        {/* <div><RightNavBar contents={contents} /></div> */}
       </div>
     </div>
   );

@@ -59,6 +59,7 @@ export default function RegisterFormComponent() {
       [name]: validationError,
     }));
   };
+
   const handlePositionSelect = (position: string) => {
     setSelectedPositions(position);
     setErrors((prev) => ({ ...prev, mainPosition: undefined }));
