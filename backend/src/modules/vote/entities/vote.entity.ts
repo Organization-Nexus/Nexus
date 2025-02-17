@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VoteOption } from './vote-options.entity';
+import { Like } from 'src/modules/like/entities/like.entity';
 
 @Entity('vote')
 export class Vote {
@@ -37,6 +38,9 @@ export class Vote {
 
   @Column('text', { array: true, nullable: true })
   community_files: string[];
+
+  @OneToMany(() => Like, (like) => like.vote)
+  likes: Like[];
 
   @OneToMany(() => VoteOption, (option) => option.vote, {
     cascade: true,
