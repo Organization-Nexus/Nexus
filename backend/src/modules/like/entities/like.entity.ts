@@ -23,7 +23,7 @@ export class Like {
   // ETC
 
   @ManyToOne(() => ProjectUser, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'project_user_id' })
+  @JoinColumn({ name: 'projectUserId' })
   projectUser: ProjectUser;
 
   @CreateDateColumn()

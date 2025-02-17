@@ -72,8 +72,8 @@ export class VoteController {
     return { vote, voteOptions };
   }
 
-  // POST /api/vote/vote-response/:projectId/:voteId
-  @Post('vote-response/:projectId/:voteId')
+  // POST /api/vote/vote-response/:voteId/:projectId
+  @Post('vote-response/:voteId/:projectId')
   @UseGuards(JwtAuthGuard)
   async voteResponse(
     @Body() voteRequestDto: VoteRequestDto,
@@ -98,8 +98,8 @@ export class VoteController {
     );
   }
 
-  // GET /api/vote/vote-response/:voteOptionId
-  @Get('vote-response/:projectId/:voteOptionId')
+  // GET /api/vote/vote-response/:voteOptionId/:projectId
+  @Get('vote-response/:voteOptionId/:projectId')
   @UseGuards(JwtAuthGuard)
   async getVoteResponseByOptionId(
     @Param('projectId') projectId: number,

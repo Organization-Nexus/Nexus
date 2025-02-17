@@ -34,7 +34,7 @@ export class FeedService {
     return await this.feedRepository.save(feed);
   }
 
-  async getFeedById(feedId: number): Promise<Feed> {
+  async getFeedByFeedId(feedId: number): Promise<Feed> {
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
       // relations: ['author', 'author.user', 'author.user.log'],

@@ -16,5 +16,6 @@ import { CommunityModule } from '../community/community.module';
   ],
   controllers: [FeedController],
   providers: [FeedService],
+  exports: [FeedService],
 })
 export class FeedModule {}

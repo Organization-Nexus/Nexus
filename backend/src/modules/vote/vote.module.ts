@@ -20,5 +20,6 @@ import { VoteResponseService } from './services/vote-response.service';
   ],
   controllers: [VoteController],
   providers: [VoteService, VoteOptionService, VoteResponseService],
+  exports: [VoteService, VoteOptionService, VoteResponseService],
 })
 export class VoteModule {}
