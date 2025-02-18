@@ -22,4 +22,8 @@ export class CreateVoteDto {
 
   @IsArray()
   options: string[];
+
+  @IsOptional()
+  @IsString()
+  community_files?: string[];
 }

@@ -121,20 +121,21 @@ export class CommunityService {
           },
         },
       },
-      voteOptions: vote.options.map((option) => {
-        const voteCount = option.response_users.length;
-        const isSelectedByUser = option.response_users.some(
-          (response) => response.projectUser.id === projectUserId,
-        );
-        return {
-          id: option.id,
-          content: option.content,
-          voteCount,
-          isSelectedByUser,
-        };
-      }),
+      voteOptions: vote.options
+        .map((option) => {
+          const voteCount = option.response_users.length;
+          const isSelectedByUser = option.response_users.some(
+            (response) => response.projectUser.id === projectUserId,
+          );
+          return {
+            id: option.id,
+            content: option.content,
+            voteCount,
+            isSelectedByUser,
+          };
+        })
+        .sort((a, b) => a.id - b.id),
     }));
-
     return votes;
   }
 }

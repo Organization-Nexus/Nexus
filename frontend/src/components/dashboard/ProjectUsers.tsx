@@ -2,7 +2,7 @@ import { ProjectUserListProps } from "@/types/project-user";
 
 export default function ProjectUsers({ projectUsers }: ProjectUserListProps) {
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap">
       {projectUsers.map((projectUser) => (
         <div
           key={projectUser.id}
