@@ -33,6 +33,8 @@ export default function CommunityTemplate({
     Community | Notice | undefined
   >(undefined);
 
+  console.log("😡 ITEMS", items);
+
   const handleToggleExpand = (itemId: string | number) => {
     setExpandedFeed((prev) => (prev === itemId ? null : itemId));
   };
@@ -96,6 +98,7 @@ export default function CommunityTemplate({
           const files = item.community_files || [];
           const imageFiles = files.filter((file) => isImageFile(file));
           const docsFiles = files.filter((file) => !isImageFile(file));
+
           return (
             <div
               key={index}
@@ -167,6 +170,58 @@ export default function CommunityTemplate({
                 </button>
               )}
 
+              {/* 투표 항목 */}
+              {"voteOptions" in item &&
+                item.voteOptions &&
+                item.voteOptions.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      {!item.isAnonymous && !item.isMultipleChoice && (
+                        <div className="text-sm text-gray-300">
+                          <p>
+                            단일 투표입니다. 한 개의 항목만 선택 가능합니다.
+                          </p>
+                        </div>
+                      )}
+
+                      {item.isMultipleChoice && (
+                        <div className="text-sm text-gray-300">
+                          <p>다중 선택이 가능합니다.</p>
+                        </div>
+                      )}
+
+                      {item.isAnonymous && (
+                        <div className="text-sm text-gray-300">
+                          <p>
+                            익명 투표입니다. 선택한 항목은 다른 사용자에게
+                            표시되지 않습니다.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <ul className="space-y-2">
+                      {item.voteOptions.map((option, idx) => (
+                        <li
+                          key={idx}
+                          className={`flex items-center p-4 bg-gray-50 border rounded-md shadow-md hover:bg-green-50 hover:text-white ${
+                            option.isSelectedByUser ? "bg-green-100" : ""
+                          }`}
+                        >
+                          <span
+                            className={`ml-2 ${
+                              option.isSelectedByUser
+                                ? "text-gray-700"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            {option.content}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
               {/* 파일 처리 */}
               <div className="mt-4">
                 {/* 이미지 파일 */}
@@ -229,8 +284,11 @@ export default function CommunityTemplate({
           isOpen={isUpdateModalOpen}
           onClose={handleUpdateModalClose}
           projectId={projectId}
-          feedId={selectedItem.id}
-          updateData={selectedItem}
+          feedId={selectedItem.id.toString()}
+          updateData={{
+            ...selectedItem,
+            community_files: selectedItem?.community_files ?? undefined,
+          }}
         />
       )}
     </div>

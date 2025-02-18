@@ -1,4 +1,4 @@
-import { Community, Notice } from "@/types/community";
+import { Community, Notice, Vote } from "@/types/community";
 import { communityKeys } from "../key";
 import { communityApi } from "@/app/_api/models/community";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +18,15 @@ export const useFeedList = (projectId: string, initialData: Community[]) => {
   return useQuery({
     queryKey: communityKeys.FEED_LIST_KEY,
     queryFn: () => communityApi.getfeedsByProjectId(projectId),
+    initialData,
+    initialDataUpdatedAt: Date.now(),
+  });
+};
+
+export const uesVoteList = (projectId: string, initialData: Vote[]) => {
+  return useQuery({
+    queryKey: communityKeys.VOTE_LIST_KEY,
+    queryFn: () => communityApi.getVotesByProjectId(projectId),
     initialData,
     initialDataUpdatedAt: Date.now(),
   });
