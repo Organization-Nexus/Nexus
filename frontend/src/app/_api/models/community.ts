@@ -3,6 +3,7 @@ import {
   CreateCommunityForm,
   UpdateCommunityForm,
   Notice,
+  Vote,
 } from "@/types/community";
 import api from "../axios";
 
@@ -54,5 +55,11 @@ export const communityApi = {
         "Content-Type": isFormData ? "multipart/form-data" : "application/json",
       },
     });
+  },
+
+  getVotesByProjectId: async (projectId: string): Promise<Vote[]> => {
+    return await api
+      .get<Vote[]>(`/community/votes/${projectId}`)
+      .then((res) => res.data);
   },
 };

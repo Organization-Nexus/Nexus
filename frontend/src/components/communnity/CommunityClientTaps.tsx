@@ -12,7 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { CommunityClientTapsProps } from "@/types/community";
-import { useFeedList, useNoticeList } from "@/query/queries/community";
+import {
+  uesVoteList,
+  useFeedList,
+  useNoticeList,
+} from "@/query/queries/community";
 import CreateCommunityModal from "../modal/community/CreateCommunityModal";
 
 const tabs = [
@@ -27,6 +31,7 @@ export default function CommunityClientTabs({
   projectUser,
   feeds: initialFeeds,
   notices: initialNotices,
+  votes: initialVotes,
 }: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState("all");
   const [openCreateCommunityForm, setOpenCreateCommunityForm] = useState(false);
@@ -36,8 +41,13 @@ export default function CommunityClientTabs({
 
   const notices = useNoticeList(projectId, initialNotices).data;
   const feeds = useFeedList(projectId, initialFeeds).data;
+  const votes = uesVoteList(projectId, initialVotes).data;
 
-  const contentData: Record<string, any> = { notice: notices, feed: feeds };
+  const contentData: Record<string, any> = {
+    notice: notices,
+    feed: feeds,
+    vote: votes,
+  };
 
   const handleTabClick = (tabKey: string) => setSelectedTab(tabKey);
 
@@ -105,11 +115,11 @@ export default function CommunityClientTabs({
         <hr className="my-4" />
 
         {/* 커뮤니티 컨텐츠 */}
-        <Suspense fallback={<div>로딩 중...</div>}>
+        <Suspense>
           <div className="mt-8">
             {tabs.map(({ key, label }) =>
               selectedTab === key ? (
-                key === "all" || key === "vote" ? (
+                key === "all" ? (
                   <div key={key}>{label}</div>
                 ) : (
                   <CommunityTemplate

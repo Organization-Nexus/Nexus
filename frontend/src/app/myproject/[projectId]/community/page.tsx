@@ -10,6 +10,7 @@ export default async function Community({ params }: ProjectIdProps) {
   const project = await projectApi.getProjectById(projectId);
   const notices = await communityApi.getNoticesByProjectId(projectId);
   const feeds = await communityApi.getfeedsByProjectId(projectId);
+  const votes = await communityApi.getVotesByProjectId(projectId);
   const projectUser = await projectUserApi.getProjectUser(projectId);
 
   return (
@@ -21,6 +22,7 @@ export default async function Community({ params }: ProjectIdProps) {
           projectUser={projectUser}
           feeds={feeds}
           notices={notices}
+          votes={votes}
         />
       </div>
 
