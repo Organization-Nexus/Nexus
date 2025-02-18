@@ -74,7 +74,9 @@ export class UserService {
       // 이전 이미지 삭제
       if (previousImageUrl) {
         console.log('이전 이미지 삭제:', previousImageUrl);
-        await this.fileService.deleteFiles([previousImageUrl]);
+        if (previousImageUrl !== process.env.DEFAULT_PROFILE_IMAGE) {
+          await this.fileService.deleteFiles([previousImageUrl]);
+        }
       }
       // 기존 이미지 URL을 유지하는 경우
     } else if (updateUserDto.profileImageUrl) {

@@ -9,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-export function MinutesList({ projectId }: { projectId: string }) {
+export function MinutesList({ projectId }: { projectId: number }) {
+  console.log(projectId);
   return (
     <div>
       {/* <Button

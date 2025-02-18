@@ -5,14 +5,14 @@ export const minutesApi = {
     return await api.post(`/projects/${projectId}/minutes/`, data);
   },
 
-  getMinutesByProjectId: async (projectId: string): Promise<Minutes[]> => {
+  getMinutesByProjectId: async (projectId: number): Promise<Minutes[]> => {
     return await api
       .get<Minutes[]>(`/projects/${projectId}/minutes/`)
       .then((res) => res.data);
   },
   getMinutesByMinutesId: async (
-    projectId: string,
-    minutesId: string
+    projectId: number,
+    minutesId: number
   ): Promise<Minutes> => {
     return await api
       .get<Minutes>(`/projects/${projectId}/minutes/${minutesId}/`)
@@ -20,8 +20,8 @@ export const minutesApi = {
   },
 
   UpdateMinutesByMinutesId: async (
-    projectId: string,
-    minutesId: string,
+    projectId: number,
+    minutesId: number,
     data: UpdateMinutes
   ) => {
     return await api.patch(
@@ -30,7 +30,7 @@ export const minutesApi = {
     );
   },
 
-  deleteMinutesByMinutesId: async (projectId: string, minutesId: string) => {
+  deleteMinutesByMinutesId: async (projectId: number, minutesId: number) => {
     return await api.delete(`/projects/${projectId}/minutes/${minutesId}/`);
   },
 };

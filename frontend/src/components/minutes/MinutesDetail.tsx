@@ -15,7 +15,7 @@ export function MinutesDetail({
     title: "",
     date: "",
     time: "",
-    participants: [],
+    participant_ids: [],
     topic: "",
     content: "",
     decisions: "",

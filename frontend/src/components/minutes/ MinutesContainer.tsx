@@ -6,6 +6,8 @@ import { SquarePlus } from "lucide-react";
 import { MinutesList } from "./MinutesList";
 import RightNavBar from "../navbar/RightNavBar";
 import { CreateMinutesForm } from "./CreateMinutesForm";
+import { Project } from "@/types/project";
+import { Minutes } from "@/types/minutes";
 const contents = [
   "Project Management",
   "Task Management",
@@ -13,19 +15,11 @@ const contents = [
   "Calendar",
   "Chat",
 ];
-interface Minutes {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
-  participants: string[];
-  topic: string;
-  content: string;
-  decisions: string;
-  notes: string;
-}
 
-export function MinutesContainer({ projectId }: { projectId: string }) {
+interface MinutesContainerProps {
+  project: Project;
+}
+export function MinutesContainer({ project }: MinutesContainerProps) {
   const [selectedMinutes, setSelectedMinutes] = useState<Minutes | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -49,7 +43,7 @@ export function MinutesContainer({ projectId }: { projectId: string }) {
         >
           <SquarePlus className="mr-2" /> 회의록 생성
         </Button>
-        <MinutesList projectId={projectId} />
+        <MinutesList projectId={project.id} />
       </div>
 
       {/* 오른쪽 영역: RightNavBar와 CreateMinutesForm */}
@@ -62,7 +56,7 @@ export function MinutesContainer({ projectId }: { projectId: string }) {
             <CreateMinutesForm
               isOpen={isCreating}
               onClose={() => setIsCreating(false)}
-              projectId={projectId}
+              project={project}
             />
           </div>
         )}
