@@ -12,7 +12,7 @@ import {
 import { VoteService } from './services/vote.service';
 import { VoteOptionService } from './services/vote-options.service';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { UserPayload } from 'src/types/user-payload';
 import { ProjectUserService } from '../project-user/project-user.service';
@@ -36,7 +36,7 @@ export class VoteController {
   // POST /api/vote/create-vote/:projectId
   @Post('create-vote/:projectId')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('community_files'))
+  @UseInterceptors(FilesInterceptor('community_files'))
   async createVote(
     @Body() createVoteDto: CreateVoteDto,
     @Param('projectId') projectId: number,
@@ -77,8 +77,8 @@ export class VoteController {
   @UseGuards(JwtAuthGuard)
   async voteResponse(
     @Body() voteRequestDto: VoteRequestDto,
-    @Param('projectId') projectId: number,
     @Param('voteId') voteId: number,
+    @Param('projectId') projectId: number,
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
@@ -91,11 +91,16 @@ export class VoteController {
       projectId,
       userId,
     );
-    return await this.voteResponseService.createVoteResponse(
+    await this.voteResponseService.handleExistingVoteResponse(
+      voteId,
+      projectUser,
+    );
+    const newVoteResponses = await this.voteResponseService.createVoteResponse(
       vote,
       projectUser,
       selectedOptions,
     );
+    return newVoteResponses;
   }
 
   // GET /api/vote/vote-response/:voteOptionId/:projectId
