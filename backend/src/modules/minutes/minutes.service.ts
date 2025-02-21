@@ -11,6 +11,7 @@ import { MinutesParticipant } from './entities/minutes-participant.entity';
 import { CreateMinutesDto } from './dto/create-minutes.dto';
 import { ProjectUser } from '../project-user/entites/project-user.entity';
 import { UpdateMinutesDto } from './dto/update-minutes.dto';
+import { MinutesResponseDto } from './dto/minutes.dto';
 
 @Injectable()
 export class MinutesService {
@@ -50,7 +51,12 @@ export class MinutesService {
   async getMinutesList(projectId: number) {
     return await this.minutesRepository.find({
       where: { project: { id: projectId } },
-      relations: ['author', 'participants', 'participants.member'],
+      relations: [
+        'author.user',
+        // 'participants',
+        // 'participants.member',
+        // 'participants.member.user',
+      ],
       order: { created_at: 'DESC' },
     });
   }
@@ -58,14 +64,20 @@ export class MinutesService {
   async getMinutesDetail(minutesId: number) {
     const minutes = await this.minutesRepository.findOne({
       where: { id: minutesId },
-      relations: ['author', 'participants', 'participants.member'],
+      relations: [
+        'author.user.log',
+        // 'participants',
+        // 'participants.member',
+        // 'participants.member.user',
+        'participants.member.user.log',
+      ],
     });
 
     if (!minutes) {
       throw new NotFoundMinutesException(minutesId);
     }
 
-    return minutes;
+    return this.toMinutesResponseDto(minutes);
   }
 
   async updateMinutes(updateMinutesDto: UpdateMinutesDto, minutesId: number) {
@@ -95,13 +107,11 @@ export class MinutesService {
   }
 
   async deleteMinutes(minutesId: number) {
-    const minutes = await this.getMinutesDetail(minutesId);
-
+    const minutes = await this.findMinutesEntity(minutesId);
     // 2. 참석자 정보 먼저 삭제
     await this.participantRepository.delete({
       minutes: { id: minutesId },
     });
-
     await this.minutesRepository.remove(minutes);
   }
 
@@ -118,5 +128,55 @@ export class MinutesService {
     if (minutes.author.id !== projectUserId) {
       throw new UnauthorizedMinutesException(projectUserId);
     }
+  }
+
+  private toMinutesResponseDto(minutes: Minutes): MinutesResponseDto {
+    return {
+      id: minutes.id,
+      title: minutes.title,
+      meeting_date: minutes.meeting_date,
+      meeting_time: minutes.meeting_time,
+      agenda: minutes.agenda,
+      topic: minutes.topic,
+      content: minutes.content,
+      decisions: minutes.decisions,
+      notes: minutes.notes,
+      author: {
+        id: minutes.author.id,
+        user: {
+          name: minutes.author.user.name,
+          position: minutes.author.position,
+          log: {
+            profileImage: minutes.author.user.log?.profileImage,
+          },
+        },
+      },
+      participants: minutes.participants.map((participant) => ({
+        id: participant.id,
+        member: {
+          id: participant.member.id,
+          user: {
+            name: participant.member.user.name,
+            log: {
+              profileImage: participant.member.user.log?.profileImage,
+            },
+          },
+        },
+      })),
+    };
+  }
+
+  // 엔티티 조회용 private 메서드
+  private async findMinutesEntity(minutesId: number) {
+    const minutes = await this.minutesRepository.findOne({
+      where: { id: minutesId },
+      relations: ['author', 'author.user', 'participants'],
+    });
+
+    if (!minutes) {
+      throw new NotFoundMinutesException(minutesId);
+    }
+
+    return minutes;
   }
 }

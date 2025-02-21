@@ -1,7 +1,7 @@
 import api from "../axios";
 import { CreateMinutes, Minutes, UpdateMinutes } from "@/types/minutes";
 export const minutesApi = {
-  createMinutesByProjectId: async (projectId: string, data: CreateMinutes) => {
+  createMinutesByProjectId: async (projectId: number, data: CreateMinutes) => {
     return await api.post(`/projects/${projectId}/minutes/`, data);
   },
 

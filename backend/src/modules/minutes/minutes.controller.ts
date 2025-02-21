@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +9,7 @@ import {
   Post,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MinutesService } from './minutes.service';
 import { ProjectUserService } from '../project-user/project-user.service';
@@ -17,6 +19,7 @@ import { CreateMinutesDto } from './dto/create-minutes.dto';
 import { UserPayload } from 'src/types/user-payload';
 import { UpdateMinutesDto } from './dto/update-minutes.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('projects/:projectId/minutes')
 export class MinutesController {
   constructor(
@@ -46,7 +49,7 @@ export class MinutesController {
 
   // GET /api/projects/:projectId/minutes
   @Get()
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async getMinutesList(
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
@@ -62,7 +65,7 @@ export class MinutesController {
 
   // GET /api/projects/:projectId/minutes/:minutesId
   @Get(':minutesId')
-  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
+  @UseGuards(JwtAuthGuard)
   async getMinutesDetail(
     @Param('minutesId') minutesId: number,
     @Param('projectId') projectId: number,

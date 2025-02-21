@@ -7,6 +7,15 @@ export const communityKeys = {
   FEED_LIST_KEY: ["feedList"],
 };
 
+export const minutesKeys = {
+  MINUTES_LIST_KEY: ["minutesList"],
+  MINUTES_DETAIL_KEY: (projectId: number, minutesId: number) => [
+    "minutesList",
+    projectId,
+    minutesId,
+  ],
+};
+
 export const userKeys = {
   MYPAGE_USER_INFO_KEY: ["myPageUserInfo"],
 };
