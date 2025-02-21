@@ -3,11 +3,7 @@ import { Repository } from 'typeorm';
 import { VoteOption } from '../entities/vote-options.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vote } from '../entities/vote.entity';
-import {
-  AnonymousVoteException,
-  InvalidVoteOptionException,
-  VoteNotFoundException,
-} from '../exception/vote.exception';
+import { InvalidVoteOptionException } from '../exception/vote.exception';
 
 @Injectable()
 export class VoteOptionService {
@@ -54,28 +50,27 @@ export class VoteOptionService {
     return voteOption;
   }
 
-  async getVoteOptionDetails(voteOptionsId: number) {
-    const voteOption = await this.voteOptionRepository.findOne({
-      where: { id: voteOptionsId },
-      relations: ['vote', 'response_users.projectUser.user.log'],
+  async getVoteOptionsByVoteId(voteId: number, projectUserId: number) {
+    const voteOptions = await this.voteOptionRepository.find({
+      where: { vote: { id: voteId } },
+      relations: ['response_users.projectUser.user.log'],
     });
-    if (!voteOption) {
-      throw new VoteNotFoundException(voteOptionsId);
-    }
-    if (voteOption.vote.isAnonymous) {
-      throw new AnonymousVoteException();
-    }
-
-    const responseUsers = voteOption.response_users.map((response) => ({
-      userId: response.projectUser.id,
-      userName: response.projectUser.user.name,
-      profileImage: response.projectUser.user.log.profileImage,
-    }));
-
-    return {
-      voteOptionId: voteOption.id,
-      responseUsers: responseUsers,
-      voteCount: voteOption.response_users.length,
-    };
+    return voteOptions.map((option) => {
+      const voteCount = option.response_users.length;
+      const isSelectedByUser = option.response_users.some(
+        (response) => response.projectUser.id === projectUserId,
+      );
+      return {
+        id: option.id,
+        content: option.content,
+        voteCount,
+        isSelectedByUser,
+        response_users: option.response_users.map((response) => ({
+          id: response.projectUser.id,
+          name: response.projectUser.user.name,
+          profileImage: response.projectUser.user.log.profileImage,
+        })),
+      };
+    });
   }
 }

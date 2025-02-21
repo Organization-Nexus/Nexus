@@ -4,6 +4,7 @@ import {
   UpdateCommunityForm,
   Notice,
   Vote,
+  VoteOption,
 } from "@/types/community";
 import api from "../axios";
 
@@ -60,6 +61,31 @@ export const communityApi = {
   getVotesByProjectId: async (projectId: string): Promise<Vote[]> => {
     return await api
       .get<Vote[]>(`/community/votes/${projectId}`)
+      .then((res) => res.data);
+  },
+
+  createVoteResponseByVoteIdAndProjectId: async (
+    voteId: string,
+    projectId: string,
+    optionId: number[]
+  ) => {
+    return await api.patch(
+      `/vote/vote-response/${voteId}/${projectId}`,
+      { optionId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  },
+
+  getVoteOptionsByVoteIdAndProjectId: async (
+    voteId: string,
+    projectId: string
+  ): Promise<VoteOption[]> => {
+    return await api
+      .get(`/vote/vote-options/${voteId}/${projectId}`)
       .then((res) => res.data);
   },
 };

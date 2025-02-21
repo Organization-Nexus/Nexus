@@ -1,22 +1,26 @@
 import { communityApi } from "@/app/_api/models/community";
 import { projectApi } from "@/app/_api/models/project";
 import { projectUserApi } from "@/app/_api/models/project-user";
+import PageInfo from "@/components/common/PageInfo";
 import CommunityClientTaps from "@/components/communnity/CommunityClientTaps";
-import CommunityInfo from "@/components/communnity/CommunityInfo";
 import { ProjectIdProps } from "@/types/project";
 
 export default async function Community({ params }: ProjectIdProps) {
   const projectId = params.projectId;
-  const project = await projectApi.getProjectById(projectId);
   const notices = await communityApi.getNoticesByProjectId(projectId);
   const feeds = await communityApi.getfeedsByProjectId(projectId);
   const votes = await communityApi.getVotesByProjectId(projectId);
   const projectUser = await projectUserApi.getProjectUser(projectId);
+  const project = await projectApi.getProjectById(projectId);
+  const communityMenuType = {
+    title: "커뮤니티",
+    description: "팀원들과 편하게 대화하는 커뮤니티 공간입니다. 🌴",
+  };
 
   return (
-    <div className="flex justify-center py-8">
-      <div className="w-full max-w-5xl bg-white rounded-lg shadow-md">
-        <CommunityInfo project={project} />
+    <div>
+      <div className="mx-20">
+        <PageInfo project={project} menuType={communityMenuType} />
         <CommunityClientTaps
           projectId={projectId}
           projectUser={projectUser}
@@ -24,17 +28,6 @@ export default async function Community({ params }: ProjectIdProps) {
           notices={notices}
           votes={votes}
         />
-      </div>
-
-      <div className="pl-8">
-        <div className="bg-white border rounded-xl shadow-md p-6 h-[600px] w-[400px]">
-          <h3 className="text-2xl font-semibold text-gray-800">공지사항</h3>
-          <div className="mt-4">
-            <p className="text-sm text-gray-600">
-              여기에 공지사항 내용을 추가해주세요.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

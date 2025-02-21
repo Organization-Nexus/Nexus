@@ -107,7 +107,7 @@ export default function UpdateCommunityModal({
   const toggleIsImportant = () => {
     setFormData((prev) => ({
       ...prev,
-      isImportant: prev.isImportant === true ? "false" : "true",
+      isImportant: !prev.isImportant,
     }));
   };
 
@@ -298,7 +298,7 @@ export default function UpdateCommunityModal({
                 type="button"
                 onClick={toggleIsImportant}
                 className={`${
-                  formData.isImportant === true ? "text-red-500" : ""
+                  formData.isImportant === true ? "text-red-500" : "text-black"
                 }`}
               >
                 <Siren size={25} />
