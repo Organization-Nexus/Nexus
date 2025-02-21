@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import { useUpdateMinutes } from "@/query/mutations/minutes";
 import {
-  CreateMinutes,
-  CreateMinutesFormProps,
+  Minutes,
+  UpdateMinutes,
   ValidationMinutesErrors,
 } from "@/types/minutes";
-import { useState } from "react";
-import { Modal } from "../modal/config/ModalMaps";
+import { useRouter } from "next/navigation";
+import { UnderlineInput } from "../ui/underlineInput";
 import {
   BadgeCheck,
   Calendar1,
@@ -18,7 +20,6 @@ import {
   X,
   Text,
 } from "lucide-react";
-import { UnderlineInput } from "../ui/underlineInput";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,38 +27,51 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import Image from "next/image";
-import { useCreateMinutes } from "@/query/mutations/minutes";
+import { Project } from "@/types/project";
+import { Modal } from "../modal/config/ModalMaps";
 
-export function CreateMinutesForm({
-  isOpen,
-  onClose,
+interface UpdateMinutesFormProps {
+  project: Project;
+  minutesId: number;
+  initialData: Minutes;
+  onClose: () => void;
+}
+
+export function UpdateMinutesForm({
   project,
-}: CreateMinutesFormProps) {
+  minutesId,
+  initialData,
+  onClose,
+}: UpdateMinutesFormProps) {
+  console.log("initialData:", initialData); // 전체 데이터 확인
+
+  const router = useRouter();
   const projectId = project.id;
   const projectMembers = project.projectUsers;
-  const createMinutesMutation = useCreateMinutes(projectId);
 
-  const [formData, setFormData] = useState<CreateMinutes>({
-    title: "",
-    meeting_date: "",
-    meeting_time: "",
-    participant_ids: [],
-    agenda: "",
-    topic: "",
-    content: "",
-    decisions: null,
-    notes: null,
+  const [formData, setFormData] = useState({
+    title: initialData.title,
+    meeting_date: initialData.meeting_date,
+    meeting_time: initialData.meeting_time,
+    participant_ids: initialData.participants.map((p) => p.member.id),
+
+    agenda: initialData.agenda,
+    topic: initialData.topic,
+    content: initialData.content,
+    decisions: initialData.decisions ?? "",
+    notes: initialData.notes ?? "",
   });
   const [errors, setErrors] = useState<ValidationMinutesErrors>({});
-  const [serverError, setServerError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [selectedMembers, setSelectedMembers] = useState<
-    Array<{
-      id: number;
-      name: string;
-      profileImage: string;
-    }>
-  >([]);
+  const [selectedMembers, setSelectedMembers] = useState(
+    initialData.participants.map((participant) => ({
+      id: participant.member.id,
+      name: participant.member.user.name,
+      profileImage: participant.member.user.log.profileImage,
+    }))
+  );
+
+  const updateMutation = useUpdateMinutes(projectId);
+
   const handleMemberSelect = (member: {
     id: number;
     name: string;
@@ -78,10 +92,11 @@ export function CreateMinutesForm({
     );
     setFormData((prev) => ({
       ...prev,
-      participant_ids: prev.participant_ids.filter((id) => id !== memberId),
+      participant_ids: prev.participant_ids.filter(
+        (id: number) => id !== memberId
+      ),
     }));
   };
-
   // textarea 높이 조절
   const adjustTextareaHeight = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -105,46 +120,40 @@ export function CreateMinutesForm({
     }
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: ValidationMinutesErrors = {
-      title: !formData.title.trim() ? "제목을 입력해주세요." : undefined,
-      meeting_date: !formData.meeting_date ? "날짜을 입력해주세요." : undefined,
-      meeting_time: !formData.meeting_time ? "시간을 입력해주세요." : undefined,
-      participant_ids: !formData.participant_ids.length
-        ? "참석자를 선택해주세요."
-        : undefined,
-      agenda: !formData.agenda.trim() ? "안건을 입력해주세요." : undefined,
-      topic: !formData.topic.trim() ? "주제을 입력해주세요." : undefined,
-      content: !formData.content.trim() ? "내용을 입력해주세요." : undefined,
-    };
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { title: "", agenda: "", decisions: "" };
+
+    if (!formData.title.trim()) {
+      newErrors.title = "제목을 입력해주세요.";
+      isValid = false;
+    }
+    if (!formData.agenda.trim()) {
+      newErrors.agenda = "안건을 입력해주세요.";
+      isValid = false;
+    }
 
     setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error !== undefined);
+    return isValid;
   };
 
   const handleSubmit = async () => {
     setErrors({});
-    if (!validateForm()) {
-      return;
-    }
-    setIsLoading(true);
+
+    if (!validateForm()) return;
 
     try {
-      const minutesData: CreateMinutes = {
+      const updatedData: UpdateMinutes = {
         ...formData,
         decisions:
           formData.decisions?.trim() === "" ? null : formData.decisions?.trim(),
         notes: formData.notes?.trim() === "" ? null : formData.notes?.trim(),
       };
-
-      createMinutesMutation.mutate(minutesData);
-      console.log("회의록 생성 성공");
+      updateMutation.mutate({ minutesId, data: updatedData });
+      console.log("회의록 수정 성공");
       onClose();
-      alert("회의록이 작성되었습니다.");
-    } catch (error: any) {
-      console.error("회의록 생성 실패", error);
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error("회의록 수정 실패:", error);
     }
   };
 
@@ -408,7 +417,7 @@ export function CreateMinutesForm({
           </CustomAlertDialog>
 
           <Modal.Button variant="primary" onClick={handleSubmit}>
-            작성
+            수정
           </Modal.Button>
         </div>
       </form>

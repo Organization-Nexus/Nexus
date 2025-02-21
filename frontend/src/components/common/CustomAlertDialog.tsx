@@ -14,7 +14,7 @@ interface CustomAlertDialogProps {
   onConfirm: () => void;
   children: React.ReactNode;
   title: string;
-  description: string;
+  description?: string;
   confirmText?: string;
   cancelText?: string;
 }

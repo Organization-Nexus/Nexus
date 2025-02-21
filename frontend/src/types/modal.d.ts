@@ -86,6 +86,7 @@ export interface InputProps {
   placeholder?: string;
   required?: boolean;
   min?: string;
+  maxLength?: number;
   className?: string;
 }
 

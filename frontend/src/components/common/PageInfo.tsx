@@ -28,7 +28,7 @@ export default function ProjectInfo({ project, menuType }: PageInfoProps) {
               className="rounded-lg"
             />
             <div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-end space-x-2">
                 <p className="text-4xl font-semibold text-primary">
                   {project?.title}
                 </p>

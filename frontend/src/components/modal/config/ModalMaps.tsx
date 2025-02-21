@@ -248,7 +248,14 @@ function ModalInput({ type, className, ...props }: InputProps) {
     return <textarea {...props} className={finalClassName} />;
   }
 
-  return <input type={type} {...props} className={finalClassName} />;
+  return (
+    <input
+      type={type}
+      maxLength={props.maxLength}
+      {...props}
+      className={finalClassName}
+    />
+  );
 }
 
 // 모달 컴포넌트 조합
