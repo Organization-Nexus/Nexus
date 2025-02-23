@@ -5,6 +5,7 @@ import {
   Notice,
   Vote,
   VoteOption,
+  CreateVoteDto,
 } from "@/types/community";
 import api from "../axios";
 
@@ -80,12 +81,24 @@ export const communityApi = {
     );
   },
 
-  getVoteOptionsByVoteIdAndProjectId: async (
+  getVoteOptionByVoteIdAndProjectId: async (
     voteId: string,
     projectId: string
   ): Promise<VoteOption[]> => {
     return await api
       .get(`/vote/vote-options/${voteId}/${projectId}`)
       .then((res) => res.data);
+  },
+
+  createVoteByProjectId: async (
+    projectId: string,
+    data: CreateVoteDto | FormData
+  ) => {
+    const isFormData = data instanceof FormData;
+    return await api.post(`/vote/create-vote/${projectId}`, data, {
+      headers: {
+        "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+      },
+    });
   },
 };

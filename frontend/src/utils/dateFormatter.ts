@@ -7,5 +7,5 @@ export const formatDate = (date: string | Date): string => {
   const minutes = koreanTime.getMinutes().toString().padStart(2, "0");
   const seconds = koreanTime.getSeconds().toString().padStart(2, "0");
 
-  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  return `${year}.${month}.${day} ${hours}:${minutes}`;
 };

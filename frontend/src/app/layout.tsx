@@ -7,7 +7,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko-KR">
       <head />
-      <body className="bg-[#EDF2FB] hide-scrollbar">
+      <body className="bg-gray-100 hide-scrollbar">
         <QueryProvider>
           <NavigationWrapper>{children}</NavigationWrapper>
         </QueryProvider>

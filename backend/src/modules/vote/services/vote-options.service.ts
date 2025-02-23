@@ -55,22 +55,25 @@ export class VoteOptionService {
       where: { vote: { id: voteId } },
       relations: ['response_users.projectUser.user.log'],
     });
-    return voteOptions.map((option) => {
-      const voteCount = option.response_users.length;
-      const isSelectedByUser = option.response_users.some(
-        (response) => response.projectUser.id === projectUserId,
-      );
-      return {
-        id: option.id,
-        content: option.content,
-        voteCount,
-        isSelectedByUser,
-        response_users: option.response_users.map((response) => ({
-          id: response.projectUser.id,
-          name: response.projectUser.user.name,
-          profileImage: response.projectUser.user.log.profileImage,
-        })),
-      };
-    });
+
+    return voteOptions
+      .map((option) => {
+        const voteCount = option.response_users.length;
+        const isSelectedByUser = option.response_users.some(
+          (response) => response.projectUser.id === projectUserId,
+        );
+        return {
+          id: option.id,
+          content: option.content,
+          voteCount,
+          isSelectedByUser,
+          response_users: option.response_users.map((response) => ({
+            id: response.projectUser.id,
+            name: response.projectUser.user.name,
+            profileImage: response.projectUser.user.log.profileImage,
+          })),
+        };
+      })
+      .sort((a, b) => a.id - b.id);
   }
 }

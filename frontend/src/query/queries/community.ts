@@ -32,12 +32,3 @@ export const uesVoteList = (projectId: string, initialData: Vote[]) => {
     initialDataUpdatedAt: Date.now(),
   });
 };
-
-// 투표 항목 리스트 가져오기
-export const useVoteOptionResponses = (projectId: string, voteId: string) => {
-  return useQuery({
-    queryKey: communityKeys.VOTE_OPTION_RESPONSES_KEY,
-    queryFn: () =>
-      communityApi.getVoteOptionsByVoteIdAndProjectId(projectId, voteId),
-  });
-};

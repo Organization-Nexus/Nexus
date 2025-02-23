@@ -61,6 +61,19 @@ export default function CommunityTemplate({
     ? items.filter((item) => "isImportant" in item && item.isImportant)
     : items;
 
+  const getVoteStatus = (deadline: string) => {
+    const deadlineDate = new Date(
+      convertToKST(new Date(deadline).toISOString())
+    );
+    const currentDate = new Date();
+
+    if (deadlineDate > currentDate) {
+      return "진행중";
+    } else {
+      return "마감됨";
+    }
+  };
+
   return (
     <div>
       {type === "공지사항" && (
@@ -123,7 +136,7 @@ export default function CommunityTemplate({
                 </button>
               )}
 
-              {type == "투표" && "voteOptions" in item && (
+              {type === "투표" && "voteOptions" in item && (
                 <CommunityVoteOptions
                   voteOptions={item.voteOptions}
                   isAnonymous={item.isAnonymous}
@@ -133,8 +146,17 @@ export default function CommunityTemplate({
                 />
               )}
 
+              {type === "투표" && "voteOptions" in item && item.deadline && (
+                <div>
+                  <span className="font-semibold">마감일: </span>
+                  <span>
+                    {convertToKST(new Date(item.deadline).toISOString())} -{" "}
+                    {getVoteStatus(item.deadline)}
+                  </span>
+                </div>
+              )}
+
               <FilePreview files={item.community_files || []} />
-              {/* 작성일 */}
               <div className="flex items-center justify-between mt-8">
                 <button className="text-gray-500 hover:underline text-sm">
                   <p className="text-sm text-gray-400">좋아요</p>

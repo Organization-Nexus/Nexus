@@ -69,6 +69,23 @@ export const useUpdateCommunity = (
   });
 };
 
+// 투표 생성
+export const useCreateVote = (projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (voteData: FormData) =>
+      communityApi.createVoteByProjectId(projectId, voteData),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: communityKeys.VOTE_LIST_KEY,
+      });
+    },
+    onError: (error) => {
+      console.error("투표 생성 실패", error);
+    },
+  });
+};
+
 // 투표 해버리기
 export const useCreateVoteResponse = (voteId: string, projectId: string) => {
   const queryClient = useQueryClient();
@@ -80,11 +97,6 @@ export const useCreateVoteResponse = (voteId: string, projectId: string) => {
         projectId,
         optionId
       ),
-    onSuccess: () => {
-      queryClient.refetchQueries({
-        queryKey: communityKeys.VOTE_OPTION_RESPONSES_KEY,
-      });
-    },
     onError: (error: any) => {
       console.error("투표 응답 실패", error.response?.data || error);
       alert(`서버 에러: ${JSON.stringify(error.response?.data)}`);

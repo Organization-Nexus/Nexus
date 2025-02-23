@@ -90,3 +90,13 @@ export interface VoteOption {
     profileImage: string;
   }[];
 }
+
+export interface CreateVoteDto {
+  title: string;
+  content: string;
+  isMultipleChoice?: string;
+  isAnonymous?: string;
+  deadline?: string | null;
+  options: string[];
+  community_files?: File[];
+}

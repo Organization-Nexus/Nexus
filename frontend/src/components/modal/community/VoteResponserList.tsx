@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useVoteOptionResponses } from "@/query/queries/community";
+import { useState, useEffect } from "react";
 import { Modal } from "../config/ModalMaps";
+import { communityApi } from "@/app/_api/models/community"; // API 경로가 맞는지 확인해주세요.
 
 export interface VoteResponserListProps {
   isOpen: boolean;
@@ -9,17 +9,22 @@ export interface VoteResponserListProps {
   projectId: string;
 }
 
+interface VoteOption {
+  id: number;
+  content: string;
+  voteCount: number;
+  response_users: { id: number; name: string; profileImage: string }[];
+}
+
 export default function VoteResponserList({
   isOpen,
   onClose,
   voteId,
   projectId,
 }: VoteResponserListProps) {
-  const { data: voteOptionResponsers, refetch } = useVoteOptionResponses(
-    projectId,
-    voteId
-  );
-
+  const [voteOptionResponsers, setVoteOptionResponsers] = useState<
+    VoteOption[] | null
+  >(null);
   const [activeTab, setActiveTab] = useState<
     "participated" | "nonParticipated" | null
   >("participated");
@@ -28,13 +33,25 @@ export default function VoteResponserList({
     onClose();
   };
 
-  const handleRefresh = () => {
-    refetch();
-  };
-
   const handleTabChange = (tab: "participated" | "nonParticipated" | null) => {
     setActiveTab(tab);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isOpen) return;
+      try {
+        const data = await communityApi.getVoteOptionByVoteIdAndProjectId(
+          voteId,
+          projectId
+        );
+        setVoteOptionResponsers(data);
+      } catch (error) {
+        console.error("데이터 로딩 실패:", error);
+      }
+    };
+    fetchData();
+  }, [isOpen, voteId, projectId]);
 
   return (
     <Modal
@@ -94,25 +111,35 @@ export default function VoteResponserList({
             </div>
 
             <div className="space-y-2">
-              {activeTab === "participated"
-                ? voteOption.response_users?.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-md hover:bg-gray-100 transition"
-                    >
-                      <img
-                        src={user.profileImage}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-lg"
-                      />
-                      <div>
-                        <span className="text-sm font-semibold text-gray-800">
-                          {user.name}
-                        </span>
-                      </div>
+              {activeTab === "participated" &&
+              voteOption.response_users.length > 0 ? (
+                voteOption.response_users.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-md hover:bg-gray-100 transition"
+                  >
+                    <img
+                      src={user.profileImage}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-lg"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-gray-800">
+                        {user.name}
+                      </span>
                     </div>
-                  ))
-                : activeTab === "nonParticipated" && null}
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-500 text-sm">참여자가 없습니다.</div>
+              )}
+
+              {activeTab === "nonParticipated" &&
+                voteOption.response_users.length === 0 && (
+                  <div className="text-gray-500 text-sm">
+                    미참여자가 없습니다.
+                  </div>
+                )}
             </div>
           </div>
         ))}
