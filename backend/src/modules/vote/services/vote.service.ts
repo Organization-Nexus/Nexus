@@ -34,7 +34,11 @@ export class VoteService {
   }
 
   async getVoteByVoteId(voteId: number): Promise<Vote> {
-    const vote = await this.voteRepository.findOneBy({ id: voteId });
+    const vote = await this.voteRepository.findOne({
+      where: { id: voteId },
+      relations: ['options'],
+    });
+
     if (!vote) {
       throw new VoteNotFoundException(voteId);
     }

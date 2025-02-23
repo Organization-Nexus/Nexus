@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import CommunityTemplate from "./contents/CommunityTemplate";
 import { Button } from "../ui/button";
-import { Newspaper, Siren, SquarePlus, Users, Vote } from "lucide-react";
+import { Newspaper, Siren, SquarePlus, Vote } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,6 @@ import {
 import CreateCommunityModal from "../modal/community/CreateCommunityModal";
 
 const tabs = [
-  { key: "all", label: "전체보기", icon: <Users size={20} /> },
   { key: "notice", label: "공지사항", icon: <Siren size={20} /> },
   { key: "feed", label: "피드", icon: <Newspaper size={20} /> },
   { key: "vote", label: "투표", icon: <Vote size={20} /> },
@@ -33,15 +32,15 @@ export default function CommunityClientTabs({
   notices: initialNotices,
   votes: initialVotes,
 }: CommunityClientTapsProps) {
-  const [selectedTab, setSelectedTab] = useState("all");
+  const [selectedTab, setSelectedTab] = useState("notice");
   const [openCreateCommunityForm, setOpenCreateCommunityForm] = useState(false);
   const [communityFormType, setCommunityFormType] = useState<string | null>(
     null
   );
 
-  const notices = useNoticeList(projectId, initialNotices).data;
-  const feeds = useFeedList(projectId, initialFeeds).data;
-  const votes = uesVoteList(projectId, initialVotes).data;
+  const notices = useNoticeList(projectId, initialNotices).data || [];
+  const feeds = useFeedList(projectId, initialFeeds).data || [];
+  const votes = uesVoteList(projectId, initialVotes).data || [];
 
   const contentData: Record<string, any> = {
     notice: notices,
@@ -63,8 +62,9 @@ export default function CommunityClientTabs({
   };
 
   return (
-    <div className="flex justify-center w-full p-8">
-      <div className="w-4/5 max-w-7xl space-y-4">
+    <div>
+      <div className="w-3/5 space-y-4">
+        <hr className="my-4" />
         <div className="flex justify-between items-center">
           {/* 커뮤니티 탭 */}
           <div className="flex items-center space-x-6">
@@ -92,46 +92,33 @@ export default function CommunityClientTabs({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>컨텐츠 선택</DropdownMenuLabel>
-              {tabs
-                .filter(({ key }) => key !== "all")
-                .map(({ key, label, icon }) => (
-                  <DropdownMenuItem
-                    key={key}
-                    onClick={() => handleCreateModalOpen(key)}
-                    disabled={key === "notice" && !projectUser.is_sub_admin}
-                    className={
-                      key === "notice" && !projectUser.is_sub_admin
-                        ? "text-gray-500"
-                        : ""
-                    }
-                  >
-                    {icon} {label}
-                  </DropdownMenuItem>
-                ))}
+              {tabs.map(({ key, label, icon }) => (
+                <DropdownMenuItem
+                  key={key}
+                  onClick={() => handleCreateModalOpen(key)}
+                  disabled={key === "notice" && !projectUser.is_sub_admin}
+                  className={
+                    key === "notice" && !projectUser.is_sub_admin
+                      ? "text-gray-500"
+                      : ""
+                  }
+                >
+                  {icon} {label}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        <hr className="my-4" />
-
         {/* 커뮤니티 컨텐츠 */}
-        <Suspense>
+        <Suspense fallback={<div>로딩 중...</div>}>
           <div className="mt-8">
-            {tabs.map(({ key, label }) =>
-              selectedTab === key ? (
-                key === "all" ? (
-                  <div key={key}>{label}</div>
-                ) : (
-                  <CommunityTemplate
-                    key={key}
-                    type={label}
-                    items={contentData[key] || []}
-                    projectUser={projectUser}
-                    projectId={projectId}
-                  />
-                )
-              ) : null
-            )}
+            <CommunityTemplate
+              key={selectedTab}
+              type={tabs.find((t) => t.key === selectedTab)?.label || ""}
+              items={contentData[selectedTab] || []}
+              projectUser={projectUser}
+              projectId={projectId}
+            />
           </div>
         </Suspense>
       </div>

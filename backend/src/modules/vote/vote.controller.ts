@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UploadedFiles,
@@ -21,6 +22,7 @@ import { FileService } from '../file/file.service';
 import { Category } from 'src/types/enum/file-category.enum';
 import { VoteRequestDto } from './dto/vote-request.dto';
 import { VoteResponseService } from './services/vote-response.service';
+import { AnonymousVoteException } from './exception/vote.exception';
 
 @Controller('vote')
 export class VoteController {
@@ -72,8 +74,8 @@ export class VoteController {
     return { vote, voteOptions };
   }
 
-  // POST /api/vote/vote-response/:voteId/:projectId
-  @Post('vote-response/:voteId/:projectId')
+  // PATCH /api/vote/vote-response/:voteId/:projectId
+  @Patch('vote-response/:voteId/:projectId')
   @UseGuards(JwtAuthGuard)
   async voteResponse(
     @Body() voteRequestDto: VoteRequestDto,
@@ -103,19 +105,44 @@ export class VoteController {
     return newVoteResponses;
   }
 
-  // GET /api/vote/vote-response/:voteOptionId/:projectId
-  @Get('vote-response/:voteOptionId/:projectId')
+  // GET /api/vote/vote-options/:voteId/:projectId
+  @Get('vote-options/:voteId/:projectId')
   @UseGuards(JwtAuthGuard)
-  async getVoteResponseByOptionId(
+  async getVoteOptionsByVoteId(
     @Param('projectId') projectId: number,
-    @Param('voteOptionId') voteOptionId: number,
+    @Param('voteId') voteId: number,
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    await this.projectUserService.validateProjectMemberByUserId(
-      projectId,
-      userId,
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    const vote = await this.voteService.getVoteByVoteId(voteId);
+    if (vote.isAnonymous) {
+      throw new AnonymousVoteException();
+    }
+    return await this.voteOptionService.getVoteOptionsByVoteId(
+      voteId,
+      projectUserId,
     );
-    return await this.voteOptionService.getVoteOptionDetails(voteOptionId);
+  }
+
+  // GET /api/vote/:voteId/:projectId
+  @Get(':voteId/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getVoteByVoteId(
+    @Param('projectId') projectId: number,
+    @Param('voteId') voteId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    return await this.voteService.getVoteByVoteId(voteId);
   }
 }

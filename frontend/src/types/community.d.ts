@@ -82,6 +82,21 @@ export interface Vote extends BaseCommunity {
 export interface VoteOption {
   id: number;
   content: string;
-  vote_id: number;
+  voteCount: number;
   isSelectedByUser: boolean;
+  response_users: {
+    id: number;
+    name: string;
+    profileImage: string;
+  }[];
+}
+
+export interface CreateVoteDto {
+  title: string;
+  content: string;
+  isMultipleChoice?: string;
+  isAnonymous?: string;
+  deadline?: string | null;
+  options: string[];
+  community_files?: File[];
 }

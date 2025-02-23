@@ -23,6 +23,7 @@ export const useFeedList = (projectId: string, initialData: Community[]) => {
   });
 };
 
+// 투표 목록 가져오기
 export const uesVoteList = (projectId: string, initialData: Vote[]) => {
   return useQuery({
     queryKey: communityKeys.VOTE_LIST_KEY,

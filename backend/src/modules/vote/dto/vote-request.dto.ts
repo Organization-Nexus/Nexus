@@ -1,7 +1,6 @@
-import { IsArray, ArrayNotEmpty } from 'class-validator';
+import { IsArray } from 'class-validator';
 
 export class VoteRequestDto {
   @IsArray()
-  @ArrayNotEmpty()
   optionId: number[];
 }

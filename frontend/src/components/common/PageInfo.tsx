@@ -10,9 +10,9 @@ interface PageInfoProps extends ProjectProps {
   };
 }
 
-export default function ProjectInfo({ project, menuType }: PageInfoProps) {
+export default function PageInfo({ project, menuType }: PageInfoProps) {
   return (
-    <div className="flex w-full pt-4 mt-8">
+    <div className="flex w-full py-4 mt-8">
       <div className="w-1/2 max-w-7xl space-y-6">
         <div className="">
           <div className="flex items-center space-x-6">

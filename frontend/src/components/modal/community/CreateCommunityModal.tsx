@@ -1,5 +1,8 @@
-import { useCreateFeed, useCreateNotice } from "@/query/mutations/community";
-import { CreateCommunityForm } from "@/types/community";
+import {
+  useCreateFeed,
+  useCreateNotice,
+  useCreateVote,
+} from "@/query/mutations/community";
 import { CreateCommunity } from "@/types/modal";
 import { useState } from "react";
 import { isImageFile } from "../../utils/isImageFile";
@@ -14,22 +17,31 @@ import {
 } from "../../ui/carousel";
 import Image from "next/image";
 import FileItem from "../../utils/FileItem";
+import CreateVoteOptions from "@/components/communnity/CreateVoteOptions";
+import { CreateCommunityForm, CreateVoteDto } from "@/types/community";
 
 export default function CreateCommunityModal({
   isOpen,
   onClose,
-  type, // "feed" | "notice"
+  type, // "feed" | "notice" | "vote"
   projectId,
 }: CreateCommunity) {
   const createNoticeMutation = useCreateNotice(projectId);
   const createFeedMutation = useCreateFeed(projectId);
+  const createVoteMutation = useCreateVote(projectId);
 
-  const [formData, setFormData] = useState<CreateCommunityForm>({
-    title: "",
-    content: "",
-    community_files: [],
-    isImportant: "false",
-  });
+  const [formData, setFormData] = useState<CreateCommunityForm | CreateVoteDto>(
+    {
+      title: "",
+      content: "",
+      community_files: [],
+      isImportant: type === "공지사항" ? "false" : undefined,
+      isMultipleChoice: type === "투표" ? "false" : "",
+      isAnonymous: type === "투표" ? "false" : "",
+      deadline: type === "투표" ? null : "",
+      options: type === "투표" ? [] : undefined,
+    }
+  );
 
   const [titleError, setTitleError] = useState<string>("");
   const [contentError, setContentError] = useState<string>("");
@@ -90,10 +102,15 @@ export default function CreateCommunityModal({
   };
 
   const toggleIsImportant = () => {
-    setFormData((prev) => ({
-      ...prev,
-      isImportant: prev.isImportant === "true" ? "false" : "true",
-    }));
+    setFormData((prev) => {
+      if ("isImportant" in prev) {
+        return {
+          ...prev,
+          isImportant: prev.isImportant === "true" ? "false" : "true",
+        };
+      }
+      return prev;
+    });
   };
 
   const handleSubmit = async () => {
@@ -113,12 +130,38 @@ export default function CreateCommunityModal({
       formData.community_files?.forEach((file) => {
         formDataToSend.append("community_files", file);
       });
+
+      // 공지사항 처리
       if (type === "공지사항") {
-        formDataToSend.append("isImportant", formData.isImportant || "");
+        if ("isImportant" in formData) {
+          formDataToSend.append("isImportant", formData.isImportant || "");
+        }
         createNoticeMutation.mutate(formDataToSend);
       } else if (type === "피드") {
         createFeedMutation.mutate(formDataToSend);
+      } else if (type === "투표") {
+        if ("isMultipleChoice" in formData) {
+          formDataToSend.append(
+            "isMultipleChoice",
+            formData.isMultipleChoice || ""
+          );
+        }
+        if ("isAnonymous" in formData) {
+          formDataToSend.append("isAnonymous", formData.isAnonymous || "");
+        }
+        if ("options" in formData) {
+          formData.options.forEach((option: string) => {
+            formDataToSend.append("options", option);
+          });
+        }
+        if ("deadline" in formData) {
+          if (formData.deadline) {
+            formDataToSend.append("deadline", formData.deadline);
+          }
+        }
+        createVoteMutation.mutate(formDataToSend);
       }
+
       onClose();
     } catch (err) {
       console.error("Create Error:", err);
@@ -126,7 +169,12 @@ export default function CreateCommunityModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnOutsideClick={false}
+      className="max-h-[90vh] overflow-y-auto"
+    >
       <div className="flex justify-between items-center">
         <Modal.Title>{type} 생성</Modal.Title>
         <Modal.Button variant="nothing" onClick={onClose}>
@@ -135,6 +183,9 @@ export default function CreateCommunityModal({
       </div>
       <Modal.Divider />
       <Modal.Subtitle>{type}을 생성해주세요. 🤟</Modal.Subtitle>
+      {type === "투표" && (
+        <p className="text-xs text-red-500">투표는 수정이 불가능 합니다.</p>
+      )}
       <Modal.Divider />
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -154,7 +205,6 @@ export default function CreateCommunityModal({
           onChange={handleChange}
           placeholder="제목을 입력하세요."
           className="placeholder:text-sm placeholder:gray-400"
-          required
         />
         {titleError && (
           <span className="text-red-500 text-sm">{titleError}</span>
@@ -174,11 +224,20 @@ export default function CreateCommunityModal({
           value={formData.content}
           onChange={handleChange}
           placeholder="설명을 입력하세요."
-          className="w-full h-52 p-2 border rounded resize-none placeholder:text-sm placeholder:gray-400"
-          required
+          className="w-full h-40 p-2 border rounded resize-none placeholder:text-sm placeholder:gray-400"
         />
         {contentError && (
           <span className="text-red-500 text-sm">{contentError}</span>
+        )}
+
+        {/* 투표 옵션 선택해버리기 */}
+        {type === "투표" && (
+          <CreateVoteOptions
+            formData={formData as CreateVoteDto}
+            setFormData={
+              setFormData as React.Dispatch<React.SetStateAction<CreateVoteDto>>
+            }
+          />
         )}
 
         <div className="flex items-center">
@@ -276,7 +335,9 @@ export default function CreateCommunityModal({
                 type="button"
                 onClick={toggleIsImportant}
                 className={`${
-                  formData.isImportant === "true" ? "text-red-500" : ""
+                  "isImportant" in formData && formData.isImportant === "true"
+                    ? "text-red-500"
+                    : ""
                 }`}
               >
                 <Siren size={25} />
