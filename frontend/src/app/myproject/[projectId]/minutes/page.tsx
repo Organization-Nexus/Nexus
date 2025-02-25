@@ -1,6 +1,6 @@
 import { projectApi } from "@/app/_api/models/project";
 import PageInfo from "@/components/common/PageInfo";
-import { MinutesContainer } from "@/components/minutes/ MinutesContainer";
+import { MinutesContainer } from "@/components/minutes/MinutesContainer";
 import { ProjectIdProps } from "@/types/project";
 
 export default async function Minutes({ params }: ProjectIdProps) {

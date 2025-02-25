@@ -12,7 +12,7 @@ export interface Minutes {
   decisions: string | null;
   notes: string | null;
 
-  created_at: string;
+  createdAt: string;
   author: {
     id: number;
     user: {

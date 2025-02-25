@@ -8,37 +8,35 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { MinutesParticipant } from './minutes-participant.entity';
+import { MilestoneParticipant } from './milestone-participant.entity';
 
-@Entity('minutes')
-export class Minutes {
+@Entity('milestone')
+export class Milestone {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 50 })
+  @Column({ length: 100 })
   title: string;
 
   @Column({ type: 'date' })
-  meeting_date: Date;
+  start_date: Date;
 
-  @Column({ type: 'time' })
-  meeting_time: string;
+  @Column({ type: 'date' })
+  end_date: Date;
 
-  @Column({ length: 100 })
-  agenda: string;
-
-  @Column({ length: 255 })
-  topic: string;
-
-  @Column({ length: 3000 })
+  @Column({ length: 2000 })
   content: string;
 
-  @Column({ length: 255, nullable: true })
-  decisions: string;
+  @Column({ length: 1000 })
+  goal: string;
 
   @Column({ length: 255, nullable: true })
-  notes: string;
+  note: string;
+
+  @Column({ length: 20 })
+  category: string; // FE, BE
 
   @ManyToOne(() => ProjectUser, {
     nullable: false,
@@ -53,11 +51,18 @@ export class Minutes {
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
-  @OneToMany(() => MinutesParticipant, (participant) => participant.minutes, {
-    onDelete: 'CASCADE',
-  })
-  participants: MinutesParticipant[];
+  @OneToMany(
+    () => MilestoneParticipant,
+    (participant) => participant.milestone,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  participants: MilestoneParticipant[];
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
