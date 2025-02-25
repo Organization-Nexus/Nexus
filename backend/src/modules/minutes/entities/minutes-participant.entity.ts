@@ -7,19 +7,15 @@ export class MinutesParticipant {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Minutes, (minutes) => minutes.participants, {
+  @ManyToOne(() => Minutes, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'minutes_id' })
   minutes: Minutes;
 
-  @ManyToOne(
-    () => ProjectUser,
-    (projectUser) => projectUser.meetingParticipations,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
+  @ManyToOne(() => ProjectUser, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'member_id' })
   member: ProjectUser;
 }

@@ -67,10 +67,7 @@ export function MinutesList({
                       <h3 className="text-lg font-semibold">{minute.title}</h3>
                       <p className="text-xs text-custom-smallText">
                         {minute.author.user.name} ·{" "}
-                        {format(
-                          new Date(minute.created_at),
-                          "yyyy-MM-dd HH:mm"
-                        )}
+                        {format(new Date(minute.createdAt), "yyyy-MM-dd HH:mm")}
                       </p>
                     </div>
                   </div>

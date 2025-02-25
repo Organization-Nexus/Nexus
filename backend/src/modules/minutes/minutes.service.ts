@@ -57,7 +57,7 @@ export class MinutesService {
         // 'participants.member',
         // 'participants.member.user',
       ],
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 

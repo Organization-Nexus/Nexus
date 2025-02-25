@@ -1,5 +1,3 @@
-import { MinutesParticipant } from 'src/modules/minutes/entities/minutes-participant.entity';
-import { Minutes } from 'src/modules/minutes/entities/minutes.entity';
 import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
 import { User } from 'src/modules/user/entities/user.entity';
@@ -56,10 +54,4 @@ export class ProjectUser {
 
   @OneToMany(() => Feed, (feed) => feed.author)
   feeds: Feed[];
-
-  @OneToMany(() => Minutes, (minutes) => minutes.author)
-  minutes: Minutes[];
-
-  @OneToMany(() => MinutesParticipant, (participant) => participant.member)
-  meetingParticipations: MinutesParticipant[];
 }
