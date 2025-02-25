@@ -7,7 +7,7 @@ import { CreateCommunity } from "@/types/modal";
 import { useState } from "react";
 import { isImageFile } from "../../utils/isImageFile";
 import { Modal } from "../config/ModalMaps";
-import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
+import { MapPin, Paperclip, Siren, Trash2, X } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -17,8 +17,9 @@ import {
 } from "../../ui/carousel";
 import Image from "next/image";
 import FileItem from "../../utils/FileItem";
-import CreateVoteOptions from "@/components/communnity/CreateVoteOptions";
+import CreateVoteOptions from "@/components/modal/community/CreateVoteOptions";
 import { CreateCommunityForm, CreateVoteDto } from "@/types/community";
+import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
 
 export default function CreateCommunityModal({
   isOpen,
@@ -45,6 +46,7 @@ export default function CreateCommunityModal({
 
   const [titleError, setTitleError] = useState<string>("");
   const [contentError, setContentError] = useState<string>("");
+  const [voteOptionError, setVoteOptionError] = useState<string>("");
   const [fileError, setFileError] = useState<string>("");
 
   const imageFiles = Array.isArray(formData.community_files)
@@ -63,9 +65,12 @@ export default function CreateCommunityModal({
       setTitleError("제목은 50자 이내로 작성해주세요.");
     } else if (name === "content" && value.length > 2000) {
       setContentError("설명은 2000자 이내로 작성해주세요.");
+    } else if (name === "options" && value.length < 2) {
+      setVoteOptionError("투표 옵션은 최소 2개 이상 입력해야 합니다.");
     } else {
       if (name === "title") setTitleError("");
       if (name === "content") setContentError("");
+      if (name === "options") setVoteOptionError("");
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -114,54 +119,45 @@ export default function CreateCommunityModal({
   };
 
   const handleSubmit = async () => {
-    if (!formData.title.trim()) {
-      setTitleError("제목을 입력해주세요.");
-    }
-    if (!formData.content.trim()) {
-      setContentError("내용을 입력해주세요.");
-    }
-    if (!formData.title.trim() || !formData.content.trim()) {
+    const errors = {
+      title: !formData.title.trim() ? "제목을 입력해주세요." : "",
+      content: !formData.content.trim() ? "내용을 입력해주세요." : "",
+      voteOptions:
+        type === "투표" && (formData as CreateVoteDto).options?.length < 2
+          ? "투표 옵션은 최소 2개 이상 입력해야 합니다."
+          : "",
+    };
+    setTitleError(errors.title);
+    setContentError(errors.content);
+    setVoteOptionError(errors.voteOptions);
+    if (errors.title || errors.content || errors.voteOptions) {
       return;
     }
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("content", formData.content);
-      formData.community_files?.forEach((file) => {
-        formDataToSend.append("community_files", file);
-      });
-
-      // 공지사항 처리
-      if (type === "공지사항") {
-        if ("isImportant" in formData) {
-          formDataToSend.append("isImportant", formData.isImportant || "");
-        }
+      formData.community_files?.forEach((file) =>
+        formDataToSend.append("community_files", file)
+      );
+      if (type === "공지사항" && "isImportant" in formData) {
+        formDataToSend.append("isImportant", formData.isImportant || "");
         createNoticeMutation.mutate(formDataToSend);
       } else if (type === "피드") {
         createFeedMutation.mutate(formDataToSend);
       } else if (type === "투표") {
-        if ("isMultipleChoice" in formData) {
-          formDataToSend.append(
-            "isMultipleChoice",
-            formData.isMultipleChoice || ""
-          );
-        }
-        if ("isAnonymous" in formData) {
-          formDataToSend.append("isAnonymous", formData.isAnonymous || "");
-        }
-        if ("options" in formData) {
-          formData.options.forEach((option: string) => {
-            formDataToSend.append("options", option);
-          });
-        }
-        if ("deadline" in formData) {
-          if (formData.deadline) {
-            formDataToSend.append("deadline", formData.deadline);
-          }
-        }
+        Object.entries({
+          isMultipleChoice: (formData as CreateVoteDto).isMultipleChoice,
+          isAnonymous: (formData as CreateVoteDto).isAnonymous,
+          deadline: (formData as CreateVoteDto).deadline,
+        }).forEach(([key, value]) => {
+          if (value) formDataToSend.append(key, value);
+        });
+        (formData as CreateVoteDto).options.forEach((option) =>
+          formDataToSend.append("options", option)
+        );
         createVoteMutation.mutate(formDataToSend);
       }
-
       onClose();
     } catch (err) {
       console.error("Create Error:", err);
@@ -177,14 +173,22 @@ export default function CreateCommunityModal({
     >
       <div className="flex justify-between items-center">
         <Modal.Title>{type} 생성</Modal.Title>
-        <Modal.Button variant="nothing" onClick={onClose}>
-          X
-        </Modal.Button>
+        <CustomAlertDialog
+          onConfirm={onClose}
+          title="작성을 취소할까요?"
+          description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+        >
+          <Modal.Button variant="nothing">
+            <X />
+          </Modal.Button>
+        </CustomAlertDialog>
       </div>
       <Modal.Divider />
       <Modal.Subtitle>{type}을 생성해주세요. 🤟</Modal.Subtitle>
       {type === "투표" && (
-        <p className="text-xs text-red-500">투표는 수정이 불가능 합니다.</p>
+        <p className="text-xs text-red-500">
+          투표는 모든사항이 수정 불가능 합니다.
+        </p>
       )}
       <Modal.Divider />
 
@@ -237,6 +241,7 @@ export default function CreateCommunityModal({
             setFormData={
               setFormData as React.Dispatch<React.SetStateAction<CreateVoteDto>>
             }
+            voteOptionError={voteOptionError}
           />
         )}
 
@@ -347,9 +352,13 @@ export default function CreateCommunityModal({
 
           {/* 제출 버튼 */}
           <div className="flex space-x-2">
-            <Modal.Button variant="secondary" onClick={onClose}>
-              닫기
-            </Modal.Button>
+            <CustomAlertDialog
+              onConfirm={onClose}
+              title="작성을 취소할까요?"
+              description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+            >
+              <Modal.Button variant="secondary">닫기</Modal.Button>
+            </CustomAlertDialog>
             <Modal.Button variant="primary" onClick={handleSubmit}>
               생성
             </Modal.Button>

@@ -11,6 +11,10 @@ export interface Project {
   projectUsers: ProjectUser[];
 }
 
+export interface ProjectListProps {
+  project: Project[];
+}
+
 // Create Project
 export interface CreateProject {
   title: string;

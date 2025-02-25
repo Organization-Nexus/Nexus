@@ -62,10 +62,6 @@ export const useUpdateCommunity = (
         });
       }
     },
-    onError: (error: any) => {
-      console.error("공지사항 수정 실패", error.response?.data || error);
-      alert(`서버 에러: ${JSON.stringify(error.response?.data)}`);
-    },
   });
 };
 
@@ -88,8 +84,6 @@ export const useCreateVote = (projectId: string) => {
 
 // 투표 해버리기
 export const useCreateVoteResponse = (voteId: string, projectId: string) => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (optionId: number[]) =>
       communityApi.createVoteResponseByVoteIdAndProjectId(
@@ -97,9 +91,5 @@ export const useCreateVoteResponse = (voteId: string, projectId: string) => {
         projectId,
         optionId
       ),
-    onError: (error: any) => {
-      console.error("투표 응답 실패", error.response?.data || error);
-      alert(`서버 에러: ${JSON.stringify(error.response?.data)}`);
-    },
   });
 };

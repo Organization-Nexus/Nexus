@@ -4,6 +4,8 @@ import { ModalRootProps } from "@/types/modal";
 import { project_image } from "@/data/project_image";
 import { CreateProject } from "@/types/project";
 import { useCreateProject } from "@/query/mutations/project";
+import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import { X } from "lucide-react";
 
 export default function CreateProjectModal({
   isOpen,
@@ -136,9 +138,15 @@ export default function CreateProjectModal({
       <div>
         <div className="flex justify-between items-center">
           <Modal.Title>프로젝트 생성</Modal.Title>
-          <Modal.Button variant="nothing" onClick={onClose}>
-            X
-          </Modal.Button>
+          <CustomAlertDialog
+            onConfirm={onClose}
+            title="작성을 취소할까요?"
+            description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+          >
+            <Modal.Button variant="nothing">
+              <X />
+            </Modal.Button>
+          </CustomAlertDialog>
         </div>
         <Modal.Divider />
         <Modal.Subtitle>프로젝트 정보를 입력해주세요. 🚀</Modal.Subtitle>
@@ -308,9 +316,13 @@ export default function CreateProjectModal({
           <Modal.Divider />
 
           <div className="flex justify-end space-x-2">
-            <Modal.Button variant="secondary" onClick={onClose}>
-              닫기
-            </Modal.Button>
+            <CustomAlertDialog
+              onConfirm={onClose}
+              title="작성을 취소할까요?"
+              description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+            >
+              <Modal.Button variant="secondary">닫기</Modal.Button>
+            </CustomAlertDialog>
             <Modal.Button
               variant="primary"
               onClick={() => handleSubmit()}

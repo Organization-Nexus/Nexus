@@ -1,6 +1,7 @@
 import RightNavBar from "@/components/navbar/RightNavBar";
 import MyProjectHeader from "@/components/project/MyprojectHeader";
 import ProjectList from "@/components/project/ProjectList";
+import { projectApi } from "../_api/models/project";
 
 const contents = [
   "Project Management",
@@ -11,6 +12,7 @@ const contents = [
 ];
 
 export default async function MyProject() {
+  const project = await projectApi.getMyProjects();
   return (
     <>
       <div className="flex justify-center items-center h-screen bg-[#EDF2FB]">
@@ -18,7 +20,7 @@ export default async function MyProject() {
           <div className="flex-1 bg-white p-9 rounded-2xl shadow-md overflow-y-auto">
             <MyProjectHeader />
             <hr className="my-4" />
-            <ProjectList />
+            <ProjectList project={project} />
           </div>
           <div className="">
             <RightNavBar contents={contents} />

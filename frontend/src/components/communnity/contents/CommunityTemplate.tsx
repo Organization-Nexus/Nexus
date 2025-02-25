@@ -1,13 +1,13 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageModal from "@/components/utils/ImageModal";
 import { Community, CommunityTemplateProps, Notice } from "@/types/community";
-import { convertToKST } from "@/utils/convertToKST";
 import { useState } from "react";
 import UpdateCommunityModal from "@/components/modal/community/UpdateCommunityModal";
 import FilePreview from "@/components/utils/FilePreview";
 import AuthorInfo from "@/components/utils/AuthorInfo";
 import CommunityVoteOptions from "./CommunityVoteOptions";
 import { TimeAgo } from "@/components/utils/TimeAgo";
+import { formatDate } from "@/utils/dateFormatter";
 
 export default function CommunityTemplate({
   type,
@@ -62,37 +62,48 @@ export default function CommunityTemplate({
     : items;
 
   const getVoteStatus = (deadline: string) => {
-    const deadlineDate = new Date(
-      convertToKST(new Date(deadline).toISOString())
-    );
+    const deadlineDate = new Date(deadline);
     const currentDate = new Date();
-
-    if (deadlineDate > currentDate) {
-      return "진행중";
+    if (deadlineDate < currentDate) {
+      return (
+        <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-lg">
+          종료됨
+        </div>
+      );
     } else {
-      return "마감됨";
+      return (
+        <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-lg">
+          진행중
+        </div>
+      );
     }
   };
 
   return (
     <div>
-      {type === "공지사항" && (
-        <div className="my-2">
-          <div className="flex items-center p-4 rounded-md bg-white shadow-md">
-            <Checkbox
-              checked={state.showImportantOnly}
-              onCheckedChange={toggleImportantOnly}
-            />
-            <span className="ml-2 font-semibold">중요 항목만 보기</span>
-          </div>
+      <div className="my-2">
+        <div className="flex items-center p-4 rounded-md bg-white shadow-md justify-end">
+          {type === "공지사항" && (
+            <>
+              <Checkbox
+                checked={state.showImportantOnly}
+                onCheckedChange={toggleImportantOnly}
+              />
+              <span className="ml-2 font-semibold">중요 항목만 보기</span>
+            </>
+          )}
+          {type === "피드" && <>필터 및 검색</>}
+          {type === "투표" && <>필터 및 검색</>}
         </div>
-      )}
+      </div>
 
       {filteredItems.length > 0 ? (
         filteredItems.map((item) => {
-          const createdAtKST = convertToKST(
-            new Date(item.createdAt).toISOString()
-          );
+          const createdAt = new Date(item.createdAt);
+          const formatedDeadline =
+            "deadline" in item && item.deadline
+              ? formatDate(item.deadline)
+              : "";
           const isExpanded = state.expandedFeed === item.id;
           const borderClass =
             "isImportant" in item && item.isImportant
@@ -115,8 +126,15 @@ export default function CommunityTemplate({
               />
 
               <hr className="my-4" />
-              <div className="flex items-center">
+              <div className="flex items-center space-x-4">
                 <p className="text-xl font-semibold">{item.title}</p>
+                {type === "투표" && (
+                  <span className="text-sm text-gray-400 ml-2">
+                    {"deadline" in item && item.deadline
+                      ? getVoteStatus(item.deadline)
+                      : getVoteStatus("")}
+                  </span>
+                )}
               </div>
               <hr className="my-4" />
 
@@ -136,8 +154,20 @@ export default function CommunityTemplate({
                 </button>
               )}
 
+              {type === "투표" && "voteOptions" in item && item.deadline && (
+                <div className="text-sm text-gray-400 my-4">
+                  <span>투표 마감일 : </span>
+                  <span>{formatedDeadline}</span>
+                </div>
+              )}
+
               {type === "투표" && "voteOptions" in item && (
                 <CommunityVoteOptions
+                  title={item.title}
+                  deadline={formatedDeadline}
+                  IsCompletedVote={
+                    item.deadline ? new Date(item.deadline) < new Date() : false
+                  }
                   voteOptions={item.voteOptions}
                   isAnonymous={item.isAnonymous}
                   isMultipleChoice={item.isMultipleChoice}
@@ -146,23 +176,13 @@ export default function CommunityTemplate({
                 />
               )}
 
-              {type === "투표" && "voteOptions" in item && item.deadline && (
-                <div>
-                  <span className="font-semibold">마감일: </span>
-                  <span>
-                    {convertToKST(new Date(item.deadline).toISOString())} -{" "}
-                    {getVoteStatus(item.deadline)}
-                  </span>
-                </div>
-              )}
-
               <FilePreview files={item.community_files || []} />
               <div className="flex items-center justify-between mt-8">
                 <button className="text-gray-500 hover:underline text-sm">
                   <p className="text-sm text-gray-400">좋아요</p>
                 </button>
                 <p className="text-sm text-gray-400">
-                  <TimeAgo date={new Date(createdAtKST)} />
+                  <TimeAgo date={new Date(createdAt)} />
                 </p>
               </div>
             </div>

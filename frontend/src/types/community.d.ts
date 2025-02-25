@@ -88,6 +88,7 @@ export interface VoteOption {
     id: number;
     name: string;
     profileImage: string;
+    isSelectedByUser: boolean;
   }[];
 }
 

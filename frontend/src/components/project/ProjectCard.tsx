@@ -43,13 +43,13 @@ export default function ProjectCard({ project }: { project: Project }) {
       ? `${project.description.slice(0, 25)}...`
       : project.description;
 
-  const handleCardClick = () => {
-    router.push(`/myproject/${project.id}/dashboard`);
+  const navigateTo = (path: string) => {
+    router.push(path);
   };
 
   return (
     <div
-      onClick={handleCardClick}
+      onClick={() => navigateTo(`/myproject/${project.id}/dashboard`)}
       className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative cursor-pointer`}
     >
       {/* Status Sticker */}

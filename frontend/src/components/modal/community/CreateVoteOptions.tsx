@@ -7,7 +7,7 @@ import {
   Vote,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Modal } from "../modal/config/ModalMaps";
+import { Modal } from "../config/ModalMaps";
 import { CreateVoteDto } from "@/types/community";
 
 const inputClass =
@@ -15,38 +15,14 @@ const inputClass =
 const buttonClass =
   "bg-green-200 hover:bg-green-300 text-gray-800 py-3 px-8 rounded-lg text-sm";
 
-function OptionItem({
-  icon,
-  label,
-  selected,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      onClick={onClick}
-      className={`flex items-center text-sm gap-2 p-3 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${
-        selected
-          ? "bg-green-200 opacity-70 text-white"
-          : "bg-gray-100 hover:bg-gray-200"
-      }`}
-    >
-      {icon}
-      <span>{label}</span>
-    </div>
-  );
-}
-
 export default function CreateVoteOptions({
   formData,
   setFormData,
+  voteOptionError,
 }: {
   formData: CreateVoteDto;
   setFormData: React.Dispatch<React.SetStateAction<CreateVoteDto>>;
+  voteOptionError: string;
 }) {
   const [selected, setSelected] = useState({
     isMultipleChoice: formData?.isMultipleChoice || "false",
@@ -136,6 +112,9 @@ export default function CreateVoteOptions({
             추가
           </Modal.Button>
         </div>
+        {voteOptionError && (
+          <span className="text-red-500 text-sm">{voteOptionError}</span>
+        )}
       </div>
 
       <div className="flex flex-col space-y-2">
@@ -182,6 +161,30 @@ export default function CreateVoteOptions({
           onClick={() => toggleOption("isAnonymous")}
         />
       </div>
+    </div>
+  );
+}
+
+function OptionItem({
+  icon,
+  label,
+  selected,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      className={`flex items-center text-sm gap-2 p-3 rounded-md cursor-pointer transition-all duration-300 ease-in-out ${
+        selected ? "bg-green-300 opacity-70" : "bg-gray-100 hover:bg-gray-200"
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
     </div>
   );
 }
