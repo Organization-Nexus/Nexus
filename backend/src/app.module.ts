@@ -15,6 +15,7 @@ import { FeedModule } from './modules/feed/feed.module';
 import { MailModule } from './modules/mailer/mailer.module';
 import { MinutesModule } from './modules/minutes/minutes.module';
 import { LikeModule } from './modules/like/like.module';
+import { MilestoneModule } from './modules/milestone/milestone.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { LikeModule } from './modules/like/like.module';
     MailModule,
     MinutesModule,
     LikeModule,
+    MilestoneModule,
   ],
 })
 export class AppModule {
