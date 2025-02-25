@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { Modal } from "../config/ModalMaps";
-import { communityApi } from "@/app/_api/models/community"; // API 경로가 맞는지 확인해주세요.
+import { communityApi } from "@/app/_api/models/community";
+import { X, RefreshCcw, UsersRound } from "lucide-react";
+import { userApi } from "@/app/_api/models/user";
 
 export interface VoteResponserListProps {
   isOpen: boolean;
   onClose: () => void;
+  title: string;
+  deadline: string | null;
   voteId: string;
   projectId: string;
 }
@@ -13,136 +17,151 @@ interface VoteOption {
   id: number;
   content: string;
   voteCount: number;
-  response_users: { id: number; name: string; profileImage: string }[];
+  isSelectedByUser: boolean;
+  response_users: {
+    id: number;
+    name: string;
+    profileImage: string;
+  }[];
 }
 
 export default function VoteResponserList({
   isOpen,
   onClose,
+  title,
+  deadline,
   voteId,
   projectId,
 }: VoteResponserListProps) {
   const [voteOptionResponsers, setVoteOptionResponsers] = useState<
     VoteOption[] | null
   >(null);
-  const [activeTab, setActiveTab] = useState<
-    "participated" | "nonParticipated" | null
-  >("participated");
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleTabChange = (tab: "participated" | "nonParticipated" | null) => {
-    setActiveTab(tab);
+  // API 데이터 로딩 함수
+  const fetchData = async () => {
+    try {
+      const [voteOptions, userData] = await Promise.all([
+        communityApi.getVoteOptionByVoteIdAndProjectId(voteId, projectId),
+        userApi.getUser(),
+      ]);
+      setVoteOptionResponsers(voteOptions);
+      setCurrentUserName(userData.name);
+    } catch (error) {
+      console.error("데이터 로딩 실패:", error);
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!isOpen) return;
-      try {
-        const data = await communityApi.getVoteOptionByVoteIdAndProjectId(
-          voteId,
-          projectId
-        );
-        setVoteOptionResponsers(data);
-      } catch (error) {
-        console.error("데이터 로딩 실패:", error);
-      }
-    };
-    fetchData();
+    if (isOpen) {
+      fetchData();
+    }
   }, [isOpen, voteId, projectId]);
+
+  const handleRefresh = async () => {
+    await fetchData();
+  };
+
+  const totalVotes = voteOptionResponsers
+    ? voteOptionResponsers.reduce((acc, option) => acc + option.voteCount, 0)
+    : 0;
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       closeOnOutsideClick={true}
-      className="w-[40%] max-w-lg h-auto bg-white rounded-lg shadow-lg p-6"
+      className="w-[40%] max-w-lg bg-white rounded-lg shadow-lg p-6 overflow-y-auto"
     >
       <div className="flex justify-between items-center mb-4">
-        <Modal.Title className="text-2xl font-semibold text-gray-800">
-          투표 현황
+        <Modal.Title className="text-xl font-semibold text-gray-800">
+          {title}
         </Modal.Title>
-        <Modal.Button variant="nothing" onClick={onClose} className="text-xl">
-          X
-        </Modal.Button>
+        <div className="flex items-center">
+          <button
+            onClick={handleRefresh}
+            className="text-gray-600 hover:text-black transition"
+          >
+            <RefreshCcw className="w-5 h-5" />
+          </button>
+          <Modal.Button variant="nothing" onClick={onClose}>
+            <X />
+          </Modal.Button>
+        </div>
       </div>
       <div className="my-2">
-        <hr />
-        <div className="text-sm flex">
-          <button
-            onClick={() => handleTabChange("participated")}
-            className={`w-1/2 text-center py-2 ${
-              activeTab === "participated"
-                ? "bg-blue-500 text-white"
-                : "text-gray-700"
-            }`}
-          >
-            참여자
-          </button>
-          <button
-            onClick={() => handleTabChange("nonParticipated")}
-            className={`w-1/2 text-center py-2 ${
-              activeTab === "nonParticipated"
-                ? "bg-blue-500 text-white"
-                : "text-gray-700"
-            }`}
-          >
-            미참여자
-          </button>
-        </div>
-        <hr />
+        <Modal.Divider />
       </div>
 
-      <div className="space-y-2">
-        {voteOptionResponsers?.map((voteOption) => (
-          <div
-            key={voteOption.id}
-            className="bg-gray-100 p-4 rounded-md shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {voteOption.content}
-              </h3>
-              <span className="text-sm text-gray-500">
-                {voteOption.voteCount} 표
-              </span>
-            </div>
+      <div className="flex flex-col h-full">
+        {voteOptionResponsers?.map((voteOption) => {
+          const votePercentage =
+            totalVotes > 0 ? (voteOption.voteCount / totalVotes) * 100 : 0;
 
-            <div className="space-y-2">
-              {activeTab === "participated" &&
-              voteOption.response_users.length > 0 ? (
-                voteOption.response_users.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center space-x-4 bg-white p-2 rounded-lg shadow-md hover:bg-gray-100 transition"
-                  >
-                    <img
-                      src={user.profileImage}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-lg"
-                    />
-                    <div>
-                      <span className="text-sm font-semibold text-gray-800">
-                        {user.name}
-                      </span>
+          const topUsers = voteOption.response_users.slice(0, 3);
+
+          return (
+            <div key={voteOption.id} className="p-2">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-md font-semibold">
+                      - {voteOption.content}
+                    </h3>
+                    <span className="text-sm text-gray-400">
+                      {voteOption.voteCount}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  {topUsers.length > 0 && (
+                    <div className="flex mt-2">
+                      {topUsers.map((user, index) => {
+                        const isSelectedUser = user.name === currentUserName;
+                        return (
+                          <div
+                            key={user.id}
+                            className="relative group"
+                            style={{
+                              marginLeft: index === 0 ? "0px" : "-10px",
+                            }}
+                          >
+                            <img
+                              src={user.profileImage}
+                              alt={user.name}
+                              className={`w-6 h-6 rounded-full ${
+                                isSelectedUser
+                                  ? "border-2 border-green-400"
+                                  : ""
+                              }`}
+                            />
+                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 border text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              {user.name}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-gray-500 text-sm">참여자가 없습니다.</div>
-              )}
+                  )}
+                </div>
+              </div>
 
-              {activeTab === "nonParticipated" &&
-                voteOption.response_users.length === 0 && (
-                  <div className="text-gray-500 text-sm">
-                    미참여자가 없습니다.
-                  </div>
-                )}
+              {/* Progress Bar */}
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
+                <div
+                  className={`h-3 rounded-full bg-green-300`}
+                  style={{ width: `${votePercentage}%` }}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
+        <div className="flex justify-between items-center text-gray-400 text-sm mt-6">
+          <span className="flex items-center gap-1">
+            <UsersRound className="w-4 h-4" /> {totalVotes}
+          </span>
+          {deadline && <span>투표 마감일 : {deadline}</span>}
+        </div>
       </div>
     </Modal>
   );

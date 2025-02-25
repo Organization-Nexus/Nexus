@@ -1,13 +1,10 @@
 "use client";
 
-import { Project } from "@/types/project";
-import { useProjectList } from "@/query/queries/project";
+import { Project, ProjectListProps } from "@/types/project";
 import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
 
-export default function ProjectList() {
-  const { data: project } = useProjectList();
-
+export default function ProjectList({ project }: ProjectListProps) {
   const now = new Date();
   const [inProgress, setInProgress] = useState<Project[]>([]);
   const [completed, setCompleted] = useState<Project[]>([]);

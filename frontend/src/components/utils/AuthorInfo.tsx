@@ -1,4 +1,12 @@
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { Ellipsis, PenLine, Trash2 } from "lucide-react";
 
 interface AuthorInfoProps {
   profileImage: string;
@@ -40,24 +48,21 @@ export default function AuthorInfo({
 
           {/* 수정 및 삭제 버튼 */}
           {isAuthor && (
-            <div className="flex space-x-2">
-              {type !== "투표" && onEdit && (
-                <button
-                  onClick={onEdit}
-                  className="text-gray-500 hover:underline text-sm"
-                >
-                  수정
-                </button>
-              )}
-              {onDelete && (
-                <button
-                  onClick={onDelete}
-                  className="text-gray-500 hover:underline text-sm"
-                >
-                  삭제
-                </button>
-              )}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="nothing">
+                  <Ellipsis />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="min-w-[70px]">
+                <DropdownMenuItem onClick={onEdit}>
+                  <PenLine className="mr-2" /> 수정
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={onDelete}>
+                  <Trash2 className="mr-2" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>

@@ -5,6 +5,9 @@ import { VoteOption } from "@/types/community";
 import { useState } from "react";
 
 interface VoteOptionsProps {
+  title: string;
+  deadline: string;
+  IsCompletedVote: boolean;
   voteOptions: VoteOption[];
   isAnonymous: boolean;
   isMultipleChoice: boolean;
@@ -13,6 +16,9 @@ interface VoteOptionsProps {
 }
 
 export default function CommunityVoteOptions({
+  title,
+  deadline,
+  IsCompletedVote,
   voteOptions,
   isAnonymous,
   isMultipleChoice,
@@ -34,7 +40,6 @@ export default function CommunityVoteOptions({
     voteId.toString(),
     projectId
   );
-
   const handleVote = async () => {
     if (hasVoted) {
       setHasVoted(false);
@@ -102,26 +107,37 @@ export default function CommunityVoteOptions({
                   ? "bg-green-200"
                   : "bg-white"
               } ${
-                hasVoted
+                hasVoted || IsCompletedVote
                   ? "opacity-30 transition-opacity duration-700"
                   : "transition-opacity duration-700"
               }`}
-              style={{ pointerEvents: hasVoted || isVoting ? "none" : "auto" }}
+              style={{
+                pointerEvents:
+                  hasVoted || isVoting || IsCompletedVote ? "none" : "auto",
+              }}
               onClick={() => handleSelectOption(option.id)}
             >
-              <span className="ml-2 text-gray-700">{option.content}</span>
+              <div className="flex items-center justify-between">
+                <div className="text-gray-700">{option.content}</div>
+              </div>
             </li>
           ))}
         </ul>
       </div>
 
       <div className="flex justify-center space-x-4">
-        <Button variant={hasVoted ? "ghost" : "default"} onClick={handleVote}>
+        <Button
+          variant={hasVoted ? "ghost" : "default"}
+          onClick={handleVote}
+          disabled={IsCompletedVote}
+        >
           {hasVoted ? "다시 투표하기" : "투표하기"}
         </Button>
       </div>
 
       <VoteResponserList
+        title={title}
+        deadline={deadline || ""}
         isOpen={isVoteStatusOpen}
         onClose={() => setIsVoteStatusOpen(false)}
         voteId={voteId.toString()}

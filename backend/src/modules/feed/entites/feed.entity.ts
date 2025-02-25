@@ -39,7 +39,7 @@ export class Feed {
   })
   community: Community;
 
-  @ManyToOne(() => ProjectUser, (projectUser) => projectUser.feeds, {
+  @ManyToOne(() => ProjectUser, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'author' })

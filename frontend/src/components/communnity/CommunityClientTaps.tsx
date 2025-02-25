@@ -111,7 +111,7 @@ export default function CommunityClientTabs({
         </div>
         {/* 커뮤니티 컨텐츠 */}
         <Suspense fallback={<div>로딩 중...</div>}>
-          <div className="mt-8">
+          <div className="mt-8 h-[850px] overflow-y-auto">
             <CommunityTemplate
               key={selectedTab}
               type={tabs.find((t) => t.key === selectedTab)?.label || ""}
