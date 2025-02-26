@@ -92,3 +92,14 @@
 .modal-textarea::placeholder {
   color: transparent !important; /* placeholder 텍스트 숨기기 */
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

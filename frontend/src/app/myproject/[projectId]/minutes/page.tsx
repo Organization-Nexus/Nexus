@@ -14,7 +14,7 @@ export default async function Minutes({ params }: ProjectIdProps) {
   return (
     <div className="mx-20">
       <PageInfo project={project} menuType={minutesMenuType} />
-      <div className="flex justify-between py-8">
+      <div className="flex justify-between">
         <MinutesContainer project={project} />
       </div>
     </div>
