@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useCreateFeed,
   useCreateNotice,
@@ -7,7 +9,7 @@ import { CreateCommunity } from "@/types/modal";
 import { useState } from "react";
 import { isImageFile } from "../../utils/isImageFile";
 import { Modal } from "../config/ModalMaps";
-import { MapPin, Paperclip, Siren, Trash2, X } from "lucide-react";
+import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -178,9 +180,7 @@ export default function CreateCommunityModal({
           title="작성을 취소할까요?"
           description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
         >
-          <Modal.Button variant="nothing">
-            <X />
-          </Modal.Button>
+          <Modal.Button variant="nothing">X</Modal.Button>
         </CustomAlertDialog>
       </div>
       <Modal.Divider />

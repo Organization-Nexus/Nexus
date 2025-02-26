@@ -26,13 +26,16 @@ export class CommunityService {
     return community.id;
   }
 
-  async getFeedsOrNoticesByProjectId(projectId: number): Promise<{
+  async getFeedsOrNoticesByProjectId(
+    projectId: number,
+    projectUserId: number,
+  ): Promise<{
     feeds: GetCommunityContentsDto[];
     notices: GetCommunityContentsDto[];
   }> {
     const community = await this.communityRepository.findOne({
       where: { project: { id: projectId } },
-      relations: ['feeds', 'feeds.author.user.log', 'feeds.likes'],
+      relations: ['feeds', 'feeds.author.user.log', 'feeds.likes.projectUser'],
       order: {
         feeds: {
           createdAt: 'DESC',
@@ -51,6 +54,9 @@ export class CommunityService {
           isImportant: feed.isImportant,
           createdAt: feed.createdAt,
           likeCount: feed.likes.length,
+          likedByUser: feed.likes.some((like) => {
+            return like.projectUser && like.projectUser.id === projectUserId;
+          }),
           author: {
             projectUserId: feed.author.id,
             position: feed.author.position,
@@ -90,7 +96,7 @@ export class CommunityService {
         'votes',
         'votes.author.user.log',
         'votes.options.response_users.projectUser',
-        'votes.likes',
+        'votes.likes.projectUser',
       ],
       order: {
         votes: {
@@ -109,6 +115,9 @@ export class CommunityService {
       deadline: vote.deadline,
       community_files: vote.community_files,
       likeCount: vote.likes.length,
+      likedByUser: vote.likes.some((like) => {
+        return like.projectUser && like.projectUser.id === projectUserId;
+      }),
       author: {
         projectUserId: vote.author.id,
         position: vote.author.position,

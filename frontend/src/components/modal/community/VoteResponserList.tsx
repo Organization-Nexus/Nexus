@@ -38,7 +38,6 @@ export default function VoteResponserList({
   >(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
-  // API 데이터 로딩 함수
   const fetchData = async () => {
     try {
       const [voteOptions, userData] = await Promise.all([
@@ -149,7 +148,7 @@ export default function VoteResponserList({
               {/* Progress Bar */}
               <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
                 <div
-                  className={`h-3 rounded-full bg-green-300`}
+                  className="h-3 rounded-full bg-[#C2D6FF]"
                   style={{ width: `${votePercentage}%` }}
                 />
               </div>

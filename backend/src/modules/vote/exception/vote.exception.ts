@@ -27,3 +27,18 @@ export class SingleChoiceOnlyException extends CustomHttpException {
     super('이 투표는 단일 선택만 가능합니다. 😅', HttpStatus.BAD_REQUEST);
   }
 }
+
+export class DeadlineExpiredException extends CustomHttpException {
+  constructor() {
+    super('기간이 완료된 투표입니다. 😅', HttpStatus.BAD_REQUEST);
+  }
+}
+
+export class NoPermissionThisVoteException extends CustomHttpException {
+  constructor(projectUserId: number) {
+    super(
+      `유저 ${projectUserId}은/는 현재 투표의 접근권한이 없습니다. 🥲`,
+      HttpStatus.FORBIDDEN,
+    );
+  }
+}

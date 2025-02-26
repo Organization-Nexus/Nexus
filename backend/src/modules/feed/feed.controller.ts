@@ -131,13 +131,12 @@ export class FeedController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-
-    await this.projectUserService.validateProjectMemberByUserId(
-      projectId,
-      userId,
-    );
-
-    await this.feedService.deleteFeed(feedId);
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    await this.feedService.deleteFeed(feedId, projectUserId);
     return {
       message: `Feed with ID ${feedId} has been successfully deleted.👋`,
     };

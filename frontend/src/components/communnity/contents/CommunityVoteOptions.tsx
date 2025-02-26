@@ -1,3 +1,5 @@
+"use client";
+
 import VoteResponserList from "@/components/modal/community/VoteResponserList";
 import { Button } from "@/components/ui/button";
 import { useCreateVoteResponse } from "@/query/mutations/community";
@@ -85,13 +87,14 @@ export default function CommunityVoteOptions({
               : "한 개의 항목만 선택 가능합니다."}
           </p>
           <div className="flex items-center space-x-2">
-            {!isAnonymous && selectedOptions.length > 0 && hasVoted && (
-              <button onClick={() => setIsVoteStatusOpen(true)}>
-                <p className="text-sm text-gray-400 hover:text-gray-500 hover:font-semibold underline">
-                  투표현황
-                </p>
-              </button>
-            )}
+            {!isAnonymous &&
+              (selectedOptions.length > 0 || IsCompletedVote) && (
+                <button onClick={() => setIsVoteStatusOpen(true)}>
+                  <p className="text-sm text-gray-400 hover:text-gray-500 hover:font-semibold underline">
+                    투표현황
+                  </p>
+                </button>
+              )}
             {isAnonymous && (
               <p className="text-red-300 text-sm font-semibold">익명투표</p>
             )}

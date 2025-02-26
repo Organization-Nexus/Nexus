@@ -16,11 +16,13 @@ interface BaseCommunity {
   community: { id: number };
   author: Author;
   createdAt: string;
+  likeCount: number;
+  likedByUser: boolean;
 }
 
 // Community Information
-export interface Community extends BaseCommunity {}
 
+export interface Community extends BaseCommunity {}
 // Notice Detail
 export interface Notice extends Community {
   isImportant: boolean;
@@ -100,4 +102,10 @@ export interface CreateVoteDto {
   deadline?: string | null;
   options: string[];
   community_files?: File[];
+}
+
+export interface LikeDataResponse {
+  id: number;
+  name: string;
+  profileImage: string;
 }

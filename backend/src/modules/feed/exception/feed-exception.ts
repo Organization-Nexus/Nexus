@@ -8,9 +8,9 @@ export class NoPermissionForNoticeException extends CustomHttpException {
 }
 
 export class NoPermissionThisFeedException extends CustomHttpException {
-  constructor(userId: number) {
+  constructor(projectUserId: number) {
     super(
-      `유저 ${userId}은/는 현재 피드의 접근권한이 없습니다. 🥲`,
+      `유저 ${projectUserId}은/는 현재 피드의 접근권한이 없습니다. 🥲`,
       HttpStatus.FORBIDDEN,
     );
   }

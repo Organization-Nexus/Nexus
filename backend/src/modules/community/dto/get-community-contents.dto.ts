@@ -32,6 +32,9 @@ export class GetCommunityContentsDto {
   likeCount: number;
 
   @IsBoolean()
+  likedByUser: boolean;
+
+  @IsBoolean()
   @IsOptional()
   isImportant: boolean;
 

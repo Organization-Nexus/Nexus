@@ -6,7 +6,6 @@ export const communityKeys = {
   NOTICE_LIST_KEY: ["noticeList"],
   FEED_LIST_KEY: ["feedList"],
   VOTE_LIST_KEY: ["voteList"],
-  VOTE_OPTION_RESPONSES_KEY: ["voteOptionResponses"],
 };
 
 export const minutesKeys = {

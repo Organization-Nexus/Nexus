@@ -11,7 +11,7 @@ export default function NavBarBtn({
     <button
       onClick={onClick}
       className={`flex items-center w-full ${padding} rounded-md ${
-        isActive ? "bg-green-300 text-white" : "hover hover:text-green-300"
+        isActive ? "bg-[#75ea8d] text-white" : "hover hover:text-[#C2D6FF]"
       } transition-colors`}
     >
       {icon} {label}

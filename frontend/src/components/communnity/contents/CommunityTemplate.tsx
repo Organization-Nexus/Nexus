@@ -1,6 +1,13 @@
+"use client";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageModal from "@/components/utils/ImageModal";
-import { Community, CommunityTemplateProps, Notice } from "@/types/community";
+import {
+  Community,
+  CommunityTemplateProps,
+  LikeDataResponse,
+  Notice,
+} from "@/types/community";
 import { useState } from "react";
 import UpdateCommunityModal from "@/components/modal/community/UpdateCommunityModal";
 import FilePreview from "@/components/utils/FilePreview";
@@ -8,6 +15,20 @@ import AuthorInfo from "@/components/utils/AuthorInfo";
 import CommunityVoteOptions from "./CommunityVoteOptions";
 import { TimeAgo } from "@/components/utils/TimeAgo";
 import { formatDate } from "@/utils/dateFormatter";
+import { GoHeart } from "react-icons/go";
+import { GoHeartFill } from "react-icons/go";
+import { likeApi } from "@/app/_api/models/like";
+import LikeList from "@/components/modal/community/LikeList";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, PenLine, Trash2 } from "lucide-react";
+import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
+import { useDeleteFeed, useDeleteVote } from "@/query/mutations/community";
 
 export default function CommunityTemplate({
   type,
@@ -22,6 +43,10 @@ export default function CommunityTemplate({
     isUpdateModalOpen: false,
     showImportantOnly: false,
     selectedItem: undefined as Community | Notice | undefined,
+    updatedItems: items,
+    isLikeListOpen: false,
+    selectedItemId: null as string | number | null,
+    likeList: [] as LikeDataResponse[],
   });
 
   const handleToggleExpand = (itemId: string | number) =>
@@ -56,27 +81,88 @@ export default function CommunityTemplate({
       selectedItem: undefined,
       isUpdateModalOpen: false,
     }));
+  const deleteFeedMutation = useDeleteFeed(projectId, type);
+  const deleteVoteMutation = useDeleteVote(projectId);
+
+  const handleDelete = async (itemId: number) => {
+    const id = itemId.toString();
+    if (type === "피드" || type === "공지사항") {
+      deleteFeedMutation.mutate(id);
+    } else if (type === "투표") {
+      deleteVoteMutation.mutate(id);
+    }
+  };
 
   const filteredItems = state.showImportantOnly
-    ? items.filter((item) => "isImportant" in item && item.isImportant)
-    : items;
+    ? state.updatedItems.filter(
+        (item) => "isImportant" in item && item.isImportant
+      )
+    : state.updatedItems;
 
   const getVoteStatus = (deadline: string) => {
     const deadlineDate = new Date(deadline);
     const currentDate = new Date();
     if (deadlineDate < currentDate) {
       return (
-        <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-lg">
+        <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-md">
           종료됨
         </div>
       );
     } else {
       return (
-        <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-lg">
+        <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-md">
           진행중
         </div>
       );
     }
+  };
+
+  const handleLikeToggle = async (itemId: number) => {
+    const updatedItems = state.updatedItems.map((item) => {
+      if (item.id === itemId) {
+        return {
+          ...item,
+          likedByUser: !item.likedByUser,
+          likeCount: item.likedByUser ? item.likeCount - 1 : item.likeCount + 1,
+        };
+      }
+      return item;
+    });
+
+    setState((prev) => ({
+      ...prev,
+      updatedItems,
+    }));
+    if (type === "피드" || type === "공지사항") {
+      await likeApi.feedLike(itemId.toString(), projectId.toString());
+    } else if (type === "투표") {
+      await likeApi.voteLike(itemId.toString(), projectId.toString());
+    }
+  };
+
+  const handleLikeCountClick = async (itemId: number) => {
+    setState((prev) => ({
+      ...prev,
+      isLikeListOpen: true,
+      selectedItemId: itemId,
+    }));
+    let response: { data: LikeDataResponse[] };
+    if (type === "피드" || type === "공지사항") {
+      response = await likeApi.getFeedLikes(
+        itemId.toString(),
+        projectId.toString()
+      );
+    } else if (type === "투표") {
+      response = await likeApi.getVoteLikes(
+        itemId.toString(),
+        projectId.toString()
+      );
+    }
+
+    setState((prev) => ({
+      ...prev,
+      likeList: Array.isArray(response.data) ? response.data : [],
+    }));
   };
 
   return (
@@ -109,21 +195,49 @@ export default function CommunityTemplate({
             "isImportant" in item && item.isImportant
               ? "border-2 border-red-200"
               : "border border-gray-100";
+          const isLiked = item.likedByUser;
 
           return (
             <div
               key={item.id}
               className={`bg-white p-10 rounded-md shadow-md mb-2 ${borderClass}`}
             >
-              <AuthorInfo
-                profileImage={item.author.user.log.profileImage}
-                name={item.author.user.name}
-                position={item.author.position}
-                isAuthor={projectUser.id === item.author.projectUserId}
-                onEdit={() => handleUpdateModalOpen(item)}
-                onDelete={() => console.log("삭제 기능 추가 예정")}
-                type={type}
-              />
+              <div className="flex justify-between">
+                <AuthorInfo
+                  profileImage={item.author.user.log.profileImage}
+                  name={item.author.user.name}
+                  position={item.author.position}
+                />
+                {projectUser.id === item.author.projectUserId && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="nothing">
+                        <MoreHorizontal />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() => handleUpdateModalOpen(item)}
+                      >
+                        <PenLine className="mr-2" /> 수정
+                      </DropdownMenuItem>
+                      <CustomAlertDialog
+                        onConfirm={() => handleDelete(item.id)}
+                        title="정말 삭제하시겠습니까?"
+                        confirmText="삭제"
+                        cancelText="취소"
+                      >
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 className="mr-2" /> 삭제
+                        </DropdownMenuItem>
+                      </CustomAlertDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
 
               <hr className="my-4" />
               <div className="flex items-center space-x-4">
@@ -178,9 +292,20 @@ export default function CommunityTemplate({
 
               <FilePreview files={item.community_files || []} />
               <div className="flex items-center justify-between mt-8">
-                <button className="text-gray-500 hover:underline text-sm">
-                  <p className="text-sm text-gray-400">좋아요</p>
-                </button>
+                <div className="flex items-center space-x-1">
+                  <button onClick={() => handleLikeToggle(item.id)}>
+                    {isLiked ? (
+                      <GoHeartFill className="fill-red-400" />
+                    ) : (
+                      <GoHeart className="text-gray-400 hover:text-red-400" />
+                    )}
+                  </button>
+                  <button onClick={() => handleLikeCountClick(item.id)}>
+                    <p className="text-sm text-gray-400 hover:text-black">
+                      {item.likeCount}
+                    </p>
+                  </button>
+                </div>
                 <p className="text-sm text-gray-400">
                   <TimeAgo date={new Date(createdAt)} />
                 </p>
@@ -211,6 +336,18 @@ export default function CommunityTemplate({
           }}
         />
       )}
+
+      <LikeList
+        isOpen={state.isLikeListOpen}
+        onClose={() =>
+          setState((prev) => ({
+            ...prev,
+            isLikeListOpen: false,
+            selectedItemId: null,
+          }))
+        }
+        likeList={state.likeList || []}
+      />
     </div>
   );
 }
