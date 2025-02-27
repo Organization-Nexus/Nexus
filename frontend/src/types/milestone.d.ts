@@ -1,3 +1,5 @@
+import { Project } from "./project";
+
 export interface Milestone {
   id: number;
   title: string;
@@ -40,8 +42,14 @@ export interface CreateMilestone {
   start_date: string;
   end_date: string;
   goal: string;
-  note?: string;
+  note?: string | null;
   participant_ids: number[];
+}
+
+export interface CreateMilestoneFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  project: Project;
 }
 
 export interface UpdateMilestone {
@@ -67,4 +75,15 @@ interface MilestoneData {
   category: "FE" | "BE";
   title: string;
   createdAt: string;
+}
+
+export interface ValidationMilestoneErrors {
+  title?: string;
+  content?: string;
+  category?: string;
+  start_date?: string;
+  end_date?: string;
+  goal?: string;
+  note?: string;
+  participant_ids?: string;
 }
