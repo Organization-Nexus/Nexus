@@ -276,19 +276,13 @@ export default function CommunityTemplate({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          type !== "vote" ? handleUpdateModalOpen(item) : null
-                        }
-                        disabled={type === "vote"}
-                        className={
-                          type === "vote"
-                            ? "text-gray-400 cursor-not-allowed"
-                            : ""
-                        }
-                      >
-                        <PenLine className="mr-2" /> 수정
-                      </DropdownMenuItem>
+                      {type !== "vote" && (
+                        <DropdownMenuItem
+                          onClick={() => handleUpdateModalOpen(item)}
+                        >
+                          <PenLine className="mr-2" /> 수정
+                        </DropdownMenuItem>
+                      )}
                       <CustomAlertDialog
                         onConfirm={() => handleDelete(item.id)}
                         title="정말 삭제하시겠습니까?"
@@ -309,13 +303,6 @@ export default function CommunityTemplate({
 
               <hr className="my-4" />
               <div className="flex items-center space-x-2">
-                {type === "notice" &&
-                  "isImportant" in item &&
-                  (item.isImportant as boolean) && (
-                    <span className="text-sm text-red-400 border-2 border-red-400 px-2 py-1 rounded-md">
-                      IMPORTANT
-                    </span>
-                  )}
                 <p className="text-xl font-semibold">{item.title}</p>
                 {type === "vote" && (
                   <span className="text-sm text-gray-400 ml-2">
@@ -324,6 +311,13 @@ export default function CommunityTemplate({
                       : getVoteStatus("")}
                   </span>
                 )}
+                {type === "notice" &&
+                  "isImportant" in item &&
+                  (item.isImportant as boolean) && (
+                    <span className="text-sm text-red-300 border-2 border-red-300 px-2 py-1 rounded-md">
+                      IMPORTANT
+                    </span>
+                  )}
               </div>
               <hr className="my-4" />
 
