@@ -3,12 +3,14 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import ImageModal from "@/components/utils/ImageModal";
 import {
-  Community,
   CommunityTemplateProps,
+  Feed,
   LikeDataResponse,
   Notice,
+  Vote,
+  VoteOption,
 } from "@/types/community";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import UpdateCommunityModal from "@/components/modal/community/UpdateCommunityModal";
 import FilePreview from "@/components/utils/FilePreview";
 import AuthorInfo from "@/components/utils/AuthorInfo";
@@ -18,7 +20,6 @@ import { formatDate } from "@/utils/dateFormatter";
 import { GoHeart } from "react-icons/go";
 import { GoHeartFill } from "react-icons/go";
 import { likeApi } from "@/app/_api/models/like";
-import LikeList from "@/components/modal/community/LikeList";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,25 +30,103 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, PenLine, Trash2 } from "lucide-react";
 import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
 import { useDeleteFeed, useDeleteVote } from "@/query/mutations/community";
+import {
+  useFeedList,
+  useNoticeList,
+  useVoteList,
+} from "@/query/queries/community";
+import LikeList from "@/components/modal/community/LikeList";
 
 export default function CommunityTemplate({
   type,
-  items,
   projectUser,
   projectId,
 }: CommunityTemplateProps) {
+  const feedData = useFeedList(projectId).data;
+  const noticeData = useNoticeList(projectId).data;
+  const voteData = useVoteList(projectId).data;
+  const deleteFeedMutation = useDeleteFeed(projectId, type);
+  const deleteVoteMutation = useDeleteVote(projectId);
+  const getVoteStatus = (deadline: string) => {
+    const deadlineDate = new Date(deadline);
+    const currentDate = new Date();
+    return deadlineDate < currentDate ? (
+      <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-md">
+        COMPLETED
+      </div>
+    ) : (
+      <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-md">
+        IN PROGRESS
+      </div>
+    );
+  };
   const [state, setState] = useState({
     expandedFeed: null as string | number | null,
     selectedImage: null as string | null,
     isImageModalOpen: false,
     isUpdateModalOpen: false,
     showImportantOnly: false,
-    selectedItem: undefined as Community | Notice | undefined,
-    updatedItems: items,
-    isLikeListOpen: false,
+    selectedItem: undefined as Feed | Notice | Vote | undefined,
     selectedItemId: null as string | number | null,
+    isLikeListOpen: false,
     likeList: [] as LikeDataResponse[],
+    likedItems: {} as { [key: string]: boolean },
+    likeCounts: {} as { [key: string]: number },
   });
+
+  const initializeLikeStatus = () => {
+    const initialLikedItems: { [key: string]: boolean } = {};
+    const initialLikeCounts: { [key: string]: number } = {};
+    if (feedData) {
+      feedData.forEach((item) => {
+        initialLikedItems[item.id] = item.likedByUser;
+        initialLikeCounts[item.id] = item.likeCount || 0;
+      });
+    }
+    if (noticeData) {
+      noticeData.forEach((item) => {
+        initialLikedItems[item.id] = item.likedByUser;
+        initialLikeCounts[item.id] = item.likeCount || 0;
+      });
+    }
+    if (voteData) {
+      voteData.forEach((item) => {
+        initialLikedItems[item.id] = item.likedByUser;
+        initialLikeCounts[item.id] = item.likeCount || 0;
+      });
+    }
+    setState((prev) => ({
+      ...prev,
+      likedItems: { ...prev.likedItems, ...initialLikedItems },
+      likeCounts: { ...prev.likeCounts, ...initialLikeCounts },
+    }));
+  };
+  useMemo(() => {
+    initializeLikeStatus();
+  }, [feedData, noticeData, voteData]);
+
+  const data = useMemo(() => {
+    let filteredData: Feed[] | Notice[] | Vote[];
+    switch (type) {
+      case "feed":
+        filteredData = feedData || [];
+        break;
+      case "notice":
+        filteredData = noticeData || [];
+        break;
+      case "vote":
+        filteredData = voteData || [];
+        break;
+      default:
+        filteredData = [];
+    }
+    if (state.showImportantOnly && type === "notice") {
+      filteredData = filteredData.filter(
+        (item) => "isImportant" in item && item.isImportant
+      );
+    }
+    return filteredData;
+  }, [type, feedData, noticeData, voteData, state.showImportantOnly]);
 
   const handleToggleExpand = (itemId: string | number) =>
     setState((prev) => ({
@@ -68,7 +147,7 @@ export default function CommunityTemplate({
       showImportantOnly: !prev.showImportantOnly,
     }));
 
-  const handleUpdateModalOpen = (item: Community | Notice) =>
+  const handleUpdateModalOpen = (item: Feed | Notice) =>
     setState((prev) => ({
       ...prev,
       selectedItem: item,
@@ -81,63 +160,48 @@ export default function CommunityTemplate({
       selectedItem: undefined,
       isUpdateModalOpen: false,
     }));
-  const deleteFeedMutation = useDeleteFeed(projectId, type);
-  const deleteVoteMutation = useDeleteVote(projectId);
 
-  const handleDelete = async (itemId: number) => {
+  const handleDelete = async (itemId: number | string) => {
     const id = itemId.toString();
-    if (type === "피드" || type === "공지사항") {
+    if (type === "feed" || type === "notice") {
       deleteFeedMutation.mutate(id);
-    } else if (type === "투표") {
+    } else if (type === "vote") {
       deleteVoteMutation.mutate(id);
     }
   };
 
-  const filteredItems = state.showImportantOnly
-    ? state.updatedItems.filter(
-        (item) => "isImportant" in item && item.isImportant
-      )
-    : state.updatedItems;
+  const handleLikeClick = async (itemId: number) => {
+    setState((prev) => {
+      const newLikedItems = { ...prev.likedItems };
+      const newLikeCounts = { ...prev.likeCounts };
+      const isCurrentlyLiked = newLikedItems[itemId] ?? false;
+      newLikedItems[itemId] = !isCurrentlyLiked;
+      newLikeCounts[itemId] = newLikedItems[itemId]
+        ? (newLikeCounts[itemId] || 0) + 1
+        : (newLikeCounts[itemId] || 0) - 1;
 
-  const getVoteStatus = (deadline: string) => {
-    const deadlineDate = new Date(deadline);
-    const currentDate = new Date();
-    if (deadlineDate < currentDate) {
-      return (
-        <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-md">
-          종료됨
-        </div>
+      return {
+        ...prev,
+        likedItems: newLikedItems,
+        likeCounts: newLikeCounts,
+      };
+    });
+    let response: { data: LikeDataResponse[] };
+    if (type === "feed" || type === "notice") {
+      response = await likeApi.feedLike(
+        itemId.toString(),
+        projectId.toString()
       );
-    } else {
-      return (
-        <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-md">
-          진행중
-        </div>
+    } else if (type === "vote") {
+      response = await likeApi.voteLike(
+        itemId.toString(),
+        projectId.toString()
       );
     }
-  };
-
-  const handleLikeToggle = async (itemId: number) => {
-    const updatedItems = state.updatedItems.map((item) => {
-      if (item.id === itemId) {
-        return {
-          ...item,
-          likedByUser: !item.likedByUser,
-          likeCount: item.likedByUser ? item.likeCount - 1 : item.likeCount + 1,
-        };
-      }
-      return item;
-    });
-
     setState((prev) => ({
       ...prev,
-      updatedItems,
+      likeList: Array.isArray(response.data) ? response.data : [],
     }));
-    if (type === "피드" || type === "공지사항") {
-      await likeApi.feedLike(itemId.toString(), projectId.toString());
-    } else if (type === "투표") {
-      await likeApi.voteLike(itemId.toString(), projectId.toString());
-    }
   };
 
   const handleLikeCountClick = async (itemId: number) => {
@@ -147,16 +211,10 @@ export default function CommunityTemplate({
       selectedItemId: itemId,
     }));
     let response: { data: LikeDataResponse[] };
-    if (type === "피드" || type === "공지사항") {
-      response = await likeApi.getFeedLikes(
-        itemId.toString(),
-        projectId.toString()
-      );
-    } else if (type === "투표") {
-      response = await likeApi.getVoteLikes(
-        itemId.toString(),
-        projectId.toString()
-      );
+    if (type === "feed" || type === "notice") {
+      response = await likeApi.getFeedLikes(itemId.toString(), projectId);
+    } else if (type === "vote") {
+      response = await likeApi.getVoteLikes(itemId.toString(), projectId);
     }
 
     setState((prev) => ({
@@ -164,12 +222,14 @@ export default function CommunityTemplate({
       likeList: Array.isArray(response.data) ? response.data : [],
     }));
   };
-
+  const filteredItems = state.showImportantOnly
+    ? data.filter((item) => "isImportant" in item && item.isImportant)
+    : data;
   return (
     <div>
       <div className="my-2">
         <div className="flex items-center p-4 rounded-md bg-white shadow-md justify-end">
-          {type === "공지사항" && (
+          {type === "notice" && (
             <>
               <Checkbox
                 checked={state.showImportantOnly}
@@ -178,8 +238,8 @@ export default function CommunityTemplate({
               <span className="ml-2 font-semibold">중요 항목만 보기</span>
             </>
           )}
-          {type === "피드" && <>필터 및 검색</>}
-          {type === "투표" && <>필터 및 검색</>}
+          {type === "feed" && <>필터 및 검색</>}
+          {type === "vote" && <>필터 및 검색</>}
         </div>
       </div>
 
@@ -188,14 +248,14 @@ export default function CommunityTemplate({
           const createdAt = new Date(item.createdAt);
           const formatedDeadline =
             "deadline" in item && item.deadline
-              ? formatDate(item.deadline)
+              ? formatDate(item.deadline as string)
               : "";
           const isExpanded = state.expandedFeed === item.id;
           const borderClass =
             "isImportant" in item && item.isImportant
-              ? "border-2 border-red-200"
-              : "border border-gray-100";
-          const isLiked = item.likedByUser;
+              ? "border-l-4 border-red-300"
+              : "";
+          const isLiked = state.likedItems[item.id] ?? item.likedByUser;
 
           return (
             <div
@@ -217,7 +277,15 @@ export default function CommunityTemplate({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem
-                        onClick={() => handleUpdateModalOpen(item)}
+                        onClick={() =>
+                          type !== "vote" ? handleUpdateModalOpen(item) : null
+                        }
+                        disabled={type === "vote"}
+                        className={
+                          type === "vote"
+                            ? "text-gray-400 cursor-not-allowed"
+                            : ""
+                        }
                       >
                         <PenLine className="mr-2" /> 수정
                       </DropdownMenuItem>
@@ -240,12 +308,19 @@ export default function CommunityTemplate({
               </div>
 
               <hr className="my-4" />
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                {type === "notice" &&
+                  "isImportant" in item &&
+                  (item.isImportant as boolean) && (
+                    <span className="text-sm text-red-400 border-2 border-red-400 px-2 py-1 rounded-md">
+                      IMPORTANT
+                    </span>
+                  )}
                 <p className="text-xl font-semibold">{item.title}</p>
-                {type === "투표" && (
+                {type === "vote" && (
                   <span className="text-sm text-gray-400 ml-2">
                     {"deadline" in item && item.deadline
-                      ? getVoteStatus(item.deadline)
+                      ? getVoteStatus(item.deadline as string)
                       : getVoteStatus("")}
                   </span>
                 )}
@@ -268,23 +343,33 @@ export default function CommunityTemplate({
                 </button>
               )}
 
-              {type === "투표" && "voteOptions" in item && item.deadline && (
-                <div className="text-sm text-gray-400 my-4">
-                  <span>투표 마감일 : </span>
-                  <span>{formatedDeadline}</span>
-                </div>
-              )}
+              {type === "vote" &&
+                "voteOptions" in item &&
+                "deadline" in item && (
+                  <div className="text-sm text-gray-400 my-4">
+                    <span>투표 마감일 : </span>
+                    <span>{formatedDeadline}</span>
+                  </div>
+                )}
 
-              {type === "투표" && "voteOptions" in item && (
+              {type === "vote" && "voteOptions" in item && (
                 <CommunityVoteOptions
                   title={item.title}
                   deadline={formatedDeadline}
                   IsCompletedVote={
-                    item.deadline ? new Date(item.deadline) < new Date() : false
+                    "deadline" in item && typeof item.deadline === "string"
+                      ? new Date(item.deadline) < new Date()
+                      : false
                   }
-                  voteOptions={item.voteOptions}
-                  isAnonymous={item.isAnonymous}
-                  isMultipleChoice={item.isMultipleChoice}
+                  voteOptions={item.voteOptions as VoteOption[]}
+                  isAnonymous={
+                    "isAnonymous" in item ? Boolean(item.isAnonymous) : false
+                  }
+                  isMultipleChoice={
+                    "isMultipleChoice" in item
+                      ? Boolean(item.isMultipleChoice)
+                      : false
+                  }
                   voteId={item.id}
                   projectId={projectId}
                 />
@@ -293,7 +378,7 @@ export default function CommunityTemplate({
               <FilePreview files={item.community_files || []} />
               <div className="flex items-center justify-between mt-8">
                 <div className="flex items-center space-x-1">
-                  <button onClick={() => handleLikeToggle(item.id)}>
+                  <button onClick={() => handleLikeClick(item.id)}>
                     {isLiked ? (
                       <GoHeartFill className="fill-red-400" />
                     ) : (
@@ -302,7 +387,7 @@ export default function CommunityTemplate({
                   </button>
                   <button onClick={() => handleLikeCountClick(item.id)}>
                     <p className="text-sm text-gray-400 hover:text-black">
-                      {item.likeCount}
+                      {state.likeCounts[item.id] || 0}
                     </p>
                   </button>
                 </div>
@@ -336,7 +421,6 @@ export default function CommunityTemplate({
           }}
         />
       )}
-
       <LikeList
         isOpen={state.isLikeListOpen}
         onClose={() =>

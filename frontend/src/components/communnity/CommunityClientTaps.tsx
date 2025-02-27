@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import CommunityTemplate from "./contents/CommunityTemplate";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Newspaper, Siren, SquarePlus, Vote } from "lucide-react";
 import {
@@ -12,12 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { CommunityClientTapsProps } from "@/types/community";
-import {
-  uesVoteList,
-  useFeedList,
-  useNoticeList,
-} from "@/query/queries/community";
 import CreateCommunityModal from "../modal/community/CreateCommunityModal";
+import CommunityTemplate from "./contents/CommunityTemplate";
 
 const tabs = [
   { key: "notice", label: "공지사항", icon: <Siren size={20} /> },
@@ -28,25 +23,12 @@ const tabs = [
 export default function CommunityClientTabs({
   projectId,
   projectUser,
-  feeds: initialFeeds,
-  notices: initialNotices,
-  votes: initialVotes,
 }: CommunityClientTapsProps) {
   const [selectedTab, setSelectedTab] = useState("notice");
   const [openCreateCommunityForm, setOpenCreateCommunityForm] = useState(false);
   const [communityFormType, setCommunityFormType] = useState<string | null>(
     null
   );
-
-  const notices = useNoticeList(projectId, initialNotices).data || [];
-  const feeds = useFeedList(projectId, initialFeeds).data || [];
-  const votes = uesVoteList(projectId, initialVotes).data || [];
-
-  const contentData: Record<string, any> = {
-    notice: notices,
-    feed: feeds,
-    vote: votes,
-  };
 
   const handleTabClick = (tabKey: string) => setSelectedTab(tabKey);
 
@@ -110,17 +92,14 @@ export default function CommunityClientTabs({
           </DropdownMenu>
         </div>
         {/* 커뮤니티 컨텐츠 */}
-        <Suspense fallback={<div>로딩 중...</div>}>
-          <div className="mt-8 h-[850px] overflow-y-auto">
-            <CommunityTemplate
-              key={selectedTab}
-              type={tabs.find((t) => t.key === selectedTab)?.label || ""}
-              items={contentData[selectedTab] || []}
-              projectUser={projectUser}
-              projectId={projectId}
-            />
-          </div>
-        </Suspense>
+        <div className="mt-8 h-[850px] overflow-y-auto">
+          <CommunityTemplate
+            key={selectedTab}
+            type={tabs.find((t) => t.key === selectedTab)?.key || ""}
+            projectUser={projectUser}
+            projectId={projectId}
+          />
+        </div>
       </div>
 
       {/* 커뮤니티 생성 모달 */}

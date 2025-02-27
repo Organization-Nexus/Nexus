@@ -52,11 +52,11 @@ export const useUpdateCommunity = (
         communityData
       ),
     onSuccess: () => {
-      if (type === "공지사항") {
+      if (type === "notice") {
         queryClient.refetchQueries({
           queryKey: communityKeys.NOTICE_LIST_KEY,
         });
-      } else if (type === "피드") {
+      } else if (type === "feed") {
         queryClient.refetchQueries({
           queryKey: communityKeys.FEED_LIST_KEY,
         });
@@ -101,11 +101,11 @@ export const useDeleteFeed = (projectId: string, type: string) => {
     mutationFn: (feedId: string) =>
       communityApi.deleteFeedByFeedIdAndProjectId(feedId, projectId),
     onSuccess: () => {
-      if (type === "공지사항") {
+      if (type === "notice") {
         queryClient.refetchQueries({
           queryKey: communityKeys.NOTICE_LIST_KEY,
         });
-      } else if (type === "피드") {
+      } else if (type === "feed") {
         queryClient.refetchQueries({
           queryKey: communityKeys.FEED_LIST_KEY,
         });
