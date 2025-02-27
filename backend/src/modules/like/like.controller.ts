@@ -34,7 +34,7 @@ export class LikeController {
   }
 
   // PUT /api/like/vote/:voteId/:projectId
-  @Put('vote/:voteId/user/:projectUserId')
+  @Put('/vote/:voteId/:projectId')
   @UseGuards(JwtAuthGuard)
   async toggleVoteLike(
     @Param('voteId') voteId: number,
@@ -47,7 +47,7 @@ export class LikeController {
     return this.likeService.toggleLike({ vote, projectUser });
   }
 
-  // GET /api/like/feed/:feedId
+  // GET /api/like/feed/:feedId/:projectId
   @Get('/feed/:feedId/:projectId')
   @UseGuards(JwtAuthGuard)
   async getFeedLikes(
@@ -60,6 +60,26 @@ export class LikeController {
       projectId,
       userId,
     );
-    return this.likeService.getFeedLikes(feedId);
+    return this.likeService.getLikeUserListByEntityId(feedId, 'feed');
   }
+
+  // GET /api/like/vote/:voteId/:projectId
+  @Get('/vote/:voteId/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getVoteLikes(
+    @Param('voteId') voteId: number,
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return this.likeService.getLikeUserListByEntityId(voteId, 'vote');
+  }
+
+  // GET /api/likes/feed/:feedId/:projectId
+  // GET /api/likes/notice/:feedId/:projectId
+  // GET /api/likes/vote/:voteId/:projectId
 }

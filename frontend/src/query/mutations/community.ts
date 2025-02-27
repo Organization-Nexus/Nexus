@@ -52,12 +52,12 @@ export const useUpdateCommunity = (
         communityData
       ),
     onSuccess: () => {
-      if (type === "공지사항") {
-        queryClient.invalidateQueries({
+      if (type === "notice") {
+        queryClient.refetchQueries({
           queryKey: communityKeys.NOTICE_LIST_KEY,
         });
-      } else if (type === "피드") {
-        queryClient.invalidateQueries({
+      } else if (type === "feed") {
+        queryClient.refetchQueries({
           queryKey: communityKeys.FEED_LIST_KEY,
         });
       }
@@ -91,5 +91,39 @@ export const useCreateVoteResponse = (voteId: string, projectId: string) => {
         projectId,
         optionId
       ),
+  });
+};
+
+// 피드, 공지사항 삭제
+export const useDeleteFeed = (projectId: string, type: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (feedId: string) =>
+      communityApi.deleteFeedByFeedIdAndProjectId(feedId, projectId),
+    onSuccess: () => {
+      if (type === "notice") {
+        queryClient.refetchQueries({
+          queryKey: communityKeys.NOTICE_LIST_KEY,
+        });
+      } else if (type === "feed") {
+        queryClient.refetchQueries({
+          queryKey: communityKeys.FEED_LIST_KEY,
+        });
+      }
+    },
+  });
+};
+
+// 투표 삭제
+export const useDeleteVote = (projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (voteId: string) =>
+      communityApi.deleteVoteByVoteIdAndProjectId(voteId, projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: communityKeys.VOTE_LIST_KEY,
+      });
+    },
   });
 };

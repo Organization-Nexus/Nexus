@@ -16,14 +16,23 @@ interface BaseCommunity {
   community: { id: number };
   author: Author;
   createdAt: string;
+  likeCount: number;
+  likedByUser: boolean;
 }
 
 // Community Information
-export interface Community extends BaseCommunity {}
+export interface Feed extends BaseCommunity {}
 
 // Notice Detail
-export interface Notice extends Community {
+export interface Notice extends BaseCommunity {
   isImportant: boolean;
+}
+
+export interface Vote extends BaseCommunity {
+  isMultipleChoice: boolean;
+  isAnonymous: boolean;
+  deadline: string | null;
+  voteOptions: VoteOption[];
 }
 
 // Create Community Form
@@ -60,23 +69,12 @@ export interface Author {
 export interface CommunityClientTapsProps {
   projectId: string;
   projectUser: ProjectUser;
-  feeds: Community[];
-  notices: Notice[];
-  votes: VoteResponse[];
 }
 
 export interface CommunityTemplateProps {
   type: string;
-  items: (Community | Notice | Vote)[];
   projectUser: ProjectUser;
   projectId: string;
-}
-
-export interface Vote extends BaseCommunity {
-  isMultipleChoice: boolean;
-  isAnonymous: boolean;
-  deadline: string | null;
-  voteOptions: VoteOption[];
 }
 
 export interface VoteOption {
@@ -100,4 +98,10 @@ export interface CreateVoteDto {
   deadline?: string | null;
   options: string[];
   community_files?: File[];
+}
+
+export interface LikeDataResponse {
+  id: number;
+  name: string;
+  profileImage: string;
 }

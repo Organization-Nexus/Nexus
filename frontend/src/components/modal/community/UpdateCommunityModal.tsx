@@ -148,6 +148,20 @@ export default function UpdateCommunityModal({
     }
   };
 
+  switch (type) {
+    case "notice":
+      type = "공지사항";
+      break;
+    case "feed":
+      type = "피드";
+      break;
+    case "vote":
+      type = "피드";
+      break;
+    default:
+      break;
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div className="flex justify-between items-center">

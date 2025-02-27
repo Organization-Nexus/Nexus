@@ -4,7 +4,10 @@ import { Repository } from 'typeorm';
 import { Vote } from '../entities/vote.entity';
 import { CreateVoteDto } from '../dto/create-vote.dto';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
-import { VoteNotFoundException } from '../exception/vote.exception';
+import {
+  NoPermissionThisVoteException,
+  VoteNotFoundException,
+} from '../exception/vote.exception';
 
 @Injectable()
 export class VoteService {
@@ -43,5 +46,19 @@ export class VoteService {
       throw new VoteNotFoundException(voteId);
     }
     return vote;
+  }
+
+  async deleteVote(voteId: number, projectUserId: number) {
+    const vote = await this.voteRepository.findOne({
+      where: { id: voteId },
+      relations: ['author'],
+    });
+    if (!vote) {
+      throw new VoteNotFoundException(voteId);
+    }
+    if (vote.author.id !== projectUserId) {
+      throw new NoPermissionThisVoteException(projectUserId);
+    }
+    await this.voteRepository.remove(vote);
   }
 }

@@ -13,17 +13,40 @@ export class CommunityController {
 
   // GET /api/community/feeds/:projectId
   @Get('feeds/:projectId')
-  async getFeedsByProjectId(@Param('projectId') projectId: number) {
-    const { feeds } =
-      await this.communityService.getFeedsOrNoticesByProjectId(projectId);
+  @UseGuards(JwtAuthGuard)
+  async getFeedsByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        req.user.id,
+      );
+    const { feeds } = await this.communityService.getFeedsOrNoticesByProjectId(
+      projectId,
+      projectUserId,
+    );
     return feeds;
   }
 
   // GET /api/community/notices/:projectId
   @Get('notices/:projectId')
-  async getNoticesByProjectId(@Param('projectId') projectId: number) {
+  @UseGuards(JwtAuthGuard)
+  async getNoticesByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        req.user.id,
+      );
     const { notices } =
-      await this.communityService.getFeedsOrNoticesByProjectId(projectId);
+      await this.communityService.getFeedsOrNoticesByProjectId(
+        projectId,
+        projectUserId,
+      );
     return notices;
   }
 

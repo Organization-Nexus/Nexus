@@ -5,7 +5,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
-  JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
 
@@ -23,7 +22,6 @@ export class Like {
   // ETC
 
   @ManyToOne(() => ProjectUser, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'projectUserId' })
   projectUser: ProjectUser;
 
   @CreateDateColumn()

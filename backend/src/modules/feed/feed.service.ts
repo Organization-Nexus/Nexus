@@ -37,7 +37,6 @@ export class FeedService {
   async getFeedByFeedId(feedId: number): Promise<Feed> {
     const feed = await this.feedRepository.findOne({
       where: { id: feedId },
-      // relations: ['author', 'author.user', 'author.user.log'],
     });
     if (!feed) {
       throw new NotFoundFeedException(feedId);
@@ -84,10 +83,16 @@ export class FeedService {
     return feed.community_files || [];
   }
 
-  async deleteFeed(feedId: number): Promise<void> {
-    const feed = await this.feedRepository.findOneBy({ id: feedId });
+  async deleteFeed(feedId: number, projectUserId: number): Promise<void> {
+    const feed = await this.feedRepository.findOne({
+      where: { id: feedId },
+      relations: ['author'],
+    });
     if (!feed) {
       throw new NotFoundFeedException(feedId);
+    }
+    if (feed.author.id !== projectUserId) {
+      throw new NoPermissionThisFeedException(projectUserId);
     }
     await this.feedRepository.remove(feed);
   }

@@ -101,4 +101,12 @@ export const communityApi = {
       },
     });
   },
+
+  deleteFeedByFeedIdAndProjectId: async (feedId: string, projectId: string) => {
+    return await api.delete(`/feed/delete-feed/${feedId}/${projectId}`);
+  },
+
+  deleteVoteByVoteIdAndProjectId: async (voteId: string, projectId: string) => {
+    return await api.delete(`/vote/delete-vote/${voteId}/${projectId}`);
+  },
 };

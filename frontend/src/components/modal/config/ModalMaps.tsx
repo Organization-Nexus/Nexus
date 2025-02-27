@@ -12,6 +12,7 @@ import {
   ModalRootProps,
   TextButtonProps,
 } from "@/types/modal";
+import React from "react";
 
 // Dimmed 배경
 function ModalDimmed({ className }: { className?: string }) {
@@ -175,40 +176,47 @@ function ModalTextButton({
 }
 
 // 기본 버튼
-function ModalButton({
-  onClick,
-  children,
-  variant = "primary",
-  disabled,
-  className,
-  type = "button",
-}: ButtonProps) {
-  const variantClasses = {
-    primary: "bg-[#50E161] hover:bg-[#45c14f]  text-white",
-    secondary:
-      "bg-white text-black border border-gray-300 hover:bg-gray-300 hover:text-white",
-    danger: "bg-red-500 hover:bg-red-700 text-white",
-    nothing: "",
-  };
+const ModalButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      onClick,
+      children,
+      variant = "primary",
+      disabled,
+      className,
+      type = "button",
+    }: ButtonProps,
+    ref
+  ) => {
+    const variantClasses = {
+      primary: "bg-[#50E161] hover:bg-[#45c14f] text-white",
+      secondary:
+        "bg-white text-black border border-gray-300 hover:bg-gray-300 hover:text-white",
+      danger: "bg-red-500 hover:bg-red-700 text-white",
+      nothing: "",
+    };
 
-  const baseClassName = "px-4 py-2 rounded-md";
-  const finalClassName = className
-    ? `${baseClassName} ${variantClasses[variant]} disabled:opacity-50 ${className}`
-    : `${baseClassName} ${variantClasses[variant]} disabled:opacity-50`;
+    const baseClassName = "px-4 py-2 rounded-md";
+    const finalClassName = className
+      ? `${baseClassName} ${variantClasses[variant]} disabled:opacity-50 ${className}`
+      : `${baseClassName} ${variantClasses[variant]} disabled:opacity-50`;
 
-  return (
-    <div className="flex justify-center">
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        className={finalClassName}
-        type={type}
-      >
-        {children}
-      </button>
-    </div>
-  );
-}
+    return (
+      <div className="flex justify-center">
+        <button
+          ref={ref}
+          onClick={onClick}
+          disabled={disabled}
+          className={finalClassName}
+          type={type}
+        >
+          {children}
+        </button>
+      </div>
+    );
+  }
+);
+export default ModalButton;
 
 // 라벨 버튼
 function ModalLabelButton({

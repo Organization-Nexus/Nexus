@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -22,7 +23,10 @@ import { FileService } from '../file/file.service';
 import { Category } from 'src/types/enum/file-category.enum';
 import { VoteRequestDto } from './dto/vote-request.dto';
 import { VoteResponseService } from './services/vote-response.service';
-import { AnonymousVoteException } from './exception/vote.exception';
+import {
+  AnonymousVoteException,
+  DeadlineExpiredException,
+} from './exception/vote.exception';
 
 @Controller('vote')
 export class VoteController {
@@ -83,8 +87,11 @@ export class VoteController {
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
   ) {
-    const userId = req.user.id;
     const vote = await this.voteService.getVoteByVoteId(voteId);
+    if (vote.deadline && new Date(vote.deadline) < new Date()) {
+      throw new DeadlineExpiredException();
+    }
+    const userId = req.user.id;
     const selectedOptions = await this.voteOptionService.validateVoteOptions(
       voteId,
       voteRequestDto.optionId,
@@ -144,5 +151,25 @@ export class VoteController {
         userId,
       );
     return await this.voteService.getVoteByVoteId(voteId);
+  }
+
+  // DELETE /api/vote/delete-vote/:voteId/:projectId
+  @Delete('delete-vote/:voteId/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async deleteVoteByVoteIdAndProjectId(
+    @Param('projectId') projectId: number,
+    @Param('voteId') voteId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    await this.voteService.deleteVote(voteId, projectUserId);
+    return {
+      message: `Vote with ID ${voteId} has been successfully deleted.👋`,
+    };
   }
 }
