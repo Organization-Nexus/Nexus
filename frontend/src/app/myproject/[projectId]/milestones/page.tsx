@@ -20,9 +20,9 @@ export default async function Milestones({ params }: ProjectIdProps) {
     <div className="mx-20">
       <PageInfo project={project} menuType={minutesMenuType} />
       <div className="flex w-full justify-between">
-        <MilestoneContainer projectId={Number(projectId)} />
+        <MilestoneContainer project={project} />
+        {/* <MilestoneContainer projectId={Number(projectId)} /> */}
         <TodayTasksSidebar />
-        {/* <MinutesContainer project={project} /> */}
       </div>
     </div>
   );
