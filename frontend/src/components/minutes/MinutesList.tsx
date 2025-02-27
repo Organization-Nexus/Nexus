@@ -48,7 +48,7 @@ export function MinutesList({
 
   return (
     <div>
-      <div className="space-y-4 bg-white rounded-xl shadow-md p-6 h-[650px] overflow-y-auto">
+      <div className="space-y-4 bg-white rounded-xl shadow-md p-6 h-[68vh] overflow-y-auto">
         <div className="space-y-2">
           {!minutes || minutes.length === 0 ? (
             <div className="text-center text-gray-500 py-4">
@@ -74,7 +74,7 @@ export function MinutesList({
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="nothing">
+                      <Button variant="nothing" className="hover:bg-gray-100">
                         <Ellipsis />
                       </Button>
                     </DropdownMenuTrigger>

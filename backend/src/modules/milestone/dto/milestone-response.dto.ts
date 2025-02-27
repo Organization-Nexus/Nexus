@@ -17,7 +17,6 @@ export class MilestoneResponseDto {
       };
     };
   };
-
   participants: Array<{
     id: number;
     member: {

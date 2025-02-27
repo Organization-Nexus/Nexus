@@ -17,6 +17,15 @@ export const minutesKeys = {
   ],
 };
 
+export const milestoneKeys = {
+  MILESTONE_LIST_KEY: ["milestone"],
+  MILESTONE_DETAIL_KEY: (projectId: number, milestoneId: number) => [
+    "milestone",
+    projectId,
+    milestoneId,
+  ],
+};
+
 export const userKeys = {
   MYPAGE_USER_INFO_KEY: ["myPageUserInfo"],
 };
