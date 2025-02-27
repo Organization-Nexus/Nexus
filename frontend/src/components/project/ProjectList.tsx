@@ -3,20 +3,25 @@
 import { Project, ProjectListProps } from "@/types/project";
 import ProjectCard from "./ProjectCard";
 import { useState, useEffect } from "react";
+import { useProjectList } from "@/query/queries/project";
 
-export default function ProjectList({ project }: ProjectListProps) {
+export default function ProjectList({
+  project: initialProjects,
+}: ProjectListProps) {
   const now = new Date();
   const [inProgress, setInProgress] = useState<Project[]>([]);
   const [completed, setCompleted] = useState<Project[]>([]);
   const [scheduled, setScheduled] = useState<Project[]>([]);
 
+  const projects = useProjectList(initialProjects).data || [];
+
   useEffect(() => {
-    if (project) {
+    if (projects) {
       const inProgressArr: Project[] = [];
       const completedArr: Project[] = [];
       const scheduledArr: Project[] = [];
 
-      project.forEach((proj: Project) => {
+      projects.forEach((proj: Project) => {
         const startDate = new Date(proj.start_date);
         const endDate = new Date(proj.end_date);
 
@@ -33,7 +38,7 @@ export default function ProjectList({ project }: ProjectListProps) {
       setInProgress(inProgressArr);
       setCompleted(completedArr);
     }
-  }, [project]);
+  }, [projects]);
 
   return (
     <div className="mx-auto p-4">
