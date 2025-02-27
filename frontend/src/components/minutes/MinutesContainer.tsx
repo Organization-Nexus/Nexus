@@ -74,6 +74,7 @@ export function MinutesContainer({ project }: MinutesContainerProps) {
     <div className="flex w-full">
       {/* 왼쪽 영역: 목록 */}
       <div className={isRightSectionVisible ? "w-2/5 mr-6" : "w-3/5"}>
+        <hr className="mb-4" />
         <Button
           variant="default"
           onClick={handleCreateClick}
