@@ -15,6 +15,7 @@ import { useDeleteMinutes } from "@/query/mutations/minutes";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { Minutes } from "@/types/minutes";
 import { useState } from "react";
+import { useProjectUserInfo } from "@/query/queries/project-user";
 
 interface MinutesListProps {
   projectId: number;
@@ -31,6 +32,7 @@ export function MinutesList({
     null
   );
   const { data: minutes, isLoading, isError } = useMinutesList(projectId);
+  const { data: currentUser } = useProjectUserInfo(String(projectId));
 
   const deleteMutation = useDeleteMinutes(projectId);
 
@@ -71,42 +73,44 @@ export function MinutesList({
                       </p>
                     </div>
                   </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="nothing" className="hover:bg-gray-100">
-                        <Ellipsis />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="min-w-[70px]">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          onUpdate(minute);
-                        }}
-                      >
-                        <PenLine className="mr-2" /> 수정
-                      </DropdownMenuItem>
-                      <CustomAlertDialog
-                        onConfirm={() => handleDelete(minute.id)}
-                        title="정말 삭제하시겠습니까?"
-                        confirmText={
-                          deleteMutation.isPending ? "삭제 중..." : "삭제"
-                        }
-                        cancelText="취소"
-                      >
+                  {/* 수정, 삭제 버튼 */}
+                  {currentUser?.id === minute.author.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="nothing" className="hover:bg-gray-100">
+                          <Ellipsis />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="min-w-[70px]">
                         <DropdownMenuItem
-                          className="text-red-600"
-                          disabled={deleteMutation.isPending}
-                          onSelect={(e) => {
-                            e.preventDefault();
+                          onClick={() => {
+                            onUpdate(minute);
                           }}
                         >
-                          <Trash2 className="mr-2" />
-                          {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+                          <PenLine className="mr-2" /> 수정
                         </DropdownMenuItem>
-                      </CustomAlertDialog>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        <CustomAlertDialog
+                          onConfirm={() => handleDelete(minute.id)}
+                          title="정말 삭제하시겠습니까?"
+                          confirmText={
+                            deleteMutation.isPending ? "삭제 중..." : "삭제"
+                          }
+                          cancelText="취소"
+                        >
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            disabled={deleteMutation.isPending}
+                            onSelect={(e) => {
+                              e.preventDefault();
+                            }}
+                          >
+                            <Trash2 className="mr-2" />
+                            {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+                          </DropdownMenuItem>
+                        </CustomAlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
                 <hr className="mt-1" />
               </div>
@@ -114,13 +118,6 @@ export function MinutesList({
           )}
         </div>
       </div>
-      {/* {selectedMinutesId && (
-        <MinutesDetail
-          projectId={projectId}
-          minutesId={selectedMinutesId}
-          onClose={() => setSelectedMinutesId(null)}
-        />
-      )} */}
     </div>
   );
 }

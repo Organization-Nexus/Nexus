@@ -26,25 +26,46 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import { useProjectUserInfo } from "@/query/queries/project-user";
+import { useState } from "react";
+import { UpdateMilestoneForm } from "../modal/milestone/UpdateMilestoneForm";
+import { Project } from "@/types/project";
+import { useDeleteMilestone } from "@/query/mutations/milestone";
 
 interface MilestoneDetailProps {
-  projectId: number;
+  project: Project;
   milestoneId: number;
-
   onClose: () => void;
 }
 
 export function MilestoneDetail({
-  projectId,
+  project,
   milestoneId,
-
   onClose,
 }: MilestoneDetailProps) {
+  const projectId = project.id;
   const {
     data: milestone,
     isLoading,
     isError,
   } = useMilestoneDetail(projectId, milestoneId);
+  const { data: currentUser } = useProjectUserInfo(String(projectId));
+  const isAuthor = currentUser?.id === milestone?.author.id;
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  const deleteMutation = useDeleteMilestone(projectId);
+
+  const handleDelete = async (milestoneId: number) => {
+    deleteMutation.mutate(milestoneId, {
+      onSuccess: () => {
+        onClose();
+        alert("마일스톤이 삭제되었습니다.");
+      },
+      onError: (error) => {
+        console.error("마일스톤 삭제 실패", error);
+      },
+    });
+  };
 
   if (isLoading) {
     return <div>로딩 중...</div>;
@@ -75,60 +96,48 @@ export function MilestoneDetail({
             </div>
           </div>
           <div className="flex items-center justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="nothing"
-                  className="p-2 mb-2 mx-4 h-6 hover:bg-gray-100"
-                >
-                  <Ellipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="min-w-[70px]">
-                <DropdownMenuItem
-                // onClick={() => {
-                //   onUpdate(minute);
-                // }}
-                >
-                  <PenLine className="mr-2" /> 수정
-                </DropdownMenuItem>
-                <CustomAlertDialog
-                  onConfirm={() => {}}
-                  title="정말 삭제하시겠습니까?"
-                  confirmText={
-                    //   deleteMutation.isPending ? "삭제 중..." :
-                    "삭제"
-                  }
-                  cancelText="취소"
-                >
-                  <DropdownMenuItem
-                    className="text-red-600"
-                    //   disabled={deleteMutation.isPending}
-                    onSelect={(e) => {
-                      e.preventDefault();
-                    }}
+            {isAuthor && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="nothing"
+                    className="p-2 mb-2 mx-4 h-6 hover:bg-gray-100"
                   >
-                    <Trash2 className="mr-2" />
-                    {
+                    <Ellipsis />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="min-w-[70px]">
+                  <DropdownMenuItem onClick={() => setIsUpdateModalOpen(true)}>
+                    <PenLine className="mr-2" /> 수정
+                  </DropdownMenuItem>
+                  <CustomAlertDialog
+                    onConfirm={() => {
+                      handleDelete(milestone.id);
+                    }}
+                    title="정말 삭제하시겠습니까?"
+                    confirmText={
                       //   deleteMutation.isPending ? "삭제 중..." :
                       "삭제"
                     }
-                  </DropdownMenuItem>
-                </CustomAlertDialog>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {/* <button
-            className="text-gray-500 hover:text-gray-700"
-            onClick={() => setIsEditing(true)}
-          >
-            수정
-          </button>
-          <button
-            className="text-gray-500 hover:text-gray-700"
-            onClick={handleDelete}
-          >
-            삭제
-          </button> */}
+                    cancelText="취소"
+                  >
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      //   disabled={deleteMutation.isPending}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      <Trash2 className="mr-2" />
+                      {
+                        //   deleteMutation.isPending ? "삭제 중..." :
+                        "삭제"
+                      }
+                    </DropdownMenuItem>
+                  </CustomAlertDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
@@ -216,6 +225,14 @@ export function MilestoneDetail({
           </>
         )}
       </div>
+      {isUpdateModalOpen && (
+        <UpdateMilestoneForm
+          isOpen={isUpdateModalOpen}
+          onClose={() => setIsUpdateModalOpen(false)}
+          initialData={milestone}
+          project={project}
+        />
+      )}
     </div>
   );
 }

@@ -40,7 +40,6 @@ export class MilestoneController {
       projectId,
       userId,
     );
-    console.log('projectUser:', projectUser);
     return await this.milestoneService.createMilestone(
       createMilestoneDto,
       projectUser,

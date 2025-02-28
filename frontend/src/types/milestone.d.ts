@@ -52,6 +52,13 @@ export interface CreateMilestoneFormProps {
   project: Project;
 }
 
+export interface UpdateMilestoneFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  project: Project;
+  initialData: Milestone;
+}
+
 export interface UpdateMilestone {
   title?: string;
   content?: string;
@@ -59,7 +66,7 @@ export interface UpdateMilestone {
   start_date?: string;
   end_date?: string;
   goal?: string;
-  note?: string;
+  note?: string | null;
   participant_ids?: number[];
 }
 

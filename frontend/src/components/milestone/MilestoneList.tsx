@@ -2,17 +2,19 @@ import { useState } from "react";
 import { useMilestoneList } from "@/query/queries/milestone";
 import { MilestoneDetail } from "./MilestoneDetail";
 import MilestoneListView from "./MilestoneListView";
+import { Project } from "@/types/project";
 interface MilestoneListProps {
-  projectId: number;
+  project: Project;
   filter: "All" | "FE" | "BE";
   searchQuery: string;
 }
 
 export default function MilestoneList({
-  projectId,
+  project,
   filter,
   searchQuery,
 }: MilestoneListProps) {
+  const projectId = project.id;
   const { data: milestones, isLoading, isError } = useMilestoneList(projectId);
   const [selectedMilestone, setSelectedMilestone] = useState<number | null>(
     null
@@ -35,7 +37,7 @@ export default function MilestoneList({
   if (selectedMilestone) {
     return (
       <MilestoneDetail
-        projectId={projectId}
+        project={project}
         milestoneId={selectedMilestone}
         onClose={() => setSelectedMilestone(null)}
       />
@@ -44,8 +46,8 @@ export default function MilestoneList({
 
   return (
     <MilestoneListView
+      project={project}
       milestones={filteredMilestones}
-      projectId={projectId}
       onSelect={setSelectedMilestone}
     />
   );

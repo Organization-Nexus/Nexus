@@ -39,7 +39,7 @@ export function MinutesContainer({ project }: MinutesContainerProps) {
 
   const handleUpdateClick = async (minutes: Minutes) => {
     try {
-      // 상세 정보를 가져오는 API 호출
+      // 상세 정보를 가져오는 API
       const detailData = await minutesApi.getMinutesByMinutesId(
         project.id,
         minutes.id
@@ -50,7 +50,6 @@ export function MinutesContainer({ project }: MinutesContainerProps) {
       setSelectedMinutes(null);
     } catch (error) {
       console.error("회의록 상세 정보 가져오기 실패", error);
-      // 에러 처리
     }
   };
 
