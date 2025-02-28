@@ -322,8 +322,8 @@ export default function CommunityTemplate({
               <hr className="my-4" />
 
               <div
-                className="text-md text-gray-700 my-2 overflow-hidden"
-                style={{ height: isExpanded ? "auto" : "100px" }}
+                className="text-md text-gray-700 my-2 overflow-hidden whitespace-pre-line"
+                style={{ maxHeight: isExpanded ? "none" : "100px" }}
               >
                 {item.content}
               </div>
