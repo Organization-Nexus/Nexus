@@ -2,6 +2,10 @@ export const projectKeys = {
   PROJECT_LIST_KEY: ["projectList"],
 };
 
+export const projectUserKeys = {
+  PROJECT_USER_INFO_KEY: ["projectUser"],
+};
+
 export const communityKeys = {
   NOTICE_LIST_KEY: ["noticeList"],
   FEED_LIST_KEY: ["feedList"],

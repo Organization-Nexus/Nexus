@@ -152,7 +152,7 @@ export function CreateMilestoneForm({
       isOpen={isOpen}
       onClose={onClose}
       closeOnOutsideClick={false}
-      className="px-12 py-8"
+      className="px-10 py-8"
     >
       <form
         onSubmit={handleSubmit}
