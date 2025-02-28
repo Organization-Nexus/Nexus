@@ -31,11 +31,8 @@ export class ProjectUserController {
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
   ) {
-    // 권한 확인
     const organizerId = req.user.id;
     await this.projectUserService.checkAdminPermissions(projectId, organizerId);
-
-    // 초대 시작
     const invitedUser = await this.userService.findByEmail(
       projectUserDto.email,
     );
@@ -43,8 +40,6 @@ export class ProjectUserController {
       projectId,
       invitedUser.id,
     );
-
-    // 저장
     const newProjectUser = await this.projectUserService.createProjectUser({
       ...projectUserDto,
       projectId,
