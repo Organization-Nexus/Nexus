@@ -16,6 +16,7 @@ import { MailModule } from './modules/mailer/mailer.module';
 import { MinutesModule } from './modules/minutes/minutes.module';
 import { LikeModule } from './modules/like/like.module';
 import { MilestoneModule } from './modules/milestone/milestone.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MilestoneModule } from './modules/milestone/milestone.module';
     MinutesModule,
     LikeModule,
     MilestoneModule,
+    CommentModule,
   ],
 })
 export class AppModule {
