@@ -1,3 +1,4 @@
+import { Comment } from 'src/modules/comment/entities/comment.entity';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { Like } from 'src/modules/like/entities/like.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
@@ -47,4 +48,7 @@ export class Feed {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Comment, (comment) => comment.feed)
+  comments: Comment[];
 }

@@ -1,3 +1,4 @@
+import { Comment } from 'src/modules/comment/entities/comment.entity';
 import { MinutesParticipant } from 'src/modules/minutes/entities/minutes-participant.entity';
 import { Minutes } from 'src/modules/minutes/entities/minutes.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
@@ -58,4 +59,7 @@ export class ProjectUser {
 
   @OneToMany(() => MinutesParticipant, (participant) => participant.member)
   meetingParticipations: MinutesParticipant[];
+
+  @OneToMany(() => Comment, (comment) => comment.projectUser)
+  comments: Comment[];
 }
