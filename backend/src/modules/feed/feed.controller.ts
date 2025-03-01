@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Param,
@@ -22,6 +23,7 @@ import { CommunityService } from '../community/community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { UpdateCommunityDto } from './dto/update-community-dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('feed')
 export class FeedController {
   constructor(
@@ -129,7 +131,7 @@ export class FeedController {
     @Param('feedId') feedId: number,
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
-  ) {
+  ): Promise<{ message: string }> {
     const userId = req.user.id;
     const projectUserId =
       await this.projectUserService.validateProjectMemberByUserId(

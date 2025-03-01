@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { VoteOption } from './vote-options.entity';
 import { Like } from 'src/modules/like/entities/like.entity';
+import { Comment } from 'src/modules/comment/entities/comment.entity';
 
 @Entity('vote')
 export class Vote {
@@ -59,4 +60,7 @@ export class Vote {
   @ManyToOne(() => ProjectUser, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'author_id' })
   author: ProjectUser;
+
+  @OneToMany(() => Comment, (comment) => comment.vote)
+  comments: Comment[];
 }

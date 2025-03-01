@@ -96,4 +96,12 @@ export class FeedService {
     }
     await this.feedRepository.remove(feed);
   }
+
+  async validateFeed(feedId: number): Promise<Feed> {
+    const feed = await this.feedRepository.findOneBy({ id: feedId });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
+    return feed;
+  }
 }

@@ -61,4 +61,12 @@ export class VoteService {
     }
     await this.voteRepository.remove(vote);
   }
+
+  async validateVote(voteId: number): Promise<Vote> {
+    const vote = await this.voteRepository.findOneBy({ id: voteId });
+    if (!vote) {
+      throw new VoteNotFoundException(voteId);
+    }
+    return vote;
+  }
 }
