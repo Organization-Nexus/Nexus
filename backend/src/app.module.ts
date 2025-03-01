@@ -16,6 +16,7 @@ import { MailModule } from './modules/mailer/mailer.module';
 import { MinutesModule } from './modules/minutes/minutes.module';
 import { LikeModule } from './modules/like/like.module';
 import { MilestoneModule } from './modules/milestone/milestone.module';
+import { IssueModule } from './modules/issue/issue.module';
 import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
@@ -39,6 +40,7 @@ import { CommentModule } from './modules/comment/comment.module';
     MinutesModule,
     LikeModule,
     MilestoneModule,
+    IssueModule,
     CommentModule,
   ],
 })
