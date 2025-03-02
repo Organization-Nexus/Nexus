@@ -16,6 +16,10 @@ export class CreateIssueDto {
   content: string;
 
   @IsString()
+  @Length(1, 1000)
+  expected_results: string;
+
+  @IsString()
   @IsIn(['FE', 'BE'])
   category: string;
 
