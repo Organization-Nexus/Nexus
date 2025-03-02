@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
@@ -37,8 +37,6 @@ export class CommentService {
       }
       comment.parentComment = parentComment;
     }
-
-    // 댓글 저장
     return this.commentRepository.save(comment);
   }
 
@@ -47,29 +45,21 @@ export class CommentService {
     content: string,
     projectUser: ProjectUser,
     parentCommentId?: number,
-  ): Promise<number> {
+  ): Promise<Comment> {
     const comment = new Comment();
     comment.content = content;
     comment.vote = vote;
     comment.projectUser = projectUser;
-
     if (parentCommentId) {
       const parentComment = await this.commentRepository.findOne({
         where: { id: parentCommentId },
       });
-      console.log(parentComment);
       if (!parentComment) {
-        throw new NotFoundException('404 Not Found');
-      } else {
-        comment.parentComment = parentComment;
-        await this.commentRepository.save(comment);
+        throw new Error('Parent comment not found');
       }
-    } else {
-      const savedComment = await this.commentRepository.save(comment);
-      await this.commentRepository.save(savedComment);
+      comment.parentComment = parentComment;
     }
-
-    return comment.id;
+    return this.commentRepository.save(comment);
   }
 
   async findById(id: number): Promise<Comment> {
@@ -107,6 +97,7 @@ export class CommentService {
         content: comment.content,
         createdAt: comment.createdAt.toISOString(),
         projectUser: {
+          id: comment.projectUser.id,
           position: comment.projectUser.position,
           name: comment.projectUser.user.name,
           profileImage: comment.projectUser.user.log.profileImage,
@@ -116,6 +107,7 @@ export class CommentService {
           content: reply.content,
           createdAt: reply.createdAt.toISOString(),
           projectUser: {
+            id: reply.projectUser.id,
             position: reply.projectUser.position,
             name: reply.projectUser.user.name,
             profileImage: reply.projectUser.user.log.profileImage,

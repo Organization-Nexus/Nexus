@@ -1,18 +1,18 @@
 import {
-  Community,
   CreateCommunityForm,
   UpdateCommunityForm,
   Notice,
   Vote,
   VoteOption,
   CreateVoteDto,
+  Feed,
 } from "@/types/community";
 import api from "../axios";
 
 export const communityApi = {
-  getfeedsByProjectId: async (projectId: string): Promise<Community[]> => {
+  getfeedsByProjectId: async (projectId: string): Promise<Feed[]> => {
     return await api
-      .get<Community[]>(`/community/feeds/${projectId}`)
+      .get<Feed[]>(`/community/feeds/${projectId}`)
       .then((res) => res.data);
   },
 

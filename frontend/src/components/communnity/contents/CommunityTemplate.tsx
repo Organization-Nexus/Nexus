@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, PenLine, Trash2 } from "lucide-react";
+import { MessageSquare, MoreHorizontal, PenLine, Trash2 } from "lucide-react";
 import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
 import { useDeleteFeed, useDeleteVote } from "@/query/mutations/community";
 import {
@@ -36,6 +36,7 @@ import {
   useVoteList,
 } from "@/query/queries/community";
 import LikeList from "@/components/modal/community/LikeList";
+import CommunityComment from "./CommunityComment";
 
 export default function CommunityTemplate({
   type,
@@ -62,6 +63,7 @@ export default function CommunityTemplate({
   };
   const [state, setState] = useState({
     expandedFeed: null as string | number | null,
+    expandedComment: null as string | number | null,
     selectedImage: null as string | null,
     isImageModalOpen: false,
     isUpdateModalOpen: false,
@@ -72,6 +74,7 @@ export default function CommunityTemplate({
     likeList: [] as LikeDataResponse[],
     likedItems: {} as { [key: string]: boolean },
     likeCounts: {} as { [key: string]: number },
+    commentList: [] as Comment[],
   });
 
   const initializeLikeStatus = () => {
@@ -222,6 +225,14 @@ export default function CommunityTemplate({
       likeList: Array.isArray(response.data) ? response.data : [],
     }));
   };
+
+  const handleCommentClick = (type: string, itemId: number) => {
+    setState((prev) => ({
+      ...prev,
+      expandedComment: prev.expandedComment === itemId ? null : itemId,
+    }));
+  };
+
   const filteredItems = state.showImportantOnly
     ? data.filter((item) => "isImportant" in item && item.isImportant)
     : data;
@@ -260,7 +271,7 @@ export default function CommunityTemplate({
           return (
             <div
               key={item.id}
-              className={`bg-white p-10 rounded-md shadow-md mb-2 ${borderClass}`}
+              className={`bg-white p-10 rounded-xl shadow-md mb-4 ${borderClass}`}
             >
               <div className="flex justify-between">
                 <AuthorInfo
@@ -368,40 +379,58 @@ export default function CommunityTemplate({
                   projectId={projectId}
                 />
               )}
-
               <FilePreview files={item.community_files || []} />
               <div className="flex items-center justify-between mt-8">
-                <div className="flex items-center space-x-1">
-                  <button onClick={() => handleLikeClick(item.id)}>
-                    {isLiked ? (
-                      <GoHeartFill className="fill-red-400" />
-                    ) : (
-                      <GoHeart className="text-gray-400 hover:text-red-400" />
-                    )}
-                  </button>
-                  <button onClick={() => handleLikeCountClick(item.id)}>
-                    <p className="text-sm text-gray-400 hover:text-black">
-                      {state.likeCounts[item.id] || 0}
-                    </p>
+                <div className="flex items-center space-x-4">
+                  <div className="flex space-x-1">
+                    <button onClick={() => handleLikeClick(item.id)}>
+                      {isLiked ? (
+                        <GoHeartFill className="fill-red-400 w-4 h-4" />
+                      ) : (
+                        <GoHeart className="text-gray-400 hover:text-red-400 w-4 h-4" />
+                      )}
+                    </button>
+                    <button onClick={() => handleLikeCountClick(item.id)}>
+                      <p className="text-sm text-gray-400 hover:text-black">
+                        {state.likeCounts[item.id] || 0}
+                      </p>
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => handleCommentClick(type, item.id)}
+                    className="flex items-center text-gray-400 hover:text-black space-x-1"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <p className="text-sm">댓글보기</p>
                   </button>
                 </div>
                 <p className="text-sm text-gray-400">
                   <TimeAgo date={new Date(createdAt)} />
                 </p>
               </div>
+              {state.expandedComment === item.id && (
+                <div className="mt-10">
+                  <CommunityComment
+                    type={type}
+                    itemId={item.id}
+                    projectId={projectId}
+                    projectUserId={projectUser.id}
+                  />
+                </div>
+              )}
             </div>
           );
         })
       ) : (
-        <p className="text-gray-500">표시할 항목이 없습니다.</p>
+        <p className="flex items-center justify-center mt-4 p-4 rounded-md bg-white shadow-md h-[20vh]">
+          커뮤니티를 생성해주세요 🚀
+        </p>
       )}
-
       <ImageModal
         isOpen={state.isImageModalOpen}
         imageUrl={state.selectedImage}
         onClose={handleCloseImageModal}
       />
-
       {state.selectedItem && (
         <UpdateCommunityModal
           type={type}
