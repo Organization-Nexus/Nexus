@@ -24,7 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { useProjectUserInfo } from "@/query/queries/project-user";
 import { useState } from "react";
@@ -86,7 +85,7 @@ export function MilestoneDetail({
           <div className="flex justify-start items-center w-full">
             {/* < 이전 버튼 */}
             <ChevronLeft
-              className="cursor-pointer size-7 mr-2"
+              className="cursor-pointer size-7 mr-2 text-custom-smallText hover:bg-gray-50 rounded-lg"
               onClick={onClose}
             />
             {/* 제목, FE/BE */}
@@ -99,12 +98,9 @@ export function MilestoneDetail({
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="nothing"
-                    className="p-2 mb-2 mx-4 h-6 hover:bg-gray-100"
-                  >
-                    <Ellipsis />
-                  </Button>
+                  <button className="text-custom-smallText hover:bg-gray-50 rounded-lg p-1 mr-2">
+                    <Ellipsis size={18} />
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="min-w-[70px]">
                   <DropdownMenuItem onClick={() => setIsUpdateModalOpen(true)}>

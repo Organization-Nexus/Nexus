@@ -27,6 +27,9 @@ export class Issue {
   @Column({ length: 2000 })
   content: string;
 
+  @Column({ length: 1000 })
+  expected_results: string;
+
   @Column({ length: 20 })
   category: string; // FE, BE
 
