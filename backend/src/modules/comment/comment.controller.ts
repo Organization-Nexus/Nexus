@@ -19,6 +19,7 @@ import { ProjectUserService } from '../project-user/project-user.service';
 import { FeedService } from '../feed/feed.service';
 import { VoteService } from '../vote/services/vote.service';
 import { ReadCommentDto } from './dto/read-comment.dto';
+import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('comment')
@@ -32,7 +33,7 @@ export class CommentController {
 
   // POST /api/comment/feed/:projectId
   @Post('/feed/:projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
   async createFeedComment(
     @Body() createCommentDto: CreateCommentDto,
     @Param('projectId') projectId: number,
@@ -54,12 +55,12 @@ export class CommentController {
 
   // POST /api/comment/vote/:projectId
   @Post('/vote/:projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
   async createVoteComment(
     @Body() createCommentDto: CreateCommentDto,
     @Param('projectId') projectId: number,
     @Req() req: UserPayload,
-  ): Promise<number> {
+  ): Promise<Comment> {
     const { content, parentCommentId } = createCommentDto;
     const projectUser = await this.projectUserService.getProjectUser(
       projectId,

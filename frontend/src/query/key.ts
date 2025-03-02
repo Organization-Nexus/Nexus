@@ -12,6 +12,11 @@ export const communityKeys = {
   VOTE_LIST_KEY: ["voteList"],
 };
 
+export const commentKeys = {
+  FEED_OR_NOTICE_COMMENT_LIST_KEY: ["feedOrNoticeCommentList"],
+  VOTE_COMMENT_LIST_KEY: ["voteCommentList"],
+};
+
 export const minutesKeys = {
   MINUTES_LIST_KEY: ["minutesList"],
   MINUTES_DETAIL_KEY: (projectId: number, minutesId: number) => [

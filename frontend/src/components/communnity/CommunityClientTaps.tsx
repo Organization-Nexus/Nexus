@@ -46,7 +46,7 @@ export default function CommunityClientTabs({
   return (
     <div>
       <div className="w-3/5 space-y-4">
-        <hr className="my-4" />
+        <hr />
         <div className="flex justify-between items-center">
           {/* 커뮤니티 탭 */}
           <div className="flex items-center space-x-6">
@@ -92,7 +92,7 @@ export default function CommunityClientTabs({
           </DropdownMenu>
         </div>
         {/* 커뮤니티 컨텐츠 */}
-        <div className="mt-8 h-[850px] overflow-y-auto">
+        <div className="mt-8 h-[78vh] overflow-y-auto rounded-xl">
           <CommunityTemplate
             key={selectedTab}
             type={tabs.find((t) => t.key === selectedTab)?.key || ""}
