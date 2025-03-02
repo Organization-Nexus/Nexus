@@ -30,6 +30,19 @@ export const milestoneKeys = {
   ],
 };
 
+export const issueKeys = {
+  ISSUE_LIST_KEY: (projectId: number, milestoneId: number) => [
+    "issues",
+    projectId,
+    milestoneId,
+  ],
+  ISSUE_DETAIL_KEY: (projectId: number, issueId: number) => [
+    "issue",
+    projectId,
+    issueId,
+  ],
+};
+
 export const userKeys = {
   MYPAGE_USER_INFO_KEY: ["myPageUserInfo"],
 };
