@@ -16,6 +16,7 @@ import {
   useCreateVoteComment,
   useDeleteComment,
 } from "@/query/mutations/comment";
+import { CustomAlertDialog } from "@/components/common/CustomAlertDialog";
 
 export default function CommunityComment({
   type,
@@ -70,6 +71,8 @@ export default function CommunityComment({
     commentId: number,
     commentType: "feed" | "notice" | "vote"
   ) => {
+    console.log("commentId", commentId);
+    console.log("commentType", commentType);
     deleteCommentMutation.mutate({
       commentId,
       commentType,
@@ -98,17 +101,20 @@ export default function CommunityComment({
                 </div>
                 <div>
                   {projectUserId === comment.projectUser.id && (
-                    <button
-                      onClick={() =>
+                    <CustomAlertDialog
+                      onConfirm={() =>
                         handleDeleteComment(
                           comment.id,
                           type as "feed" | "notice" | "vote"
                         )
                       }
-                      className="text-xs font-semibold text-red-300 hover:underline"
+                      title="댓글 삭제"
+                      description="정말로 이 댓글을 삭제하시겠습니까?"
                     >
-                      삭제
-                    </button>
+                      <button className="text-xs font-semibold text-red-300 hover:underline">
+                        삭제
+                      </button>
+                    </CustomAlertDialog>
                   )}
                 </div>
               </div>
@@ -151,17 +157,20 @@ export default function CommunityComment({
                       </div>
                       <div>
                         {projectUserId === reply.projectUser.id && (
-                          <button
-                            onClick={() =>
+                          <CustomAlertDialog
+                            onConfirm={() =>
                               handleDeleteComment(
                                 reply.id,
                                 type as "feed" | "notice" | "vote"
                               )
                             }
-                            className="text-xs font-semibold text-red-300 hover:underline"
+                            title="댓글 삭제"
+                            description="정말로 이 댓글을 삭제하시겠습니까?"
                           >
-                            삭제
-                          </button>
+                            <button className="text-xs font-semibold text-red-300 hover:underline">
+                              삭제
+                            </button>
+                          </CustomAlertDialog>
                         )}
                       </div>
                     </div>

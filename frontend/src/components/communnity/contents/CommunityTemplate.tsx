@@ -80,33 +80,84 @@ export default function CommunityTemplate({
   const initializeLikeStatus = () => {
     const initialLikedItems: { [key: string]: boolean } = {};
     const initialLikeCounts: { [key: string]: number } = {};
-    if (feedData) {
-      feedData.forEach((item) => {
-        initialLikedItems[item.id] = item.likedByUser;
-        initialLikeCounts[item.id] = item.likeCount || 0;
+    const initializeData = (data: (Feed | Notice | Vote)[], type: string) => {
+      data.forEach((item) => {
+        const key = `${item.id}-${type}`;
+        initialLikedItems[key] = item.likedByUser;
+        initialLikeCounts[key] = item.likeCount || 0;
       });
-    }
-    if (noticeData) {
-      noticeData.forEach((item) => {
-        initialLikedItems[item.id] = item.likedByUser;
-        initialLikeCounts[item.id] = item.likeCount || 0;
-      });
-    }
-    if (voteData) {
-      voteData.forEach((item) => {
-        initialLikedItems[item.id] = item.likedByUser;
-        initialLikeCounts[item.id] = item.likeCount || 0;
-      });
-    }
+    };
+    if (feedData) initializeData(feedData, "feed");
+    if (noticeData) initializeData(noticeData, "notice");
+    if (voteData) initializeData(voteData, "vote");
+
     setState((prev) => ({
       ...prev,
       likedItems: { ...prev.likedItems, ...initialLikedItems },
       likeCounts: { ...prev.likeCounts, ...initialLikeCounts },
     }));
   };
+
   useMemo(() => {
     initializeLikeStatus();
   }, [feedData, noticeData, voteData]);
+
+  const handleLikeClick = async (itemId: number, type: string) => {
+    const key = `${itemId}-${type}`;
+    setState((prev) => {
+      const newLikedItems = { ...prev.likedItems };
+      const newLikeCounts = { ...prev.likeCounts };
+      const isCurrentlyLiked = newLikedItems[key] ?? false;
+      newLikedItems[key] = !isCurrentlyLiked;
+      newLikeCounts[key] = newLikedItems[key]
+        ? (newLikeCounts[key] || 0) + 1
+        : (newLikeCounts[key] || 0) - 1;
+
+      return {
+        ...prev,
+        likedItems: newLikedItems,
+        likeCounts: newLikeCounts,
+      };
+    });
+
+    let response: { data: LikeDataResponse[] };
+    if (type === "feed" || type === "notice") {
+      response = await likeApi.feedLike(
+        itemId.toString(),
+        projectId.toString()
+      );
+    } else if (type === "vote") {
+      response = await likeApi.voteLike(
+        itemId.toString(),
+        projectId.toString()
+      );
+    }
+    setState((prev) => ({
+      ...prev,
+      likeList: Array.isArray(response.data) ? response.data : [],
+    }));
+  };
+
+  const handleLikeCountClick = async (itemId: number, type: string) => {
+    const key = `${itemId}-${type}`;
+    setState((prev) => ({
+      ...prev,
+      isLikeListOpen: true,
+      selectedItemId: itemId,
+    }));
+
+    let response: { data: LikeDataResponse[] };
+    if (type === "feed" || type === "notice") {
+      response = await likeApi.getFeedLikes(itemId.toString(), projectId);
+    } else if (type === "vote") {
+      response = await likeApi.getVoteLikes(itemId.toString(), projectId);
+    }
+
+    setState((prev) => ({
+      ...prev,
+      likeList: Array.isArray(response.data) ? response.data : [],
+    }));
+  };
 
   const data = useMemo(() => {
     let filteredData: Feed[] | Notice[] | Vote[];
@@ -171,59 +222,6 @@ export default function CommunityTemplate({
     } else if (type === "vote") {
       deleteVoteMutation.mutate(id);
     }
-  };
-
-  const handleLikeClick = async (itemId: number) => {
-    setState((prev) => {
-      const newLikedItems = { ...prev.likedItems };
-      const newLikeCounts = { ...prev.likeCounts };
-      const isCurrentlyLiked = newLikedItems[itemId] ?? false;
-      newLikedItems[itemId] = !isCurrentlyLiked;
-      newLikeCounts[itemId] = newLikedItems[itemId]
-        ? (newLikeCounts[itemId] || 0) + 1
-        : (newLikeCounts[itemId] || 0) - 1;
-
-      return {
-        ...prev,
-        likedItems: newLikedItems,
-        likeCounts: newLikeCounts,
-      };
-    });
-    let response: { data: LikeDataResponse[] };
-    if (type === "feed" || type === "notice") {
-      response = await likeApi.feedLike(
-        itemId.toString(),
-        projectId.toString()
-      );
-    } else if (type === "vote") {
-      response = await likeApi.voteLike(
-        itemId.toString(),
-        projectId.toString()
-      );
-    }
-    setState((prev) => ({
-      ...prev,
-      likeList: Array.isArray(response.data) ? response.data : [],
-    }));
-  };
-
-  const handleLikeCountClick = async (itemId: number) => {
-    setState((prev) => ({
-      ...prev,
-      isLikeListOpen: true,
-      selectedItemId: itemId,
-    }));
-    let response: { data: LikeDataResponse[] };
-    if (type === "feed" || type === "notice") {
-      response = await likeApi.getFeedLikes(itemId.toString(), projectId);
-    } else if (type === "vote") {
-      response = await likeApi.getVoteLikes(itemId.toString(), projectId);
-    }
-
-    setState((prev) => ({
-      ...prev,
-      likeList: Array.isArray(response.data) ? response.data : [],
-    }));
   };
 
   const handleCommentClick = (type: string, itemId: number) => {
@@ -383,16 +381,16 @@ export default function CommunityTemplate({
               <div className="flex items-center justify-between mt-8">
                 <div className="flex items-center space-x-4">
                   <div className="flex space-x-1">
-                    <button onClick={() => handleLikeClick(item.id)}>
-                      {isLiked ? (
+                    <button onClick={() => handleLikeClick(item.id, type)}>
+                      {state.likedItems[`${item.id}-${type}`] ? (
                         <GoHeartFill className="fill-red-400 w-4 h-4" />
                       ) : (
                         <GoHeart className="text-gray-400 hover:text-red-400 w-4 h-4" />
                       )}
                     </button>
-                    <button onClick={() => handleLikeCountClick(item.id)}>
+                    <button onClick={() => handleLikeCountClick(item.id, type)}>
                       <p className="text-sm text-gray-400 hover:text-black">
-                        {state.likeCounts[item.id] || 0}
+                        {state.likeCounts[`${item.id}-${type}`] || 0}
                       </p>
                     </button>
                   </div>
