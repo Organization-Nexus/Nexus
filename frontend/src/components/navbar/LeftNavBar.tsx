@@ -100,17 +100,15 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
 
           <hr className="my-4" />
 
-          {/* My Posts/Comments */}
+          {/* myPostedList */}
           <NavBarBtn
-            onClick={() =>
-              navigateTo(`/myproject/${projectId}/my-posts-comments`)
-            }
+            onClick={() => navigateTo(`/myproject/${projectId}/myPostedList`)}
             icon={
               <MessageSquareText className="mr-3 w-[1.125rem] h-[1.125rem]" />
             }
-            label="내가 쓴 글/댓글"
+            label="내가 쓴 글"
             padding="p-4"
-            isActive={isActive(`/myproject/${projectId}/my-posts-comments`)}
+            isActive={isActive(`/myproject/${projectId}/myPostedList`)}
           />
 
           {/* Bookmarks */}
