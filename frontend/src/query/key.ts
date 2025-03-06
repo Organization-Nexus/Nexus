@@ -41,11 +41,11 @@ export const issueKeys = {
     projectId,
     milestoneId,
   ],
-  ISSUE_DETAIL_KEY: (projectId: number, issueId: number) => [
-    "issue",
-    projectId,
-    issueId,
-  ],
+  ISSUE_DETAIL_KEY: (
+    projectId: number,
+    milestoneId: number,
+    issueId: number
+  ) => ["issue", projectId, milestoneId, issueId],
 };
 
 export const userKeys = {

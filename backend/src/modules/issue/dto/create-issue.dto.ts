@@ -24,6 +24,10 @@ export class CreateIssueDto {
   category: string;
 
   @IsString()
-  @IsIn(['feature', 'api', 'refactor', 'bug', 'setting', 'test'])
+  @IsIn(['feature', 'refactor', 'bug', 'setting', 'test'])
   label: string;
+
+  @IsString()
+  @Length(1, 50)
+  branch: string;
 }

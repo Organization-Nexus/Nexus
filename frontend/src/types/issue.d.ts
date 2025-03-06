@@ -9,6 +9,7 @@ export interface Issue {
   category: "FE" | "BE";
   label: string;
   expected_results: string;
+  branch: string;
   author: {
     id: number;
     position: string;
@@ -20,19 +21,19 @@ export interface Issue {
       };
     };
   };
-  participants: Array<{
-    id: number;
-    member: {
-      id: number;
-      user: {
-        name: string;
-        position: string;
-        log: {
-          profileImage: string;
-        };
-      };
-    };
-  }>;
+  //   participants: Array<{
+  //     id: number;
+  //     member: {
+  //       id: number;
+  //       user: {
+  //         name: string;
+  //         position: string;
+  //         log: {
+  //           profileImage: string;
+  //         };
+  //       };
+  //     };
+  //   }>;
 }
 
 export interface CreateIssue {
@@ -43,7 +44,8 @@ export interface CreateIssue {
   category: "FE" | "BE";
   label: string;
   expected_results: string;
-  participant_ids: number[];
+  branch: string;
+  //   participant_ids: number[];
 }
 
 export interface CreateIssueFormProps {
@@ -67,7 +69,8 @@ export interface UpdateIssue {
   category?: "FE" | "BE";
   label?: string;
   expected_results?: string;
-  participant_ids?: number[];
+  branch: string;
+  //   participant_ids?: number[];
 }
 
 interface IssueData {
@@ -86,6 +89,7 @@ export interface ValidationIssueErrors {
   category?: string;
   label?: string;
   expected_results?: string;
+  branch?: string;
 
-  participant_ids?: string;
+  //   participant_ids?: string;
 }
