@@ -12,3 +12,14 @@ export function useIssueList(projectId: number, milestoneId: number) {
     },
   });
 }
+
+export const useIssueDetail = (
+  projectId: number,
+  milestoneId: number,
+  issueId: number
+) => {
+  return useQuery({
+    queryKey: issueKeys.ISSUE_DETAIL_KEY(projectId, milestoneId, issueId),
+    queryFn: () => issueApi.getIssueByIssueId(projectId, milestoneId, issueId),
+  });
+};

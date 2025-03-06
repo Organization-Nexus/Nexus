@@ -53,9 +53,9 @@ export function MinutesList({
       <div className="space-y-4 bg-white rounded-xl shadow-md p-6 h-[68vh] overflow-y-auto">
         <div className="space-y-2">
           {!minutes || minutes.length === 0 ? (
-            <div className="text-center text-gray-500 py-4">
-              등록된 회의록이 없습니다.
-            </div>
+            <p className="text-gray-500 text-sm text-center py-4">
+              등록된 회의록이 없습니다. 회의록을 작성해보세요 🚀
+            </p>
           ) : (
             minutes.map((minute) => (
               <div key={minute.id}>

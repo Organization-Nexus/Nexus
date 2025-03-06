@@ -34,7 +34,10 @@ export class Issue {
   category: string; // FE, BE
 
   @Column({ length: 20 })
-  label: string; // feature, api, refactor, bug, setting, test
+  label: string; // feature, refactor, bug, setting, test
+
+  @Column({ length: 50 })
+  branch: string;
 
   @ManyToOne(() => ProjectUser, {
     nullable: false,

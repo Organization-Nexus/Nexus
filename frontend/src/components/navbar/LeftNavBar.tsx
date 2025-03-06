@@ -1,6 +1,5 @@
 "use client";
 
-import { LogoutButton } from "../button/LogoutButton";
 import { usePathname, useRouter } from "next/navigation";
 import { LeftNavBarProps } from "@/types/navbar";
 import NavBarBtn from "./NavBarBtn";
@@ -12,7 +11,6 @@ import {
   LayoutDashboard,
   MessageSquareText,
   Milestone,
-  Waypoints,
 } from "lucide-react";
 import { PiUsersThreeBold } from "react-icons/pi";
 export default function LeftNavBar({ projectId }: LeftNavBarProps) {
@@ -64,32 +62,23 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             isActive={isActive(`/myproject/${projectId}/community`)}
           />
 
-          {/* Calendar */}
-          <NavBarBtn
-            onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}
-            icon={<CalendarDays className="mr-3 w-[1.125rem] h-[1.125rem]" />}
-            label="달력"
-            padding="p-4"
-            isActive={isActive(`/myproject/${projectId}/calendar`)}
-          />
-
           {/* Milestones */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/milestones`)}
             icon={<Milestone className="mr-3 w-[1.125rem] h-[1.125rem]" />}
-            label="마일스톤"
+            label="마일스톤 • 이슈"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/milestones`)}
           />
 
           {/* Issues */}
-          <NavBarBtn
+          {/* <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/issues`)}
             icon={<Waypoints className="mr-3 w-[1.125rem] h-[1.125rem]" />}
             label="이슈"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/issues`)}
-          />
+          /> */}
 
           {/* Minutes */}
           <NavBarBtn
@@ -98,6 +87,15 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             label="회의록"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/minutes`)}
+          />
+
+          {/* Calendar */}
+          <NavBarBtn
+            onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}
+            icon={<CalendarDays className="mr-3 w-[1.125rem] h-[1.125rem]" />}
+            label="달력"
+            padding="p-4"
+            isActive={isActive(`/myproject/${projectId}/calendar`)}
           />
 
           <hr className="my-4" />
@@ -123,13 +121,6 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/bookmarks`)}
           />
-
-          {/* Logout */}
-          <li className="mt-1">
-            <div className="flex items-center p-4 hover:bg-secondary hover:text-white transition-colors">
-              <LogoutButton />
-            </div>
-          </li>
         </ul>
       </nav>
 
