@@ -17,7 +17,7 @@ jobs:
     steps:
       # github repository에서 checkout
       - uses: actions/checkout@v4
-      
+
       # 소문자로 변환된 조직 이름 설정
       - name: Set lowercase owner name
         run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
@@ -37,13 +37,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # GitHub 컨테이너 레지스트리에 로그인
+      # GitHub 컨테이너 레지스트리에 로그인 - 수정된 부분
       - name: Login to ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.NEXUS_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # 백엔드 빌드 및 푸시
       - name: Build and push backend
@@ -85,19 +85,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       # 소문자로 변환된 조직 이름 설정
       - name: Set lowercase owner name
         run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
         env:
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
+      # GitHub 컨테이너 레지스트리에 로그인 - 수정된 부분
       - name: Login to ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.NEXUS_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # .env 파일 생성
       - name: Create env files
