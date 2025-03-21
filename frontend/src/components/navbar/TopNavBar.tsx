@@ -2,7 +2,7 @@
 
 import { BellRing, Headphones, MessageCircleMore } from "lucide-react";
 import { TopNavBarProps } from "@/types/navbar";
-import ProfileDropdown from "../userr/ProfileDropdown";
+import ProfileDropdown from "../user/ProfileDropdown";
 
 export default function TopNavBar({ user }: TopNavBarProps) {
   return (

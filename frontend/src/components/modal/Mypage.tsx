@@ -4,11 +4,11 @@ import { PencilLine, X } from "lucide-react";
 import { UnderlineInput } from "../ui/underlineInput";
 import { userValidation } from "@/utils/validators/userValidation";
 import Image from "next/image";
-import { PositionSelect } from "../userr/PositionSelect";
+import { PositionSelect } from "../user/PositionSelect";
 import { UpdateUserDto, User, ValidationErrors } from "@/types/user";
 import { useUpdateUser } from "@/query/mutations/user";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
-import PasswordChangeForm from "../authh/PasswordChangeForm";
+import PasswordChangeForm from "../auth/PasswordChangeForm";
 
 export interface MyPageModalProps {
   isOpen: boolean;

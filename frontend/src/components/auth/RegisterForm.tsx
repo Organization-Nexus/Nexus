@@ -7,7 +7,7 @@ import { userValidation } from "@/utils/validators/userValidation";
 import { ValidationErrors } from "@/types/user";
 import { authApi } from "@/app/_api/models/auth";
 import { UnderlineInput } from "../ui/underlineInput";
-import { PositionSelect } from "../userr/PositionSelect";
+import { PositionSelect } from "../user/PositionSelect";
 import { Button } from "../ui/button";
 
 export default function RegisterFormComponent() {
