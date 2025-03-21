@@ -1,22 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { UnderlineInput } from "@/components/ui/underlineInput";
-import { PositionSelect } from "@/components/user/PositionSelect";
-import { useState } from "react";
-import { authApi } from "@/api/auth";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterRequest } from "@/types/auth";
 import { userValidation } from "@/utils/validators/userValidation";
-
-interface ValidationErrors {
-  name?: string;
-  email?: string;
-  password?: string;
-  phoneNumber?: string;
-  githubUrl?: string;
-  mainPosition?: string;
-}
+import { ValidationErrors } from "@/types/user";
+import { authApi } from "@/app/_api/models/auth";
+import { UnderlineInput } from "../ui/underlineInput";
+import { PositionSelect } from "../user/PositionSelect";
+import { Button } from "../ui/button";
 
 export default function RegisterFormComponent() {
   const router = useRouter();
@@ -31,7 +23,26 @@ export default function RegisterFormComponent() {
   });
   const [selectedPositions, setSelectedPositions] = useState<string>("");
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [serverError, setServerError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const registerValidation = {
+    name: userValidation.name,
+    email: userValidation.email,
+    password: userValidation.password,
+    phoneNumber: userValidation.phoneNumber,
+    githubUrl: userValidation.githubUrl,
+  } as const;
+
+  useEffect(() => {
+    if (serverError) {
+      const timer = setTimeout(() => {
+        setServerError("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [serverError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,11 +53,16 @@ export default function RegisterFormComponent() {
 
     // 실시간 유효성 검사
     const validationError =
-      userValidation[name as keyof typeof userValidation]?.(value);
+      registerValidation[name as keyof typeof registerValidation]?.(value);
     setErrors((prev) => ({
       ...prev,
       [name]: validationError,
     }));
+  };
+
+  const handlePositionSelect = (position: string) => {
+    setSelectedPositions(position);
+    setErrors((prev) => ({ ...prev, mainPosition: undefined }));
   };
 
   const validateForm = (): boolean => {
@@ -65,6 +81,7 @@ export default function RegisterFormComponent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
 
     if (!validateForm()) {
       return;
@@ -78,15 +95,13 @@ export default function RegisterFormComponent() {
         mainPosition: selectedPositions,
       };
 
-      const response = await authApi.register(signupData);
+      await authApi.register(signupData);
       alert("회원가입이 완료되었습니다.");
       router.push("/login");
-    } catch (error) {
-      setErrors((prev) => ({
-        ...prev,
-        submit:
-          error instanceof Error ? error.message : "회원가입에 실패했습니다.",
-      }));
+    } catch (error: any) {
+      const serverErrorMessage =
+        error.response?.data?.message || "회원가입에 실패했습니다.";
+      setServerError(serverErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -94,13 +109,21 @@ export default function RegisterFormComponent() {
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
+      {serverError && (
+        <div
+          className="bg-red-50 text-red-500 p-3  rounded-lg text-sm 
+                  transition-all duration-500 ease-in-out 
+                  opacity-100 animate-in fade-in "
+        >
+          {serverError}
+        </div>
+      )}
       <div>
         <UnderlineInput
           placeholder="이름"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          required
         />
         {errors.name && (
           <p className="text-red-500 text-sm mt-1">{errors.name}</p>
@@ -114,7 +137,6 @@ export default function RegisterFormComponent() {
           name="email"
           value={formData.email}
           onChange={handleChange}
-          required
         />
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -128,7 +150,6 @@ export default function RegisterFormComponent() {
           name="password"
           value={formData.password}
           onChange={handleChange}
-          required
         />
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -142,7 +163,6 @@ export default function RegisterFormComponent() {
           name="phoneNumber"
           value={formData.phoneNumber}
           onChange={handleChange}
-          required
         />
         {errors.phoneNumber && (
           <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
@@ -165,7 +185,7 @@ export default function RegisterFormComponent() {
         <p className="mb-3 px-3 text-muted-foreground text-base md:text-sm">
           주포지션 선택
         </p>
-        <PositionSelect onSelectPosition={setSelectedPositions} />
+        <PositionSelect onSelectPosition={handlePositionSelect} />
         {errors.mainPosition && (
           <p className="text-red-500 text-sm mt-1">{errors.mainPosition}</p>
         )}

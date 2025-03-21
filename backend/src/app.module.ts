@@ -10,12 +10,14 @@ import { ProjectModule } from './modules/project/project.module';
 import { FileModule } from './modules/file/file.module';
 import { ProjectUserModule } from './modules/project-user/project-user.module';
 import { CommunityModule } from './modules/community/community.module';
-import { NoticeModule } from './modules/notice/notice.module';
 import { VoteModule } from './modules/vote/vote.module';
 import { FeedModule } from './modules/feed/feed.module';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
+import { MailModule } from './modules/mailer/mailer.module';
+import { MinutesModule } from './modules/minutes/minutes.module';
+import { LikeModule } from './modules/like/like.module';
+import { MilestoneModule } from './modules/milestone/milestone.module';
+import { IssueModule } from './modules/issue/issue.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -33,29 +35,13 @@ import { join } from 'path';
     ProjectUserModule,
     CommunityModule,
     FeedModule,
-    NoticeModule,
     VoteModule,
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        secure: false,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      },
-      defaults: {
-        from: '"No Reply" <nexus_official@gmail.com>',
-      },
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
-        },
-      },
-    }),
+    MailModule,
+    MinutesModule,
+    LikeModule,
+    MilestoneModule,
+    IssueModule,
+    CommentModule,
   ],
 })
 export class AppModule {

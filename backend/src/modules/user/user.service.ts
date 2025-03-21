@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import {
   NotAllowedStatusException,
   UserNotFoundException,
 } from './exception/user.exception';
+import { FileService } from '../file/file.service';
+import { Category } from 'src/types/enum/file-category.enum';
 
 @Injectable()
 export class UserService {
@@ -16,10 +18,19 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
+    private readonly fileService: FileService,
     @InjectRepository(UserLog)
     private readonly userLogRepository: Repository<UserLog>,
   ) {}
+
+  // 이메일로 유저 조회
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    return user;
+  }
 
   // 특정 유저 조회
   async findOne(id: number): Promise<User> {
@@ -41,12 +52,39 @@ export class UserService {
   }
 
   // 유저 정보 수정
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
-    const { profileImage, status, rank, ...userFields } = updateUserDto;
+  async update(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+    file?: Express.Multer.File,
+  ): Promise<User> {
+    const user = await this.findOne(userId);
+    const { status, rank, ...userFields } = updateUserDto;
+    const previousImageUrl = user.log.profileImage;
+    let newImageUrl: string | null = null;
 
-    // UserLog 필드 업데이트
-    if (profileImage !== undefined) user.log.profileImage = profileImage;
+    // 새 파일이 업로드된 경우
+    if (file) {
+      const uploadResult = await this.fileService.handleFileUpload({
+        files: [file],
+        userId,
+        category: Category.AVATAR,
+      });
+      newImageUrl = uploadResult[0]; // 업로드된 파일의 URL
+
+      // 이전 이미지 삭제
+      if (previousImageUrl) {
+        console.log('이전 이미지 삭제:', previousImageUrl);
+        if (previousImageUrl !== process.env.DEFAULT_PROFILE_IMAGE) {
+          await this.fileService.deleteFiles([previousImageUrl]);
+        }
+      }
+      // 기존 이미지 URL을 유지하는 경우
+    } else if (updateUserDto.profileImageUrl) {
+      newImageUrl = updateUserDto.profileImageUrl;
+    }
+
+    user.log.profileImage = newImageUrl;
+
     if (status !== undefined) {
       if (!this.ALLOWED_STATUS.includes(status)) {
         throw new NotAllowedStatusException();

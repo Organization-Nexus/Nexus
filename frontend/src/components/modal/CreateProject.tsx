@@ -1,18 +1,20 @@
+"use client";
+
 import { useState } from "react";
 import { Modal } from "./config/ModalMaps";
 import { ModalRootProps } from "@/types/modal";
-import { ProjectBase } from "@/types/project";
 import { project_image } from "@/data/project_image";
-import { projectApi } from "@/api/project";
-import { useQueryClient } from "@tanstack/react-query";
+import { CreateProject } from "@/types/project";
+import { useCreateProject } from "@/query/mutations/project";
+import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import { X } from "lucide-react";
 
 export default function CreateProjectModal({
   isOpen,
   onClose,
 }: ModalRootProps) {
-  const queryClient = useQueryClient();
-
-  const [formData, setFormData] = useState<ProjectBase>({
+  const createProjectMutation = useCreateProject();
+  const [formData, setFormData] = useState<CreateProject>({
     title: "",
     description: "",
     start_date: new Date().toISOString().split("T")[0],
@@ -45,6 +47,27 @@ export default function CreateProjectModal({
       }
     }
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+      let updatedData = { ...prev, [name]: value };
+      if (name === "start_date") {
+        if (new Date(value) > new Date(prev.end_date)) {
+          updatedData.end_date = value;
+        }
+      }
+      if (name === "end_date") {
+        if (new Date(value) < new Date(prev.start_date)) {
+          return prev;
+        }
+      }
+      return updatedData;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,23 +128,27 @@ export default function CreateProjectModal({
       }
 
       formDataToSend.append("project_image", projectImage);
-
-      await projectApi.createProject(formDataToSend);
-      queryClient.invalidateQueries({ queryKey: ["projectList"] });
+      createProjectMutation.mutate(formDataToSend);
       onClose();
-    } catch (err) {
-      setFileError("프로젝트 생성에 실패했습니다.");
+    } catch (error) {
+      console.error("Error creating project:", error);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div>
         <div className="flex justify-between items-center">
           <Modal.Title>프로젝트 생성</Modal.Title>
-          <Modal.Button variant="nothing" onClick={onClose}>
-            X
-          </Modal.Button>
+          <CustomAlertDialog
+            onConfirm={onClose}
+            title="작성을 취소할까요?"
+            description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+          >
+            <Modal.Button variant="nothing">
+              <X />
+            </Modal.Button>
+          </CustomAlertDialog>
         </div>
         <Modal.Divider />
         <Modal.Subtitle>프로젝트 정보를 입력해주세요. 🚀</Modal.Subtitle>
@@ -180,7 +207,6 @@ export default function CreateProjectModal({
 
           {/* 시작일, 마감일 입력 */}
           <div className="flex justify-between w-full">
-            {/* 시작일 */}
             <div className="w-1/2 pr-2">
               <div className="flex items-center">
                 <label className="block text-lg font-bold text-gray-700 pr-2">
@@ -191,7 +217,7 @@ export default function CreateProjectModal({
                 type="date"
                 name="start_date"
                 value={formData.start_date}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 required
               />
             </div>
@@ -207,7 +233,7 @@ export default function CreateProjectModal({
                 type="date"
                 name="end_date"
                 value={formData.end_date}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 min={formData.start_date}
                 required
               />
@@ -292,11 +318,19 @@ export default function CreateProjectModal({
           <Modal.Divider />
 
           <div className="flex justify-end space-x-2">
-            <Modal.Button variant="secondary" onClick={onClose}>
-              취소
-            </Modal.Button>
-            <Modal.Button variant="primary" onClick={() => handleSubmit()}>
-              생성
+            <CustomAlertDialog
+              onConfirm={onClose}
+              title="작성을 취소할까요?"
+              description="확인 버튼을 누르시면 작성 내용이 저장되지 않습니다."
+            >
+              <Modal.Button variant="secondary">닫기</Modal.Button>
+            </CustomAlertDialog>
+            <Modal.Button
+              variant="primary"
+              onClick={() => handleSubmit()}
+              disabled={createProjectMutation.isPending}
+            >
+              {createProjectMutation.isPending ? "생성 중..." : "생성"}
             </Modal.Button>
           </div>
         </form>

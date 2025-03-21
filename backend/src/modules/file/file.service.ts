@@ -9,27 +9,42 @@ import { FileValidator } from './validator/file-validator';
 @Injectable()
 export class FileService {
   constructor(private readonly s3ConfigService: S3ConfigService) {}
-
-  async handleFileUpload(uploadFileDto: UploadFileDto): Promise<string> {
-    const { file, userId, projectId, category: categoryString } = uploadFileDto;
+  async handleFileUpload(uploadFileDto: UploadFileDto): Promise<string[]> {
+    const {
+      files,
+      userId,
+      projectId,
+      category: categoryString,
+    } = uploadFileDto;
     const category = Category[categoryString as keyof typeof Category];
     if (!category) {
       throw new BadRequestException('Invalid category');
     }
-    const fileTypeInfo = FileValidator.validate(file);
-    const fileType = fileTypeInfo.category;
-
-    if (!File) {
-      throw new Error('No file uploaded');
+    if (files.length > 10) {
+      throw new BadRequestException(
+        '첨부 파일은 10개 이내로 업로드할 수 있습니다.',
+      );
+    }
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files uploaded');
     }
 
-    return await this.uploadFileHelper({
-      file,
-      userId,
-      projectId,
-      fileType,
-      category,
-    });
+    const fileLocations: string[] = [];
+
+    for (const file of files) {
+      const fileTypeInfo = FileValidator.validate(file);
+      const fileType = fileTypeInfo.category;
+      const fileLocation = await this.uploadFileHelper({
+        file,
+        userId,
+        projectId,
+        fileType,
+        category,
+      });
+      fileLocations.push(fileLocation);
+    }
+
+    return fileLocations;
   }
 
   private async uploadFileHelper(s3ConfigDto: S3ConfigDto): Promise<string> {
@@ -40,5 +55,10 @@ export class FileService {
     } catch (error) {
       throw new S3UploadFailedException(error.message);
     }
+  }
+
+  async deleteFiles(fileUrls: string[]): Promise<void> {
+    const filesToDelete = Array.isArray(fileUrls) ? fileUrls : [fileUrls];
+    await this.s3ConfigService.deleteFiles(filesToDelete);
   }
 }

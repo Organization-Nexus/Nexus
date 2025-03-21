@@ -37,4 +37,7 @@ export class Project {
 
   @OneToOne(() => Community, (community) => community.project)
   community: Community;
+
+  // @OneToMany(() => Minutes, (minutes) => minutes.project)
+  // minutes: Minutes[];
 }

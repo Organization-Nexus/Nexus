@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   BaseModalProps,
@@ -9,28 +12,69 @@ import {
   ModalRootProps,
   TextButtonProps,
 } from "@/types/modal";
+import React from "react";
 
 // Dimmed 배경
-function ModalDimmed({
-  onClick,
-  className,
-}: {
-  onClick: () => void;
-  className?: string;
-}) {
+function ModalDimmed({ className }: { className?: string }) {
   const baseClassName = "fixed inset-0 bg-black bg-opacity-65";
   const finalClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
-  return <div className={finalClassName} onClick={onClick} />;
+  return <div className={finalClassName} />;
+}
+
+// 메인 모달
+function ModalRoot({
+  isOpen,
+  onClose,
+  children,
+  className,
+  hasOverlay = true,
+  closeOnOutsideClick = true, // false일때 밖을 클릭해도 닫히지 않음
+}: ModalRootProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (!closeOnOutsideClick) return;
+    const overlay = e.currentTarget;
+    const clickedElement = e.target as HTMLElement;
+
+    if (overlay === clickedElement) {
+      onClose();
+    }
+  };
+  if (!isOpen) return null;
+
+  const baseClassName = "fixed inset-0 z-50";
+  const finalClassName = className
+    ? `${baseClassName} ${className}`
+    : baseClassName;
+
+  return createPortal(
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center ${
+        hasOverlay ? "bg-black bg-opacity-65" : ""
+      }`}
+      onClick={handleOverlayClick}
+    >
+      <div
+        ref={modalRef}
+        className={`bg-white p-6 rounded-2xl shadow-lg w-1/2 z-10 ${
+          className || ""
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
 }
 
 // 제목
 function ModalTitle({ children, className }: BaseModalProps) {
   const baseClassName = "text-2xl font-bold mb-4";
-  const finalClassName = className
-    ? `${baseClassName} ${className}`
-    : baseClassName;
+  const finalClassName = className ? `${className}` : baseClassName;
   return <div className={finalClassName}>{children}</div>;
 }
 
@@ -132,39 +176,47 @@ function ModalTextButton({
 }
 
 // 기본 버튼
-function ModalButton({
-  onClick,
-  children,
-  variant = "primary",
-  disabled,
-  className,
-}: ButtonProps) {
-  const variantClasses = {
-    primary: "bg-[#50E161] hover:bg-[#45c14f] text-white",
-    secondary:
-      "bg-white text-black border border-gray-300 hover:bg-gray-300 hover:text-white",
-    danger: "bg-red-500 hover:bg-red-700 text-white",
-    nothing: "",
-  };
+const ModalButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      onClick,
+      children,
+      variant = "primary",
+      disabled,
+      className,
+      type = "button",
+    }: ButtonProps,
+    ref
+  ) => {
+    const variantClasses = {
+      primary: "bg-[#50E161] hover:bg-[#45c14f] text-white",
+      secondary:
+        "bg-white text-black border border-gray-300 hover:bg-gray-300 hover:text-white",
+      danger: "bg-red-500 hover:bg-red-700 text-white",
+      nothing: "",
+    };
 
-  const baseClassName = "px-4 py-2 rounded-md";
-  const finalClassName = className
-    ? `${baseClassName} ${variantClasses[variant]} disabled:opacity-50 ${className}`
-    : `${baseClassName} ${variantClasses[variant]} disabled:opacity-50`;
+    const baseClassName = "px-4 py-2 rounded-md";
+    const finalClassName = className
+      ? `${baseClassName} ${variantClasses[variant]} disabled:opacity-50 ${className}`
+      : `${baseClassName} ${variantClasses[variant]} disabled:opacity-50`;
 
-  return (
-    <div className="flex justify-center">
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        className={finalClassName}
-        type="button"
-      >
-        {children}
-      </button>
-    </div>
-  );
-}
+    return (
+      <div className="flex justify-center">
+        <button
+          ref={ref}
+          onClick={onClick}
+          disabled={disabled}
+          className={finalClassName}
+          type={type}
+        >
+          {children}
+        </button>
+      </div>
+    );
+  }
+);
+export default ModalButton;
 
 // 라벨 버튼
 function ModalLabelButton({
@@ -173,7 +225,7 @@ function ModalLabelButton({
   className,
   ...props
 }: LabelButtonProps) {
-  const baseClassName = "flex flex-col items-center bg-gray-400";
+  const baseClassName = "flex flex-col items-center";
   const finalClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
@@ -193,28 +245,6 @@ function ModalDivider({ className }: BaseModalProps) {
   return <hr className={finalClassName} />;
 }
 
-// 메인 모달
-function ModalRoot({ isOpen, onClose, children, className }: ModalRootProps) {
-  if (!isOpen) return null;
-
-  const baseClassName = "fixed inset-0 z-50";
-  const finalClassName = className
-    ? `${baseClassName} ${className}`
-    : baseClassName;
-
-  return createPortal(
-    <div className={finalClassName}>
-      <ModalDimmed onClick={onClose} />
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className={`bg-white p-6 rounded-lg shadow-lg w-1/2 ${className}`}>
-          {children}
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-}
-
 // 입력
 function ModalInput({ type, className, ...props }: InputProps) {
   const baseClassName = "mt-1 p-2 border border-gray-300 rounded-md w-full";
@@ -226,7 +256,14 @@ function ModalInput({ type, className, ...props }: InputProps) {
     return <textarea {...props} className={finalClassName} />;
   }
 
-  return <input type={type} {...props} className={finalClassName} />;
+  return (
+    <input
+      type={type}
+      maxLength={props.maxLength}
+      {...props}
+      className={finalClassName}
+    />
+  );
 }
 
 // 모달 컴포넌트 조합

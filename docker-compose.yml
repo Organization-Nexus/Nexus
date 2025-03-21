@@ -2,6 +2,8 @@ services:
   # backend
   backend:
     image: backend
+    environment:
+      - TZ=Asia/Seoul
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -23,6 +25,8 @@ services:
   # database
   database:
     image: postgres
+    environment:
+      - TZ=Asia/Seoul
     container_name: database
     env_file:
       - ./backend/.env.development

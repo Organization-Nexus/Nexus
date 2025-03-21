@@ -9,6 +9,7 @@ import {
   Get,
   Param,
   ClassSerializerInterceptor,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -18,12 +19,14 @@ import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard'
 import { UserPayload } from 'src/types/user-payload';
 import { Category } from 'src/types/enum/file-category.enum';
 import { FileService } from '../file/file.service';
+import { ProjectUserService } from '../project-user/project-user.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('project')
 export class ProjectController {
   constructor(
     private readonly projectService: ProjectService,
+    private readonly projectUserService: ProjectUserService,
     private readonly fileService: FileService,
   ) {}
 
@@ -38,24 +41,31 @@ export class ProjectController {
   ) {
     const userId = req.user.id;
     if (file && !file.mimetype.startsWith('image/')) {
-      throw new Error('Invalid file type. Only image files are allowed.');
+      throw new BadRequestException(
+        'Invalid file type. Only image files are allowed.',
+      );
     }
     const project = await this.projectService.createProject(
       createProjectDto,
       userId,
     );
-    const projectImageUrl = file
+    const projectImage = file
       ? await this.fileService.handleFileUpload({
-          file,
+          files: [file],
           userId,
           projectId: project.id,
           category: Category.PROJECT,
         })
       : createProjectDto.project_image || null;
+    const finalProjectImage = Array.isArray(projectImage)
+      ? projectImage[0]
+      : projectImage;
+
     const updatedProject = await this.projectService.updateProject({
       projectId: project.id,
-      project_image: projectImageUrl,
+      project_image: finalProjectImage,
     });
+
     return {
       message: 'Project created successfully',
       project: updatedProject,
@@ -78,6 +88,10 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    return await this.projectService.getProject(projectId, userId);
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.projectService.getProject(projectId);
   }
 }

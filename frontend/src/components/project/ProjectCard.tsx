@@ -2,8 +2,9 @@ import { Project } from "@/types/project";
 import ProgressBar from "./ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
 import { useRouter } from "next/navigation";
+import { FaRegFaceGrinBeam } from "react-icons/fa6";
 
-const ProjectCard = ({ project }: { project: Project }) => {
+export default function ProjectCard({ project }: { project: Project }) {
   const router = useRouter();
   const now = new Date();
   const startDate = new Date(project.start_date);
@@ -28,9 +29,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
     project.end_date
   );
 
-  const projectMembers = project.projectUsers;
-  const memberCount = projectMembers.length;
-  const memberPositions = projectMembers.map((member) => member.position);
+  const memberCount = project.projectUsers.length;
 
   const bgColor =
     status === "in-progress"
@@ -39,13 +38,18 @@ const ProjectCard = ({ project }: { project: Project }) => {
       ? "bg-yellow-50"
       : "bg-gray-50";
 
-  const handleCardClick = () => {
-    router.push(`/myproject/${project.id}/dashboard`);
+  const trimmedDescription =
+    project.description.length > 25
+      ? `${project.description.slice(0, 25)}...`
+      : project.description;
+
+  const navigateTo = (path: string) => {
+    router.push(path);
   };
 
   return (
     <div
-      onClick={handleCardClick}
+      onClick={() => navigateTo(`/myproject/${project.id}/dashboard`)}
       className={`${bgColor} shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform relative cursor-pointer`}
     >
       {/* Status Sticker */}
@@ -73,25 +77,27 @@ const ProjectCard = ({ project }: { project: Project }) => {
             className="w-32 h-32 object-cover rounded-md mr-4"
           />
         )}
-        <div className="flex-1">
+        <div className="flex-1 space-y-2">
           {/* Title and Description */}
           <h3 className="text-xl font-semibold text-gray-800">
             {project.title}
           </h3>
-          <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+          <p className="text-sm text-gray-600">{trimmedDescription}</p>
 
           {/* Dates */}
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <div className="flex justify-between text-xs text-gray-500">
             <div>Start Date: {project.start_date}</div>
             <div>End Date: {project.end_date}</div>
           </div>
 
           {/* Member Information */}
-          <div className="flex gap-2 text-sm text-gray-600 mb-2">
-            <p>Members: {memberCount}</p>
-            {memberPositions.map((position, index) => (
-              <span key={index}>Position: {position}</span>
-            ))}
+          <div className="flex gap-2 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-md">
+                <FaRegFaceGrinBeam />
+              </p>
+              {memberCount}
+            </div>
           </div>
 
           {/* Progress Bar */}
@@ -100,6 +106,4 @@ const ProjectCard = ({ project }: { project: Project }) => {
       </div>
     </div>
   );
-};
-
-export default ProjectCard;
+}

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -7,6 +8,7 @@ import {
   Param,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,11 +19,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { RoleGuard } from '../auth/guard/role.guard';
 import { Roles } from '../auth/decorator/role.decorator';
 import { UserLog } from './entities/user-log.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserPayload } from 'src/types/user-payload';
+import { FileService } from '../file/file.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly fileService: FileService,
+  ) {}
 
   // 모든 사용자 조회, ADMIN
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -46,10 +54,19 @@ export class UserController {
   }
 
   // 본인 정보 변경
-  @UseGuards(JwtAuthGuard)
   @Put()
-  async updateUser(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(req.user.id, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('profileImage'))
+  async updateUser(
+    @Req() req: UserPayload,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    if (file && !file.mimetype.startsWith('image/')) {
+      throw new BadRequestException('Only image files are allowed');
+    }
+
+    return this.userService.update(req.user.id, updateUserDto, file);
   }
 
   // 유저 정보 변경, ADMIN

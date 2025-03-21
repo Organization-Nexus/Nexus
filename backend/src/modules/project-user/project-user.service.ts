@@ -7,7 +7,9 @@ import { Project } from '../project/entities/project.entity';
 import { User } from '../user/entities/user.entity';
 import {
   ProjectNotFoundException,
+  ThisBroIsAlreadyProjectMemberException,
   UserNotFoundException,
+  YouCanNotAccessGetOutException,
   YourNotProjectMemberException,
 } from './exception/project-user.exception';
 
@@ -27,50 +29,78 @@ export class ProjectUserService {
   async createProjectUser(
     projectUserDto: ProjectUserDto,
   ): Promise<ProjectUser> {
-    const { projectId, userId, position, is_sub_admin } = projectUserDto;
-    const project = await this.projectRepository.findOneBy({ id: projectId });
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (!project) {
-      throw new ProjectNotFoundException(projectId);
-    }
-    if (!user) {
-      throw new UserNotFoundException(userId);
-    }
+    const { projectId, userId } = projectUserDto;
+
+    const [project, user] = await Promise.all([
+      this.projectRepository.findOne({ where: { id: projectId } }),
+      this.userRepository.findOne({ where: { id: userId } }),
+    ]);
+
+    if (!project) throw new ProjectNotFoundException(projectId);
+    if (!user) throw new UserNotFoundException(userId);
+
     return this.projectUserRepository.save({
+      ...projectUserDto,
       project,
       user,
-      position,
-      is_sub_admin,
     });
   }
 
-  async validateProjectMember(
+  // 👋 단순 존재 여부 확인 -> projectUser.id
+  async validateProjectMemberByUserId(
     projectId: number,
     userId: number,
-  ): Promise<boolean> {
+  ): Promise<number> {
     const projectUser = await this.projectUserRepository.findOne({
       where: { project: { id: projectId }, user: { id: userId } },
     });
     if (!projectUser) {
       throw new YourNotProjectMemberException(userId, projectId);
     }
-    return !!projectUser;
+    return projectUser.id;
   }
 
-  async getProjectUser(
-    userId: number,
+  // 프로젝트 멤버인지 확인 -> True면 에러
+  async validateIsUserAleadyMember(
     projectId: number,
-  ): Promise<ProjectUser> {
-    const projectUser = await this.projectUserRepository.findOne({
-      where: { user: { id: userId }, project: { id: projectId } },
+    userId: number,
+  ): Promise<void> {
+    const existingProjectUser = await this.projectUserRepository.findOne({
+      where: { project: { id: projectId }, user: { id: userId } },
     });
-
-    if (!projectUser) {
-      throw new Error(
-        `User with ID ${userId} not found in project with ID ${projectId}`,
-      );
+    if (existingProjectUser) {
+      throw new ThisBroIsAlreadyProjectMemberException(userId);
     }
+  }
 
-    return projectUser;
+  // 👋 상세 정보 -> ProjectUser, ProjectUser인지 판별과 함께
+  async getProjectUser(
+    projectId: number,
+    userId: number,
+  ): Promise<ProjectUser> {
+    const projectUserId = await this.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.projectUserRepository.findOneBy({ id: projectUserId });
+  }
+
+  // 프로젝트의 모든 멤버 -> ProjectUser[]
+  async getProjectUsers(projectId: number): Promise<ProjectUser[]> {
+    return await this.projectUserRepository.find({
+      where: { project: { id: projectId } },
+      relations: ['user', 'user.log'],
+    });
+  }
+
+  // 관리자 권한 확인
+  async checkAdminPermissions(
+    projectId: number,
+    userId: number,
+  ): Promise<void> {
+    const projectUser = await this.getProjectUser(projectId, userId);
+    if (!projectUser.is_sub_admin) {
+      throw new YouCanNotAccessGetOutException(userId);
+    }
   }
 }

@@ -11,6 +11,7 @@ import { ProjectNotFoundException } from './exception/project-exception';
 import { CommunityService } from '../community/community.service';
 import { ProjectUserService } from '../project-user/project-user.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ProjectService {
@@ -21,6 +22,8 @@ export class ProjectService {
     @InjectRepository(ProjectUser)
     private readonly projectUserRepository: Repository<ProjectUser>,
     private readonly projectUserService: ProjectUserService,
+
+    private readonly userService: UserService,
 
     private readonly communityService: CommunityService,
   ) {}
@@ -33,13 +36,17 @@ export class ProjectService {
     const savedProject = await this.projectRepository.save(project);
 
     await this.communityService.createCommunity(savedProject.id);
-    await this.projectUserService.createProjectUser({
+
+    const user = await this.userService.findOne(userId);
+
+    const projectUserDto = {
       projectId: savedProject.id,
       userId: userId,
+      email: user.email,
       position: ProjectPosition.PM,
       is_sub_admin: true,
-    });
-
+    };
+    await this.projectUserService.createProjectUser(projectUserDto);
     return savedProject;
   }
 
@@ -64,11 +71,10 @@ export class ProjectService {
   }
 
   // 프로젝트 상세 조회
-  async getProject(projectId: number, userId: number): Promise<Project> {
-    await this.projectUserService.validateProjectMember(projectId, userId);
+  async getProject(projectId: number): Promise<Project> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
-      relations: ['projectUsers', 'projectUsers.user', 'community'],
+      relations: ['projectUsers', 'projectUsers.user', 'projectUsers.user.log'],
     });
     if (!project) {
       throw new ProjectNotFoundException(projectId);

@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class UploadFileDto {
   @IsNotEmpty()
-  file: Express.Multer.File;
+  files: Express.Multer.File[];
 
   @IsNotEmpty()
   @IsNumber()

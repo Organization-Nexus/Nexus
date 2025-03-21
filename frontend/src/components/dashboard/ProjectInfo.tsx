@@ -1,9 +1,8 @@
-import { Project, ProjectBase } from "@/types/project";
-import React from "react";
+import { ProjectProps } from "@/types/project";
 import ProgressBar from "../project/ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
 
-function ProjectInfo({ project }: { project: ProjectBase }) {
+export default function ProjectInfo({ project }: ProjectProps) {
   const progressPercentage = calculateProjectProgress(
     project.start_date,
     project.end_date
@@ -15,7 +14,7 @@ function ProjectInfo({ project }: { project: ProjectBase }) {
           src={
             typeof project?.project_image === "string"
               ? project.project_image
-              : URL.createObjectURL(project.project_image)
+              : undefined
           }
           alt={`${project?.title} project image`}
           className="w-24 h-24 object-cover"
@@ -39,5 +38,3 @@ function ProjectInfo({ project }: { project: ProjectBase }) {
     </>
   );
 }
-
-export default ProjectInfo;
