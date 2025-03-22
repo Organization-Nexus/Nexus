@@ -27,7 +27,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://13.209.41.52',
-      // 'http://localhost:3000',
+      'http://localhost:3000',
       'http://ec2-13-209-41-52.ap-northeast-2.compute.amazonaws.com',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
