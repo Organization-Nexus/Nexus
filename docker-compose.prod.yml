@@ -12,13 +12,13 @@ services:
       - "8000:8000"
     restart: always
     depends_on:
-      database-prod:
+      database:
         condition: service_healthy
       redis:
         condition: service_started
 
   # database
-  database-prod:
+  database:
     image: postgres:15-alpine
     container_name: database-prod
     environment:
@@ -28,7 +28,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata_prod:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
@@ -43,7 +43,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data_prod:/data
+      - redis_data:/data
     command: redis-server --appendonly yes
     restart: always
     healthcheck:
@@ -65,5 +65,5 @@ services:
       - backend
 
 volumes:
-  pgdata_prod:
-  redis_data_prod:
+  pgdata:
+  redis_data:
