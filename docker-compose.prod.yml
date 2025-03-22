@@ -14,7 +14,7 @@ services:
       - "8000:8000"
     restart: always
     depends_on:
-      database:
+      database-prod:
         condition: service_healthy
       redis:
         condition: service_started
