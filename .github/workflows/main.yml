@@ -122,6 +122,9 @@ jobs:
           # 이전 컨테이너 중지 및 삭제 (docker-compose down)
           docker-compose -f docker-compose.prod.yml down || true
 
+          # 처음 설정하는 경우에만 사용하고, 이후에는 주석 처리하세요
+          docker volume rm pgdata_prod || true
+
           # 개별 컨테이너 강제 제거 (문제가 있는 경우를 대비)
           docker rm -f database-prod redis-prod backend-prod frontend-prod || true
 
