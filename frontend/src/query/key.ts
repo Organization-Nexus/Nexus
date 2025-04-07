@@ -10,6 +10,9 @@ export const communityKeys = {
   NOTICE_LIST_KEY: ["noticeList"],
   FEED_LIST_KEY: ["feedList"],
   VOTE_LIST_KEY: ["voteList"],
+  MY_FEED_LIST_KEY: (projectId: string) => ["myFeedList", projectId],
+  MY_NOTICE_LIST_KEY: (projectId: string) => ["myNoticeList", projectId],
+  MY_VOTE_LIST_KEY: (projectId: string) => ["myVoteList", projectId],
 };
 
 export const commentKeys = {

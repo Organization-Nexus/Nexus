@@ -15,7 +15,7 @@ export default async function page({ params }: ProjectIdProps) {
   return (
     <div className="mx-20">
       <PageInfo project={project} menuType={myPostedListMenuType} />
-      <MyPostedListContainer />
+      <MyPostedListContainer projectId={projectId} />
     </div>
   );
 }

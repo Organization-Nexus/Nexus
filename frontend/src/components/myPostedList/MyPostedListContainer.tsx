@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import PostedFeed from "./community/Feed";
-import PostedNotice from "./community/Notice";
-import PostedVote from "./community/Vote";
+import PostedFeed from "./community/PostedFeed";
+import PostedNotice from "./community/PostedNotice";
+import PostedVote from "./community/PostedVote";
 import Milestone from "./projectWorkflow/Milestone";
 import Issue from "./projectWorkflow/Issue";
 import Minutes from "./minutes/Minutes";
@@ -66,11 +66,21 @@ const tabs = [
   },
 ];
 
-export default function MyPostedListContainer() {
+// 타입 정의
+interface MyPostedListContainerProps {
+  projectId: string;
+}
+
+export default function MyPostedListContainer({
+  projectId,
+}: MyPostedListContainerProps) {
   const [activeTab, setActiveTab] = useState(tabs[0].key);
   const [activeSubTab, setActiveSubTab] = useState(tabs[0].subTabs[0].key);
 
   const currentTab = tabs.find((tab) => tab.key === activeTab);
+  const CurrentSubComponent = currentTab?.subTabs.find(
+    (subTab) => subTab.key === activeSubTab
+  )?.component;
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 h-[78vh] overflow-hidden">
@@ -114,9 +124,11 @@ export default function MyPostedListContainer() {
 
       {/* 선택된 하위 탭의 콘텐츠 */}
       <div className="mt-6 h-[60vh] overflow-auto">
-        {currentTab?.subTabs
-          .find((subTab) => subTab.key === activeSubTab)
-          ?.component()}
+        {CurrentSubComponent ? (
+          <CurrentSubComponent projectId={projectId} />
+        ) : (
+          <p>콘텐츠를 불러올 수 없습니다.</p>
+        )}
       </div>
     </div>
   );

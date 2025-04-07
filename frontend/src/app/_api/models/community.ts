@@ -109,4 +109,18 @@ export const communityApi = {
   deleteVoteByVoteIdAndProjectId: async (voteId: string, projectId: string) => {
     return await api.delete(`/vote/delete-vote/${voteId}/${projectId}`);
   },
+
+  getMyFeedList: async (projectId: string) => {
+    return await api.get(`/feed/myfeeds/${projectId}`).then((res) => res.data);
+  },
+
+  getMyNoticeList: async (projectId: string) => {
+    return await api
+      .get(`/feed/mynotices/${projectId}`)
+      .then((res) => res.data);
+  },
+
+  getMyVoteList: async (projectId: string) => {
+    return await api.get(`/vote/myvotes/${projectId}`).then((res) => res.data);
+  },
 };

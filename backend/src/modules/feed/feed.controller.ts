@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -181,5 +182,50 @@ export class FeedController {
       community_file,
       isNotice,
     );
+  }
+
+  // GET /api/feed/myfeeds/:projectId
+  @Get('/myfeeds/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getMyFeeds(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        req.user.id,
+      );
+    const { feeds } = await this.communityService.getFeedsOrNoticesByProjectId(
+      projectId,
+      projectUserId,
+    );
+    const myFeeds = feeds.filter(
+      (feed) => feed.author.projectUserId === projectUserId,
+    );
+    return myFeeds;
+  }
+
+  // GET /api/feed/mynotices/:projectId
+  @Get('mynotices/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getNoticesByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        req.user.id,
+      );
+    const { notices } =
+      await this.communityService.getFeedsOrNoticesByProjectId(
+        projectId,
+        projectUserId,
+      );
+    const myNotices = notices.filter(
+      (notice) => notice.author.projectUserId === projectUserId,
+    );
+    return myNotices;
   }
 }
