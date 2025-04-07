@@ -69,4 +69,12 @@ export class VoteService {
     }
     return vote;
   }
+
+  async getMyVotes(userId: number, projectId: number): Promise<Vote[]> {
+    const votes = await this.voteRepository.find({
+      where: { author: { id: userId } },
+      relations: ['author'],
+    });
+    return votes;
+  }
 }

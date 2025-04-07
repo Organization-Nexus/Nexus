@@ -39,6 +39,29 @@ export class VoteController {
     private readonly fileService: FileService,
   ) {}
 
+  // GET /api/vote/myvotes/:projectId
+  @Get('myvotes/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getMyVoteByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    const votes = await this.communityService.getVoteByProjectId(
+      projectId,
+      projectUserId,
+    );
+    const myVotes = votes.filter(
+      (vote) => vote.author.projectUserId === projectUserId,
+    );
+    return myVotes;
+  }
+
   // POST /api/vote/create-vote/:projectId
   @Post('create-vote/:projectId')
   @UseGuards(JwtAuthGuard)
