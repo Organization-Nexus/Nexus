@@ -25,7 +25,11 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter(), new AllExceptionsFilter());
 
   app.enableCors({
-    origin: process.env.CLIENT_URL,
+    origin: [
+      'http://13.209.41.52',
+      'http://localhost:3000',
+      'http://ec2-13-209-41-52.ap-northeast-2.compute.amazonaws.com',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     exposedHeaders: [

@@ -1,0 +1,141 @@
+name: CI/CD Docker
+
+# 트리거를 수행할 브랜치 지정
+on:
+  push:
+    branches: [main, dev, test/full-deploy] #임시
+
+# 환경설정
+env:
+  VERSION: ${{ github.sha }}
+
+jobs:
+  # 빌드 Job
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # github repository에서 checkout
+      - uses: actions/checkout@v4
+
+      # 소문자로 변환된 조직 이름 설정
+      - name: Set lowercase owner name
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
+      # docker buildx 설정
+      - name: Set up docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ env.VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # GitHub 컨테이너 레지스트리에 로그인
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.NEXUS_TOKEN }}
+
+      # 백엔드 빌드 및 푸시
+      - name: Build and push backend
+        id: docker_build_backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ghcr.io/${{ env.OWNER_LC }}/backend:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      # 프론트엔드 빌드 및 푸시
+      - name: Build and push frontend
+        id: docker_build_frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ghcr.io/${{ env.OWNER_LC }}/frontend:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      # 캐시 업데이트
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  # 배포 Job
+  deploy:
+    needs: build # build 후에 실행되도록 정의
+    name: Deploy
+    runs-on: [self-hosted, label-go] # 자체 호스팅 러너 사용
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 소문자로 변환된 조직 이름 설정
+      - name: Set lowercase owner name
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
+      # GitHub 컨테이너 레지스트리에 로그인
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.NEXUS_TOKEN }}
+
+      # .env 파일 생성
+      - name: Create env files
+        run: |
+          mkdir -p ./backend
+          echo "${{ secrets.BACKEND_ENV }}" > ./backend/.env.production
+
+          mkdir -p ./frontend
+          echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env.production
+
+          # 파일이 생성되었는지 확인 (민감 정보 제외)
+          ls -la ./backend/.env.production
+          ls -la ./frontend/.env.production
+
+      # Docker Compose로 배포
+      - name: Deploy with docker-compose
+        run: |
+          # 환경 변수 설정
+          export GITHUB_REPOSITORY_OWNER=${{ env.OWNER_LC }}
+
+          # 이전 컨테이너 중지 및 삭제 (있는 경우)
+          docker-compose -f docker-compose.prod.yml down || true
+
+          # 최신 이미지 풀
+          docker-compose -f docker-compose.prod.yml pull || true
+
+          # 새 컨테이너 시작
+          docker-compose -f docker-compose.prod.yml up -d
+
+      # 컨테이너 로그 확인(오류 디버깅용)
+      - name: Check container logs
+        run: |
+          docker logs backend-prod || true
+          docker logs database-prod || true
+          docker logs frontend-prod || true
+
+      # 사용하지 않는 이미지 정리
+      - name: Clean up old images
+        run: |
+          docker image prune -af --filter "until=24h"

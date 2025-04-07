@@ -1,0 +1,37 @@
+# 빌드 단계
+FROM node:21-alpine AS builder
+
+RUN apk add --no-cache tzdata
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+# 개발 의존성을 포함한 모든 패키지 설치
+RUN npm ci
+
+COPY . .
+
+# npx를 사용하여 로컬에 설치된 nest CLI 실행
+RUN npx nest build
+
+# 실행 단계
+FROM node:21-alpine
+
+RUN apk add --no-cache tzdata
+
+WORKDIR /usr/src/app
+
+ENV TZ=Asia/Seoul
+ENV NODE_ENV=production
+
+# 프로덕션 의존성만 설치
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/src/templates ./src/templates
+
+EXPOSE 8000
+
+CMD ["node", "dist/main"]
