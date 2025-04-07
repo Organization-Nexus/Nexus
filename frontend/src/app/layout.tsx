@@ -9,7 +9,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head />
       <body className="bg-gray-100 hide-scrollbar">
         <QueryProvider>
+          {/* <SocketProvider> */}
           <NavigationWrapper>{children}</NavigationWrapper>
+          {/* </SocketProvider> */}
         </QueryProvider>
       </body>
     </html>
