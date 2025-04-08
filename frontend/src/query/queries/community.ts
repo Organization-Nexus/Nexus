@@ -25,3 +25,25 @@ export const useVoteList = (projectId: string) => {
     queryFn: () => communityApi.getVotesByProjectId(projectId),
   });
 };
+
+// 본인 피드 목록 가져오기
+export const useMyFeedList = (projectId: string) => {
+  return useQuery({
+    queryKey: communityKeys.MY_FEED_LIST_KEY(projectId),
+    queryFn: () => communityApi.getMyFeedList(projectId),
+  });
+};
+// 본인 공지사항 목록 가져오기
+export const useMyNoticeList = (projectId: string) => {
+  return useQuery({
+    queryKey: communityKeys.MY_NOTICE_LIST_KEY(projectId),
+    queryFn: () => communityApi.getMyNoticeList(projectId),
+  });
+};
+// 본인 투표 목록 가져오기
+export const useMyVoteList = (projectId: string) => {
+  return useQuery({
+    queryKey: communityKeys.MY_VOTE_LIST_KEY(projectId),
+    queryFn: () => communityApi.getMyVoteList(projectId),
+  });
+};

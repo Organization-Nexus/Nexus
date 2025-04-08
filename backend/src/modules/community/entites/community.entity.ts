@@ -1,7 +1,7 @@
 import { Feed } from 'src/modules/feed/entites/feed.entity';
 import { Project } from 'src/modules/project/entities/project.entity';
 import { Vote } from 'src/modules/vote/entities/vote.entity';
-// import { Vote } from 'src/modules/vote/entites/vote.entity';
+
 import {
   CreateDateColumn,
   Entity,
