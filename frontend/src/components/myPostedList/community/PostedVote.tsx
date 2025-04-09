@@ -1,8 +1,9 @@
 "use client";
 
 import { useMyVoteList } from "@/query/queries/community";
-import { Vote, Heart, Calendar } from "lucide-react"; // 아이콘 추가
+import { Vote, Calendar } from "lucide-react";
 import { Vote as VoteType } from "@/types/community";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 
 interface PostedVoteProps {
   projectId: string;
@@ -10,7 +11,6 @@ interface PostedVoteProps {
 
 export default function PostedVote({ projectId }: PostedVoteProps) {
   const { data: votes, isLoading, error } = useMyVoteList(projectId);
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -44,7 +44,7 @@ export default function PostedVote({ projectId }: PostedVoteProps) {
             <div className="bg-white p-4 rounded-md shadow-sm">
               {/* 투표 제목 */}
               <div className="flex items-center gap-2 mb-2">
-                <Vote size={18} className="text-gray-600" />
+                <Vote size={18} className="text-indigo-600" />
                 <h3 className="text-base font-medium text-gray-900">
                   {vote.title}
                 </h3>
@@ -83,7 +83,11 @@ export default function PostedVote({ projectId }: PostedVoteProps) {
                 </div>
                 <div className="flex gap-3">
                   <div className="flex items-center gap-1">
-                    <Heart size={14} className="text-gray-500" />
+                    {vote.likedByUser ? (
+                      <GoHeartFill size={14} className="fill-red-400" />
+                    ) : (
+                      <GoHeart size={14} className="text-gray-500" />
+                    )}
                     <span>{vote.likeCount}</span>
                   </div>
                   <span className="bg-gray-200 px-2 py-1 rounded-md">
@@ -93,7 +97,6 @@ export default function PostedVote({ projectId }: PostedVoteProps) {
                 </div>
               </div>
             </div>
-            {/* 마지막 항목이 아니면 hr 추가 */}
             {index < votes.length - 1 && (
               <hr className="my-4 border-gray-300" />
             )}
