@@ -123,4 +123,19 @@ export const communityApi = {
   getMyVoteList: async (projectId: string) => {
     return await api.get(`/vote/myvotes/${projectId}`).then((res) => res.data);
   },
+
+  getFeedById: async (feedId: string, projectId: string): Promise<Feed> => {
+    return await api
+      .get<Feed>(`/feed/${feedId}/${projectId}`)
+      .then((res) => res.data);
+  },
+
+  getNoticeById: async (
+    noticeId: string,
+    projectId: string
+  ): Promise<Notice> => {
+    return await api
+      .get<Notice>(`/feed/${noticeId}/${projectId}`)
+      .then((res) => res.data);
+  },
 };

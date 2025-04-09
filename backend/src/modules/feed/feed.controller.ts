@@ -228,4 +228,38 @@ export class FeedController {
     );
     return myNotices;
   }
+
+  // GET /api/feed/:feedId/:projectId
+  @Get(':feedId/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getFeedById(
+    @Param('feedId') feedId: number,
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    console.log(projectId);
+    console.log(userId);
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.feedService.getFeedById(feedId);
+  }
+
+  // GET /api/feed/:noticeId/:projectId
+  @Get(':noticeId/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getNoticeById(
+    @Param('noticeId') noticeId: number,
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      userId,
+    );
+    return await this.feedService.getNoticeById(noticeId);
+  }
 }

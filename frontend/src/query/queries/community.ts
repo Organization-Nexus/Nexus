@@ -2,6 +2,22 @@ import { communityKeys } from "../key";
 import { communityApi } from "@/app/_api/models/community";
 import { useQuery } from "@tanstack/react-query";
 
+// 피드 상세 조회
+export const useFeedDetail = (projectId: string, feedId: string) => {
+  return useQuery({
+    queryKey: communityKeys.FEED_DETAIL_KEY(feedId, projectId),
+    queryFn: () => communityApi.getFeedById(feedId, projectId),
+  });
+};
+
+// 공지사항 상세 조회
+export const useNoticeDetail = (projectId: string, noticeId: string) => {
+  return useQuery({
+    queryKey: communityKeys.NOTICE_DETAIL_KEY(noticeId, projectId),
+    queryFn: () => communityApi.getNoticeById(noticeId, projectId),
+  });
+};
+
 // 공지사항 목록 가져오기
 export const useNoticeList = (projectId: string) => {
   return useQuery({
