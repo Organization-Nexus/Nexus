@@ -20,7 +20,7 @@ interface SocketWithUser extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:3000', // 실제 배포 시에는 특정 도메인으로 제한하세요
+    origin: process.env.CLIENT_URL || 'http://localhost:3000', // 실제 배포 시에는 특정 도메인으로 제한
     credentials: true,
   },
 })
