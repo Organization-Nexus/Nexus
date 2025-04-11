@@ -33,6 +33,7 @@ export interface Vote extends BaseCommunity {
   isAnonymous: boolean;
   deadline: string | null;
   voteOptions: VoteOption[];
+  options: { id: number; content: string }[];
 }
 
 // Create Community Form

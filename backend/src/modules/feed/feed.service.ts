@@ -110,9 +110,6 @@ export class FeedService {
     if (!feed) {
       throw new NotFoundFeedException(feedId);
     }
-    if (feed.isNotice) {
-      throw new Error('너가 조회하려는 것은 공지사항일지도.');
-    }
     return feed;
   }
 
@@ -120,9 +117,6 @@ export class FeedService {
     const feed = await this.feedRepository.findOneBy({ id: noticeId });
     if (!feed) {
       throw new NotFoundFeedException(noticeId);
-    }
-    if (!feed.isNotice) {
-      throw new Error('너가 조회하는 것은 피드일지도.');
     }
     return feed;
   }

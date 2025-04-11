@@ -1,5 +1,6 @@
 export const projectKeys = {
   PROJECT_LIST_KEY: ["projectList"],
+  PROJECT_DETAIL_KEY: (projectId: string) => ["projectDetail", projectId],
 };
 
 export const projectUserKeys = {
@@ -18,6 +19,11 @@ export const communityKeys = {
   NOTICE_DETAIL_KEY: (projectId: string, noticeId: string) => [
     "noticeDetail",
     noticeId,
+    projectId,
+  ],
+  VOTE_DETAIL_KEY: (projectId: string, voteId: string) => [
+    "voteDetail",
+    voteId,
     projectId,
   ],
   MY_FEED_LIST_KEY: (projectId: string) => ["myFeedList", projectId],

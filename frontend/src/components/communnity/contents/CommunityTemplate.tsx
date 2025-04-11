@@ -52,13 +52,13 @@ export default function CommunityTemplate({
     const deadlineDate = new Date(deadline);
     const currentDate = new Date();
     return deadlineDate < currentDate ? (
-      <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-md">
-        COMPLETED
-      </div>
+      <span className="inline-block px-2 py-1 text-xs font-medium text-gray-600 bg-gray-200 rounded">
+        마감됨
+      </span>
     ) : (
-      <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-md">
-        IN PROGRESS
-      </div>
+      <span className="inline-block px-2 py-1 text-xs font-medium text-white bg-blue-300 rounded">
+        진행중
+      </span>
     );
   };
   const [state, setState] = useState({
@@ -323,8 +323,8 @@ export default function CommunityTemplate({
                 {type === "notice" &&
                   "isImportant" in item &&
                   (item.isImportant as boolean) && (
-                    <span className="text-sm text-red-300 border-2 border-red-300 px-2 py-1 rounded-md">
-                      IMPORTANT
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-md font-medium">
+                      중요
                     </span>
                   )}
               </div>

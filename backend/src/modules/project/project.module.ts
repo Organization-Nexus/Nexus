@@ -8,6 +8,7 @@ import { ProjectUser } from '../project-user/entites/project-user.entity';
 import { CommunityModule } from '../community/community.module';
 import { FileModule } from '../file/file.module';
 import { UserModule } from '../user/user.module';
+import { MilestoneModule } from '../milestone/milestone.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserModule } from '../user/user.module';
     UserModule,
     FileModule,
     ProjectUserModule,
+    MilestoneModule,
   ],
   controllers: [ProjectController],
   providers: [ProjectService],

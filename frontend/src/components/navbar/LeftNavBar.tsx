@@ -4,8 +4,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { LeftNavBarProps } from "@/types/navbar";
 import NavBarBtn from "./NavBarBtn";
 import {
-  Bookmark,
-  CalendarDays,
   ClipboardList,
   House,
   LayoutDashboard,
@@ -71,15 +69,6 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             isActive={isActive(`/myproject/${projectId}/milestones`)}
           />
 
-          {/* Issues */}
-          {/* <NavBarBtn
-            onClick={() => navigateTo(`/myproject/${projectId}/issues`)}
-            icon={<Waypoints className="mr-3 w-[1.125rem] h-[1.125rem]" />}
-            label="이슈"
-            padding="p-4"
-            isActive={isActive(`/myproject/${projectId}/issues`)}
-          /> */}
-
           {/* Minutes */}
           <NavBarBtn
             onClick={() => navigateTo(`/myproject/${projectId}/minutes`)}
@@ -88,16 +77,6 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/minutes`)}
           />
-
-          {/* Calendar */}
-          <NavBarBtn
-            onClick={() => navigateTo(`/myproject/${projectId}/calendar`)}
-            icon={<CalendarDays className="mr-3 w-[1.125rem] h-[1.125rem]" />}
-            label="달력"
-            padding="p-4"
-            isActive={isActive(`/myproject/${projectId}/calendar`)}
-          />
-
           <hr className="my-4" />
 
           {/* myPostedList */}
@@ -109,15 +88,6 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             label="내가 쓴 글"
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/myPostedList`)}
-          />
-
-          {/* Bookmarks */}
-          <NavBarBtn
-            onClick={() => navigateTo(`/myproject/${projectId}/bookmarks`)}
-            icon={<Bookmark className="mr-3 w-[1.125rem] h-[1.125rem]" />}
-            label="나의 북마크"
-            padding="p-4"
-            isActive={isActive(`/myproject/${projectId}/bookmarks`)}
           />
         </ul>
       </nav>

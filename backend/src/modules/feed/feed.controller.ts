@@ -238,8 +238,6 @@ export class FeedController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    console.log(projectId);
-    console.log(userId);
     await this.projectUserService.validateProjectMemberByUserId(
       projectId,
       userId,
