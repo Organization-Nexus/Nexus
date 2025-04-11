@@ -96,6 +96,61 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     }
   };
 
+  //   // 읽지 않은 사람 수 계산
+  //   const getUnreadCount = (msg: any) => {
+  //     if (!chatRoom || !msg.readBy) return 0;
+
+  //     // 메시지 보낸 사람은 자동으로 읽은 것으로 처리
+  //     const senderId = msg.senderId.toString();
+
+  //     // 채팅방 참여자 중 메시지를 읽지 않은 사람들 계산
+  //     const participantIds = chatRoom.participants
+  //       .map((p: any) => p.userId.toString())
+  //       .filter((id) => id !== senderId); // 보낸 사람 제외
+
+  //     const readByIds = Array.isArray(msg.readBy)
+  //       ? msg.readBy.map((id: any) => id.toString())
+  //       : [];
+
+  //     console.log("senderId", senderId);
+  //     console.log("readByIds", readByIds);
+  //     console.log(
+  //       "참여자 중 readBy에 포함되지 않은 사람 수",
+  //       participantIds.filter((id) => !readByIds.includes(id)).length
+  //     );
+
+  //     // 참여자 중 readBy에 포함되지 않은 사람 수
+  //     return participantIds.filter((id) => !readByIds.includes(id)).length;
+  //   };
+
+  // 연속된 메시지 그룹화 (같은 사람이 연속해서 보낸 메시지)
+  const groupedMessages = messages.reduce((acc: any[], msg, index, arr) => {
+    const prevMsg = index > 0 ? arr[index - 1] : null;
+
+    // 이전 메시지와 같은 사람이 보낸 메시지이고 1분 이내 메시지면 그룹화
+    const isSameSender = prevMsg && prevMsg.senderId === msg.senderId;
+    const isWithinTimeWindow =
+      prevMsg &&
+      new Date(msg.createdAt).getTime() -
+        new Date(prevMsg.createdAt).getTime() <
+        60 * 1000;
+
+    if (isSameSender && isWithinTimeWindow) {
+      // 이전 그룹에 추가
+      const lastGroup = acc[acc.length - 1];
+      lastGroup.messages.push(msg);
+      return acc;
+    } else {
+      // 새 그룹 생성
+      acc.push({
+        senderId: msg.senderId,
+        sender: msg.sender,
+        messages: [msg],
+      });
+      return acc;
+    }
+  }, []);
+
   if (isLoadingRoom || isLoadingMessages) {
     return (
       <div className="flex justify-center p-10">
@@ -135,39 +190,118 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, index) => (
-          <div
-            key={msg.id || index}
-            className={`flex ${
-              msg.senderId === currentUserId ? "justify-end" : "justify-start"
-            }`}
-          >
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {groupedMessages.map((group, groupIndex) => {
+          const isMyMessage = group.senderId === currentUserId;
+
+          return (
             <div
-              className={`max-w-[70%] p-3 rounded-lg ${
-                msg.senderId === currentUserId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100"
-              }`}
+              key={`group-${groupIndex}`}
+              className={`flex ${
+                isMyMessage ? "justify-end" : "justify-start"
+              } w-full`}
             >
-              {msg.senderId !== currentUserId && (
-                <div className="font-medium text-sm mb-1">
-                  {msg.sender?.name || "알 수 없음"}
+              {/* 상대방 메시지일 경우 프로필 이미지 표시 */}
+              {!isMyMessage && (
+                <div className="mr-2 flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <img
+                      src={group.sender?.log?.profileImage}
+                      alt={group.sender?.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               )}
-              <div>{msg.content}</div>
-              <div
-                className={`text-xs mt-1 ${
-                  msg.senderId === currentUserId
-                    ? "text-blue-100"
-                    : "text-gray-500"
-                }`}
-              >
-                {format(new Date(msg.createdAt), "HH:mm")}
-              </div>
+
+              {isMyMessage ? (
+                // 내가 보낸 메시지 레이아웃
+                <div className="flex items-end">
+                  {/* 시간, 읽음 표시 */}
+                  <div className="flex items-end mr-1 justify-end">
+                    {/* {getUnreadCount(group.messages[group.messages.length - 1]) >
+                    0 ? (
+                      <span className="text-xs text-custom-point mr-2">
+                        {getUnreadCount(
+                          group.messages[group.messages.length - 1]
+                        )}
+                      </span>
+                    ) : (
+                      <CheckCheck
+                        size={12}
+                        className="text-custom-point mr-1"
+                      />
+                    )} */}
+                    <div className="text-xs text-gray-500">
+                      {format(
+                        new Date(
+                          group.messages[group.messages.length - 1].createdAt
+                        ),
+                        "HH:mm"
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 메시지 목록 */}
+                  <div className="flex flex-col items-end">
+                    <div className="space-y-1">
+                      {group.messages.map((msg: any) => (
+                        <div key={msg.id} className="flex justify-end">
+                          <div className="px-3 py-2 rounded-lg bg-custom-point text-white rounded-tr-none">
+                            <div className="text-sm">{msg.content}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // 상대방 메시지 레이아웃
+                <div className="flex flex-col max-w-[70%]">
+                  {/* 상대방 이름 표시 */}
+                  <div className="font-medium text-sm mb-1 ml-1">
+                    {group.sender?.name || "알 수 없음"}
+                  </div>
+
+                  {/* 메시지 목록 */}
+                  <div className="space-y-1">
+                    {group.messages.map((msg: any, msgIndex: number) => (
+                      <div key={msg.id} className="flex items-end">
+                        <div className="px-3 py-2 rounded-lg bg-gray-100 rounded-tl-none">
+                          <div className="text-sm">{msg.content}</div>
+                        </div>
+
+                        {/* 상대방 메시지의 경우 시간 표시가 오른쪽에 위치 */}
+                        {msgIndex === group.messages.length - 1 && (
+                          <div className="ml-1">
+                            <div className="text-xs text-gray-500">
+                              {format(new Date(msg.createdAt), "HH:mm")}
+                            </div>
+                          </div>
+                        )}
+                        {/* 읽음 표시
+                        {getUnreadCount(
+                          group.messages[group.messages.length - 1]
+                        ) > 0 ? (
+                          <span className="text-xs text-custom-point ml-2">
+                            {getUnreadCount(
+                              group.messages[group.messages.length - 1]
+                            )}
+                          </span>
+                        ) : (
+                          <CheckCheck
+                            size={12}
+                            className="text-custom-point ml-1"
+                          />
+                        )} */}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -182,7 +316,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
           />
           <button
             type="submit"
-            className="bg-blue-500 text-white px-4 rounded-r-md"
+            className="bg-custom-point text-white px-4 rounded-r-md"
             disabled={!message.trim()}
           >
             전송

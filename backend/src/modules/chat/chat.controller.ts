@@ -37,8 +37,11 @@ export class ChatsController {
   }
 
   @Get('project-members/:projectId')
-  async getProjectMembers(@Param('projectId') projectId: number) {
-    return this.chatsService.getProjectMembers(projectId);
+  async getProjectMembers(
+    @Param('projectId') projectId: number,
+    @Request() req,
+  ) {
+    return this.chatsService.getProjectMembers(projectId, req.user.id);
   }
 
   @Post('project-group')

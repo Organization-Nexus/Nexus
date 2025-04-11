@@ -2,7 +2,10 @@ export interface ChatUser {
   id: number;
   name: string;
   position: string;
-  profileImage?: string;
+  log: {
+    profileImage: string;
+    status: string;
+  };
 }
 
 export interface ChatParticipant {
@@ -44,7 +47,12 @@ export interface Project {
 
 export interface ProjectMember {
   id: number;
-  user: ChatUser;
+  name: string;
+  position: string;
+  log: {
+    profileImage: string;
+    status: string;
+  };
   role: string;
 }
 

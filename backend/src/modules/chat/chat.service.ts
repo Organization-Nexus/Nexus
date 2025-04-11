@@ -42,7 +42,7 @@ export class ChatsService {
         project: { id: In(projectIds) },
         user: { id: Not(userId) }, // 자기 자신은 제외
       },
-      relations: ['user'],
+      relations: ['user', 'user.log'],
     });
 
     // 중복 제거 (한 사용자가 여러 프로젝트에 속할 수 있음)
@@ -138,8 +138,12 @@ export class ChatsService {
 
     const savedChatRoom = await this.chatRoomRepository.save(chatRoom);
 
+    const allMemberIds = memberIds.includes(creatorId)
+      ? memberIds
+      : [...memberIds, creatorId];
+
     // 참여자 추가 (생성자는 ADMIN, 나머지는 MEMBER)
-    const participants = memberIds.map((userId) => ({
+    const participants = allMemberIds.map((userId) => ({
       userId,
       chatRoomId: savedChatRoom.id,
       role: userId === creatorId ? ChatRole.ADMIN : ChatRole.MEMBER,
@@ -157,10 +161,18 @@ export class ChatsService {
       .innerJoin('chatRoom.participants', 'participant')
       .leftJoinAndSelect('chatRoom.participants', 'allParticipants')
       .leftJoinAndSelect('allParticipants.user', 'participantUser')
+      .leftJoinAndSelect('participantUser.log', 'userLog')
       .leftJoinAndSelect('chatRoom.project', 'project')
       .where('participant.userId = :userId', { userId })
       .getMany();
   }
+  // async getUserChatRooms(userId: number) {
+  //   return await this.chatRoomRepository.find({
+  //     where: { participants: { userId } },
+  //     relations: ['participants', 'participants.user', 'project', 'messages'],
+  //     order: { updatedAt: 'DESC' },
+  //   });
+  // }
 
   // 메시지 전송
   async sendMessage(chatRoomId: number, senderId: number, content: string) {
@@ -211,7 +223,7 @@ export class ChatsService {
 
     return this.messageRepository.find({
       where: { chatRoomId },
-      relations: ['sender'],
+      relations: ['sender', 'sender.log'],
       order: { createdAt: 'ASC' },
     });
   }
@@ -227,10 +239,13 @@ export class ChatsService {
   }
 
   // 프로젝트 멤버 목록 조회
-  async getProjectMembers(projectId: number) {
+  async getProjectMembers(projectId: number, userId: number) {
     const projectUsers = await this.projectUserRepository.find({
-      where: { project: { id: projectId } },
-      relations: ['user'],
+      where: {
+        project: { id: projectId },
+        user: { id: Not(userId) }, // 자기 자신은 제외
+      },
+      relations: ['user', 'user.log'],
     });
 
     return projectUsers.map((pu) => pu.user);
