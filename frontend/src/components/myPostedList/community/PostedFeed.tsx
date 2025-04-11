@@ -4,6 +4,7 @@ import { GoHeart, GoHeartFill } from "react-icons/go";
 import { useState } from "react";
 import FeedDetailModal from "@/components/modal/myPostedList/FeedDetailModal";
 import { Feed } from "@/types/community";
+import { formatDate } from "@/utils/dateFormatter";
 
 interface PostedFeedProps {
   projectId: string;
@@ -57,11 +58,9 @@ export default function PostedFeed({ projectId }: PostedFeedProps) {
                   <div className="flex items-center gap-1">
                     <Calendar size={14} className="text-gray-500" />
                     <span>
-                      {new Date(feed.createdAt).toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {feed.createdAt
+                        ? formatDate(feed.createdAt)
+                        : "날짜 없음"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">

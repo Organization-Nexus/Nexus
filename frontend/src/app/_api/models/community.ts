@@ -138,4 +138,10 @@ export const communityApi = {
       .get<Notice>(`/feed/${noticeId}/${projectId}`)
       .then((res) => res.data);
   },
+
+  getVoteById: async (voteId: string, projectId: string): Promise<Vote> => {
+    return await api
+      .get<Vote>(`/vote/${voteId}/${projectId}`)
+      .then((res) => res.data);
+  },
 };

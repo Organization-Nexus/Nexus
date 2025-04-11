@@ -22,4 +22,10 @@ export const projectApi = {
       .get<Project>(`/project/detail/${userId}`)
       .then((res) => res.data);
   },
+
+  getMilestonesByProjectIds: async (projectIds: string): Promise<any> => {
+    return await api
+      .get<any>(`/project/milestones/${projectIds}`)
+      .then((res) => res.data);
+  },
 };

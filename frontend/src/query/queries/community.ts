@@ -18,6 +18,14 @@ export const useNoticeDetail = (projectId: string, noticeId: string) => {
   });
 };
 
+// 투표 상세 조회
+export const useVoteDetail = (projectId: string, voteId: string) => {
+  return useQuery({
+    queryKey: communityKeys.VOTE_DETAIL_KEY(voteId, projectId),
+    queryFn: () => communityApi.getVoteById(voteId, projectId),
+  });
+};
+
 // 공지사항 목록 가져오기
 export const useNoticeList = (projectId: string) => {
   return useQuery({

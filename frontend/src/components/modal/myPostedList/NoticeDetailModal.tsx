@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
-import { useFeedDetail } from "@/query/queries/community";
+import { useNoticeDetail } from "@/query/queries/community";
 import { Modal } from "../config/ModalMaps";
-import { Newspaper, X } from "lucide-react";
+import { Siren, X } from "lucide-react";
 import { commentApi } from "@/app/_api/models/comment";
 import { CommentResponse } from "@/types/comment";
-import FilePreview from "@/components/utils/FilePreview";
 import CommentsSection from "./CommentsSection";
+import FilePreview from "@/components/utils/FilePreview";
 import { formatDate } from "@/utils/dateFormatter";
 
-interface FeedDetailModalProps {
+interface NoticeDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: string;
-  feedId: number;
+  noticeId: number;
 }
 
-export default function FeedDetailModal({
+export default function NoticeDetailModal({
   isOpen,
   onClose,
   projectId,
-  feedId,
-}: FeedDetailModalProps) {
-  const { data: feedDetail, isLoading } = useFeedDetail(
+  noticeId,
+}: NoticeDetailModalProps) {
+  const { data: noticeDetail, isLoading } = useNoticeDetail(
     projectId,
-    feedId.toString()
+    noticeId.toString()
   );
   const [comments, setComments] = useState<CommentResponse[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
@@ -34,7 +34,7 @@ export default function FeedDetailModal({
       setCommentsLoading(true);
       try {
         const fetchedComments = await commentApi.getCommentsByFeedId(
-          feedId.toString()
+          noticeId.toString()
         );
         setComments(fetchedComments);
       } catch (error) {
@@ -45,9 +45,9 @@ export default function FeedDetailModal({
       }
     };
     fetchComments();
-  }, [isOpen, feedId]);
+  }, [isOpen, noticeId]);
 
-  if (isLoading || !feedDetail) return null;
+  if (isLoading || !noticeDetail) return null;
 
   return (
     <Modal
@@ -60,15 +60,20 @@ export default function FeedDetailModal({
         <div className="border-b border-indigo-100 pb-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Newspaper className="w-6 h-6 text-indigo-600" />
+              <Siren className="w-6 h-6 text-indigo-600" />
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    {feedDetail.title}
+                    {noticeDetail.title}
                   </h2>
+                  {noticeDetail.isImportant && (
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-md font-medium">
+                      중요
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-gray-500">
-                  {formatDate(feedDetail.createdAt)}
+                  {formatDate(noticeDetail.createdAt)}
                 </div>
               </div>
             </div>
@@ -80,14 +85,14 @@ export default function FeedDetailModal({
             </button>
           </div>
           <p className="mt-4 text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100 leading-relaxed">
-            {feedDetail.content}
+            {noticeDetail.content}
           </p>
         </div>
 
         {/* Files Section */}
-        {(feedDetail.community_files ?? []).length > 0 && (
+        {(noticeDetail.community_files ?? []).length > 0 && (
           <div className="py-4">
-            <FilePreview files={feedDetail.community_files ?? []} />
+            <FilePreview files={noticeDetail.community_files ?? []} />
           </div>
         )}
 
