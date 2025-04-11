@@ -190,7 +190,6 @@ export function CreateChatModal({ onClose, onSuccess }: CreateChatModalProps) {
 
           <TabsContent value="group">
             <div className="space-y-4">
-              ㅎ
               <div>
                 <h3 className="font-medium mb-2">프로젝트 선택</h3>
                 <div className="relative">
