@@ -10,6 +10,8 @@ import {
 import { UserLog } from './user-log.entity';
 import { Exclude } from 'class-transformer';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
+import { ChatParticipant } from 'src/modules/chat/entities/chat-participant.entity';
+import { Message } from 'src/modules/chat/entities/chat-message.entity';
 
 @Entity('user')
 export class User {
@@ -67,4 +69,10 @@ export class User {
     cascade: true,
   })
   projectUsers: ProjectUser[];
+
+  @OneToMany(() => ChatParticipant, (chatParticipant) => chatParticipant.user)
+  chatParticipants: ChatParticipant[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messages: Message[];
 }

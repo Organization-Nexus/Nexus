@@ -1,4 +1,3 @@
-// utils/socketService.ts
 import { io, Socket } from "socket.io-client";
 import Cookies from "js-cookie";
 
@@ -8,6 +7,7 @@ const SOCKET_URL =
 
 class SocketService {
   private socket: Socket | null = null;
+  private messageListeners: Map<string, Function[]> = new Map();
 
   // 소켓 연결
   connect() {
@@ -18,7 +18,7 @@ class SocketService {
       const token = Cookies.get("access_token");
       if (!token) {
         console.error("인증 토큰이 없습니다. 로그인이 필요합니다.");
-        return;
+        return null;
       }
       this.socket = io(SOCKET_URL, {
         transports: ["websocket"],
@@ -42,6 +42,11 @@ class SocketService {
       // 서버에서 보내는 연결 성공 이벤트
       this.socket.on("connection_established", (data) => {
         console.log("서버 연결 확인:", data);
+      });
+
+      this.socket.on("newMessage", (message) => {
+        const listeners = this.messageListeners.get(message.chatRoomId) || [];
+        listeners.forEach((listener) => listener(message));
       });
 
       // 테스트 메시지 수신
@@ -72,6 +77,36 @@ class SocketService {
   // 현재 연결 상태 확인
   isConnected() {
     return this.socket?.connected || false;
+  }
+
+  joinRoom(roomId: string) {
+    if (!this.socket) this.connect();
+    this.socket?.emit("joinRoom", { roomId });
+  }
+
+  leaveRoom(roomId: string) {
+    if (!this.socket) this.connect();
+    this.socket?.emit("leaveRoom", { roomId });
+  }
+
+  sendMessage(roomId: string, content: string) {
+    if (!this.socket) this.connect();
+    this.socket?.emit("sendMessage", { roomId, content });
+  }
+
+  onMessage(roomId: string, callback: (message: any) => void) {
+    if (!this.messageListeners.has(roomId)) {
+      this.messageListeners.set(roomId, []);
+    }
+    this.messageListeners.get(roomId)?.push(callback);
+  }
+
+  offMessage(roomId: string, callback: Function) {
+    const listeners = this.messageListeners.get(roomId) || [];
+    const index = listeners.indexOf(callback);
+    if (index !== -1) {
+      listeners.splice(index, 1);
+    }
   }
 }
 
