@@ -18,6 +18,7 @@ import { LikeModule } from './modules/like/like.module';
 import { MilestoneModule } from './modules/milestone/milestone.module';
 import { IssueModule } from './modules/issue/issue.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CommentModule } from './modules/comment/comment.module';
     MilestoneModule,
     IssueModule,
     CommentModule,
+    ChatModule,
   ],
 })
 export class AppModule {

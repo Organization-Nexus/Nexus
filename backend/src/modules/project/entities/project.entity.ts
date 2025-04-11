@@ -1,3 +1,4 @@
+import { ChatRoom } from 'src/modules/chat/entities/chat-room.entity';
 import { Community } from 'src/modules/community/entites/community.entity';
 import { ProjectUser } from 'src/modules/project-user/entites/project-user.entity';
 import {
@@ -38,6 +39,6 @@ export class Project {
   @OneToOne(() => Community, (community) => community.project)
   community: Community;
 
-  // @OneToMany(() => Minutes, (minutes) => minutes.project)
-  // minutes: Minutes[];
+  @OneToMany(() => ChatRoom, (chatRoom) => chatRoom.project)
+  chatRooms: ChatRoom[];
 }
