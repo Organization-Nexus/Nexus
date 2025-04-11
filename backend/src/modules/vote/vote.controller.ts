@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -27,7 +28,9 @@ import {
   AnonymousVoteException,
   DeadlineExpiredException,
 } from './exception/vote.exception';
+import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('vote')
 export class VoteController {
   constructor(
@@ -103,7 +106,7 @@ export class VoteController {
 
   // PATCH /api/vote/vote-response/:voteId/:projectId
   @Patch('vote-response/:voteId/:projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
   async voteResponse(
     @Body() voteRequestDto: VoteRequestDto,
     @Param('voteId') voteId: number,

@@ -94,4 +94,37 @@ export class ProjectController {
     );
     return await this.projectService.getProject(projectId);
   }
+
+  // GET /api/project/milestones/:projectIds
+  @Get('milestones/:projectIds')
+  @UseGuards(JwtAuthGuard)
+  async getMilestonesByProjectIds(
+    @Param('projectIds') projectIdsParam: string,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectIds = projectIdsParam
+      .split(',')
+      .map((id) => Number(id.trim()))
+      .filter((id) => !isNaN(id));
+    const projectUserIds = await Promise.all(
+      projectIds.map(async (projectId) => {
+        try {
+          return await this.projectUserService.validateProjectMemberByUserId(
+            projectId,
+            userId,
+          );
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const validProjectUserIds = projectUserIds.filter(
+      (id): id is number => id !== null,
+    );
+    return this.projectService.getMilestonesByProjectUserIds(
+      validProjectUserIds,
+      projectIds,
+    );
+  }
 }

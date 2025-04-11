@@ -1,5 +1,6 @@
 export const projectKeys = {
   PROJECT_LIST_KEY: ["projectList"],
+  PROJECT_DETAIL_KEY: (projectId: string) => ["projectDetail", projectId],
 };
 
 export const projectUserKeys = {
@@ -10,6 +11,21 @@ export const communityKeys = {
   NOTICE_LIST_KEY: ["noticeList"],
   FEED_LIST_KEY: ["feedList"],
   VOTE_LIST_KEY: ["voteList"],
+  FEED_DETAIL_KEY: (projectId: string, feedId: string) => [
+    "feedDetail",
+    feedId,
+    projectId,
+  ],
+  NOTICE_DETAIL_KEY: (projectId: string, noticeId: string) => [
+    "noticeDetail",
+    noticeId,
+    projectId,
+  ],
+  VOTE_DETAIL_KEY: (projectId: string, voteId: string) => [
+    "voteDetail",
+    voteId,
+    projectId,
+  ],
   MY_FEED_LIST_KEY: (projectId: string) => ["myFeedList", projectId],
   MY_NOTICE_LIST_KEY: (projectId: string) => ["myNoticeList", projectId],
   MY_VOTE_LIST_KEY: (projectId: string) => ["myVoteList", projectId],
@@ -18,6 +34,7 @@ export const communityKeys = {
 export const commentKeys = {
   FEED_OR_NOTICE_COMMENT_LIST_KEY: ["feedOrNoticeCommentList"],
   VOTE_COMMENT_LIST_KEY: ["voteCommentList"],
+  FEED_OR_NOTICE_COMMENT_KEY: ["feedOrNoticeComment"],
 };
 
 export const minutesKeys = {
