@@ -54,7 +54,7 @@ export default function ChatRoom({ roomId }: ChatRoomProps) {
     socketService.joinRoom(roomId);
 
     const handleNewMessage = (newMessage: any) => {
-      console.log("웹소켓으로 받은 메시지:", newMessage);
+      //   console.log("웹소켓으로 받은 메시지:", newMessage);
       if (newMessage.chatRoomId === roomId) {
         setMessages((prev) => [...prev, newMessage]);
       }

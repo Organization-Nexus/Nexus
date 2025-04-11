@@ -14,7 +14,7 @@ class SocketService {
     if (!this.socket) {
       console.log("소켓 서버에 연결 중...");
 
-      console.log(Cookies.get("access_token"));
+      // console.log(Cookies.get("access_token"));
       const token = Cookies.get("access_token");
       if (!token) {
         console.error("인증 토큰이 없습니다. 로그인이 필요합니다.");
