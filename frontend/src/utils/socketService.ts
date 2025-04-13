@@ -2,7 +2,8 @@ import { io, Socket } from "socket.io-client";
 import Cookies from "js-cookie";
 
 // 환경 변수에서 소켓 서버 URL 가져오기
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL || "http://13.209.41.52:8000";
 
 class SocketService {
   private socket: Socket | null = null;
