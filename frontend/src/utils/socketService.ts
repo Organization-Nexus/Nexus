@@ -2,7 +2,8 @@ import { io, Socket } from "socket.io-client";
 import Cookies from "js-cookie";
 
 // 환경 변수에서 소켓 서버 URL 가져오기
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL || "http://13.209.41.52:8000";
 
 class SocketService {
   private socket: Socket | null = null;
@@ -13,14 +14,14 @@ class SocketService {
     if (!this.socket) {
       console.log("소켓 서버에 연결 중...");
 
-      // console.log(Cookies.get("access_token"));
+      console.log(Cookies.get("access_token"));
       const token = Cookies.get("access_token");
       if (!token) {
         console.error("인증 토큰이 없습니다. 로그인이 필요합니다.");
         return null;
       }
       this.socket = io(SOCKET_URL, {
-        transports: ["websocket"],
+        transports: ["websocket", "polling"],
         auth: {
           token: token,
         },
