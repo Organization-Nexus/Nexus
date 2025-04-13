@@ -12,8 +12,6 @@ export default async function Milestones({ params }: ProjectIdProps) {
     description: "마일스톤을 한 눈에 확인하고 관리하세요. ✅",
   };
 
-  console.log(projectId);
-
   return (
     <div className="mx-20">
       <PageInfo project={project} menuType={milestoneMenuType} />

@@ -1,5 +1,4 @@
 import { projectApi } from "@/app/_api/models/project";
-import { projectUserApi } from "@/app/_api/models/project-user";
 import CardSection from "@/components/dashboard/CardSection";
 import ProjectInfo from "@/components/dashboard/ProjectInfo";
 import ProjectUsers from "@/components/dashboard/ProjectUsers";
@@ -8,7 +7,6 @@ import { ProjectIdProps } from "@/types/project";
 export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const projects = await projectApi.getProjectById(projectId);
-  const projectUsers = await projectUserApi.getProjectUsers(projectId);
 
   return (
     <div className="h-full flex justify-center items-center">
@@ -20,7 +18,7 @@ export default async function Dashboard({ params }: ProjectIdProps) {
           <hr className="my-2" />
           {/* Project Team Members */}
           <div className="flex flex-wrap justify-start gap-4">
-            <ProjectUsers projectUsers={projectUsers} />
+            <ProjectUsers projectId={projectId} />
           </div>
         </div>
 

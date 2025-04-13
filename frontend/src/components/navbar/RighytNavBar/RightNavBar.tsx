@@ -5,9 +5,9 @@ import { useUserInfo } from "@/query/queries/user";
 import { useState, useEffect } from "react";
 import { useProjectDetail, useProjectList } from "@/query/queries/project";
 import ProjectDetailCard from "./ProjectDetailCard";
-import ProjectListCard from "./ProjectListCard";
 import MyProfile from "@/components/modal/MyProfile";
 import MyPageModal from "@/components/modal/Mypage";
+import ProjectMilestones from "./ProjectMilestones";
 
 interface RightNavBarProps {
   projectId?: string;
@@ -75,7 +75,7 @@ export default function RightNavBar({ projectId }: RightNavBarProps) {
           {projectId && project ? (
             <ProjectDetailCard project={project} />
           ) : (
-            <ProjectListCard projects={projects} />
+            <ProjectMilestones projects={projects} />
           )}
         </div>
       </div>

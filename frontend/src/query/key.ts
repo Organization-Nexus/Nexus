@@ -5,6 +5,7 @@ export const projectKeys = {
 
 export const projectUserKeys = {
   PROJECT_USER_INFO_KEY: ["projectUser"],
+  PROJECT_USER_KEY: (projectId: string) => ["projectUser", projectId],
 };
 
 export const communityKeys = {
