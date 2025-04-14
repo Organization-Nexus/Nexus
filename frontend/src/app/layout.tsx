@@ -5,7 +5,9 @@ import ClientLayout from "@/components/ClientLayout";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko-KR">
-      <head />
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className="bg-gray-100 hide-scrollbar">
         <QueryProvider>
           <ClientLayout>{children}</ClientLayout>

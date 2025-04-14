@@ -9,13 +9,12 @@ interface DetailMilestoneProps {
   milestone: Milestone | null;
 }
 
-export default function DetailMilestone({
+export default function DetailMilestoneModal({
   isOpen,
   onClose,
   milestone,
 }: DetailMilestoneProps) {
   if (!milestone) return null;
-  console.log(milestone);
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col p-4">

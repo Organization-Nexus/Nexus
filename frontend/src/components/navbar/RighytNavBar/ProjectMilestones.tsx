@@ -10,7 +10,8 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-import DetailMilestone from "./DetailMilestone";
+import MilestoneIssues from "./MilestoneIssues";
+import DetailMilestoneModal from "./DetailMilestoneModal";
 
 export default function ProjectMilestones({
   projects,
@@ -22,6 +23,9 @@ export default function ProjectMilestones({
   const [openStates, setOpenStates] = useState<Record<number, boolean>>(
     Object.fromEntries(projects.map((p) => [p.id, true]))
   );
+  const [issueToggleStates, setIssueToggleStates] = useState<
+    Record<string, boolean>
+  >({});
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(
     null
   );
@@ -34,6 +38,14 @@ export default function ProjectMilestones({
     setOpenStates((prev) => ({
       ...prev,
       [projectId]: !prev[projectId],
+    }));
+  };
+
+  const toggleIssues = (projectId: number, milestoneId: number) => {
+    const key = `${projectId}-${milestoneId}`;
+    setIssueToggleStates((prev) => ({
+      ...prev,
+      [key]: !prev[key],
     }));
   };
 
@@ -88,30 +100,45 @@ export default function ProjectMilestones({
 
               {isOpen && (
                 <ul>
-                  {projectMilestones.map((milestone) => (
-                    <li
-                      key={milestone.id}
-                      onClick={() => openDetailModal(milestone, proj.id)}
-                      className="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition"
-                    >
-                      <div className="flex items-center gap-2 flex-1">
-                        <Calendar className="w-10 h-10 bg-green-300 text-white p-2 rounded-lg" />
-                        <div>
-                          <span className="font-semibold text-gray-800 text-sm">
-                            {milestone.title}
+                  {projectMilestones.map((milestone) => {
+                    const issueToggleKey = `${proj.id}-${milestone.id}`;
+                    const isIssuesOpen =
+                      issueToggleStates[issueToggleKey] || false;
+
+                    return (
+                      <li key={milestone.id}>
+                        <div
+                          onClick={() => openDetailModal(milestone, proj.id)}
+                          className="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition"
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <Calendar className="w-10 h-10 bg-green-300 text-white p-2 rounded-lg" />
+                            <div>
+                              <span className="font-semibold text-gray-800 text-sm">
+                                {milestone.title}
+                              </span>
+                              <p className="text-xs text-gray-600 truncate max-w-md">
+                                {milestone.goal.length > 20
+                                  ? milestone.goal.slice(0, 20) + "..."
+                                  : milestone.goal}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-400">
+                            ~ {milestone.end_date}
                           </span>
-                          <p className="text-xs text-gray-600 truncate max-w-md">
-                            {milestone.goal.length > 20
-                              ? milestone.goal.slice(0, 20) + "..."
-                              : milestone.goal}
-                          </p>
                         </div>
-                      </div>
-                      <span className="text-xs text-gray-400">
-                        ~ {milestone.end_date}
-                      </span>
-                    </li>
-                  ))}
+                        <MilestoneIssues
+                          projectId={proj.id}
+                          milestoneId={milestone.id}
+                          isIssuesOpen={isIssuesOpen}
+                          toggleIssues={() =>
+                            toggleIssues(proj.id, milestone.id)
+                          }
+                        />
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </li>
@@ -119,8 +146,7 @@ export default function ProjectMilestones({
         })}
       </ul>
 
-      {/* 마일스톤 상세 모달 */}
-      <DetailMilestone
+      <DetailMilestoneModal
         isOpen={isDetailOpen}
         onClose={closeDetailModal}
         milestone={selectedMilestone}
