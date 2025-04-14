@@ -59,8 +59,8 @@ export default function ProjectUsers({ projectId }: ProjectUserListProps) {
             <div className="w-14 h-14 rounded-3xl border border-dashed border-gray-400 flex items-center justify-center mb-1 hover:border-black transition">
               <Plus className="w-4 h-4" />
             </div>
-            <p className="text-sm">팀원추가</p>
-            <p className="text-xs">add user</p>
+            <p className="text-sm">팀원 초대</p>
+            <p className="text-xs">INVITE</p>
           </button>
         )}
       </div>

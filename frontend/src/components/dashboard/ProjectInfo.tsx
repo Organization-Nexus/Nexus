@@ -9,7 +9,7 @@ export default function ProjectInfo({ project }: ProjectProps) {
   );
   return (
     <>
-      <div className="flex items-center space-x-8 p-4">
+      <div className="flex items-center space-x-8 p-2 mt-2">
         <img
           src={
             typeof project?.project_image === "string"
