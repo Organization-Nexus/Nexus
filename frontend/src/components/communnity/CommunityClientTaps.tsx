@@ -44,17 +44,17 @@ export default function CommunityClientTabs({
   };
 
   return (
-    <div>
-      <div className="w-3/5 space-y-4">
+    <div className="w-3/5 space-y-4">
+      <div>
         <hr />
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-4">
           {/* 커뮤니티 탭 */}
           <div className="flex items-center space-x-6">
             {tabs.map(({ key, label, icon }) => (
               <button
                 key={key}
                 onClick={() => handleTabClick(key)}
-                className={`flex items-center space-x-2 py-2 text-gray-600 hover:text-primary transition-colors ${
+                className={`flex items-center space-x-2 py-2 text-custom-smallText hover:text-primary transition-colors ${
                   selectedTab === key
                     ? "text-primary font-semibold border-b-2 border-primary"
                     : ""
@@ -92,7 +92,7 @@ export default function CommunityClientTabs({
           </DropdownMenu>
         </div>
         {/* 커뮤니티 컨텐츠 */}
-        <div className="mt-8 h-[78vh] overflow-y-auto rounded-xl">
+        <div className="mt-8 h-[68vh] overflow-y-auto rounded-xl">
           <CommunityTemplate
             key={selectedTab}
             type={tabs.find((t) => t.key === selectedTab)?.key || ""}

@@ -1,6 +1,5 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import ImageModal from "@/components/utils/ImageModal";
 import {
   CommunityTemplateProps,
@@ -236,22 +235,6 @@ export default function CommunityTemplate({
     : data;
   return (
     <div>
-      <div className="my-2">
-        <div className="flex items-center p-4 rounded-md bg-white shadow-md justify-end">
-          {type === "notice" && (
-            <>
-              <Checkbox
-                checked={state.showImportantOnly}
-                onCheckedChange={toggleImportantOnly}
-              />
-              <span className="ml-2 font-semibold">중요 항목만 보기</span>
-            </>
-          )}
-          {type === "feed" && <>필터 및 검색</>}
-          {type === "vote" && <>필터 및 검색</>}
-        </div>
-      </div>
-
       {filteredItems.length > 0 ? (
         filteredItems.map((item) => {
           const createdAt = new Date(item.createdAt);
@@ -420,8 +403,8 @@ export default function CommunityTemplate({
           );
         })
       ) : (
-        <p className="flex items-center justify-center mt-4 p-4 rounded-md bg-white shadow-md h-[20vh]">
-          커뮤니티를 생성해주세요 🚀
+        <p className="flex items-center justify-center text-sm text-gray-500">
+          등록된 커뮤니티가 없습니다. 커뮤니티를 생성해보세요 🚀
         </p>
       )}
       <ImageModal

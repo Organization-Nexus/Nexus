@@ -11,7 +11,11 @@ import {
   Milestone,
 } from "lucide-react";
 import { PiUsersThreeBold } from "react-icons/pi";
+import { useProjectUserInfo } from "@/query/queries/project-user";
+import { Lock } from "lucide-react";
+
 export default function LeftNavBar({ projectId }: LeftNavBarProps) {
+  const { data: me } = useProjectUserInfo(projectId);
   const router = useRouter();
   const pathname = usePathname();
   const isActive = (path: string) => pathname.startsWith(path);
@@ -89,6 +93,18 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
             padding="p-4"
             isActive={isActive(`/myproject/${projectId}/myPostedList`)}
           />
+          {me?.is_sub_admin && (
+            <>
+              <hr className="my-4" />
+              <NavBarBtn
+                onClick={() => navigateTo(`/myproject/${projectId}/admin`)}
+                icon={<Lock className="mr-3 w-[1.125rem] h-[1.125rem]" />}
+                label="관리자 페이지"
+                padding="p-4"
+                isActive={isActive(`/myproject/${projectId}/admin`)}
+              />
+            </>
+          )}
         </ul>
       </nav>
 

@@ -5,7 +5,7 @@ import { projectUserApi } from "@/app/_api/models/project-user";
 // 프로젝트 유저 정보(본인)
 export const useProjectUserInfo = (projectId: string) => {
   return useQuery({
-    queryKey: projectUserKeys.PROJECT_USER_INFO_KEY,
+    queryKey: projectUserKeys.PROJECT_USER_KEY(projectId),
     queryFn: () => projectUserApi.getProjectUser(projectId),
   });
 };
