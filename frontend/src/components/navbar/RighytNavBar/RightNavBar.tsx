@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useUserInfo } from "@/query/queries/user";
 import { useState, useEffect } from "react";
 import { useProjectDetail, useProjectList } from "@/query/queries/project";
-import ProjectDetailCard from "./ProjectDetailCard";
 import MyProfile from "@/components/modal/MyProfile";
 import MyPageModal from "@/components/modal/Mypage";
 import ProjectMilestones from "./ProjectMilestones";
@@ -17,7 +16,6 @@ export default function RightNavBar({ projectId }: RightNavBarProps) {
   const { data: user, isLoading } = useUserInfo();
   const { data: project } = useProjectDetail(projectId ?? "", !!projectId);
   const { data: projects } = useProjectList([], !projectId);
-
   const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -25,6 +23,8 @@ export default function RightNavBar({ projectId }: RightNavBarProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const projectData = projectId && project ? [project] : projects || [];
 
   if (!isMounted) return null;
   if (isLoading) return <div className="p-6 text-gray-500">로딩중...</div>;
@@ -72,11 +72,7 @@ export default function RightNavBar({ projectId }: RightNavBarProps) {
 
         {/* 프로젝트 정보 */}
         <div>
-          {projectId && project ? (
-            <ProjectDetailCard project={project} />
-          ) : (
-            <ProjectMilestones projects={projects} />
-          )}
+          <ProjectMilestones projects={projectData} />
         </div>
       </div>
 
