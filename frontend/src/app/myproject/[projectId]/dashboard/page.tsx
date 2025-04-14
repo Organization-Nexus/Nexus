@@ -9,10 +9,10 @@ export default async function Dashboard({ params }: ProjectIdProps) {
   const projects = await projectApi.getProjectById(projectId);
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="w-full max-w-7xl mx-auto">
+    <div className="flex min-h-screen justify-center">
+      <div className="w-full  max-w-7xl mx-20 my-20">
         {/* Project Header */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="bg-white px-10 py-4 rounded-lg shadow-md mb-4 mt-8">
           {/* Project Info */}
           <ProjectInfo project={projects} />
           <hr className="my-2" />
@@ -22,29 +22,29 @@ export default async function Dashboard({ params }: ProjectIdProps) {
           </div>
         </div>
 
-        {/* Dashboard Cards Section */}
-        <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Community Section */}
-            <CardSection title="Community">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
-            {/* My Tasks Section */}
-            <CardSection title="My Tasks">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Calendar Section */}
-            <CardSection title="Calendar">
-              <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg ">
-                <p className="text-gray-600">Calendar coming soon...</p>
+        {/* Dashboard Content */}
+        <div className="grid grid-cols-5 grid-rows-2 gap-4 ">
+          {/* 왼쪽 Column */}
+          <div className="row-span-2 col-span-2">
+            <CardSection title="Creeper 커뮤니티">
+              <div className="space-y-2">
+                {Array(6)
+                  .fill(null)
+                  .map((_, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-sm">제목입니다.</span>
+                    </div>
+                  ))}
               </div>
             </CardSection>
-            {/* Chat Section */}
-            <CardSection title="Chat">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
+          </div>
+
+          {/* 오른쪽 Column */}
+          <div className="space-y-4 col-span-3">
+            <CardSection title="내가 담당중인 업무">02</CardSection>
+
+            <CardSection title="일정">03</CardSection>
           </div>
         </div>
       </div>
