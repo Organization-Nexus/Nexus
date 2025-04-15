@@ -1,6 +1,7 @@
 import { ProjectProps } from "@/types/project";
 import ProgressBar from "../project/ProgressBar";
 import calculateProjectProgress from "@/utils/calculateProjectProgress";
+import Image from "next/image";
 
 export default function ProjectInfo({ project }: ProjectProps) {
   const progressPercentage = calculateProjectProgress(
@@ -10,15 +11,16 @@ export default function ProjectInfo({ project }: ProjectProps) {
   return (
     <>
       <div className="flex items-center space-x-8 p-2 mt-2">
-        <img
-          src={
-            typeof project?.project_image === "string"
-              ? project.project_image
-              : undefined
-          }
-          alt={`${project?.title} project image`}
-          className="w-24 h-24 object-cover"
-        />
+        <div className="relative w-24 h-24">
+          {typeof project?.project_image === "string" && (
+            <Image
+              src={project.project_image}
+              alt={`${project?.title} project image`}
+              layout="fill"
+              objectFit="cover"
+            />
+          )}
+        </div>
         <div className="w-full">
           <p className="text-2xl font-semibold text-primary">
             {project?.title}
@@ -27,7 +29,7 @@ export default function ProjectInfo({ project }: ProjectProps) {
             </span>
           </p>
           <hr className="my-2" />
-          <p className="text-gray-600 text-sm">{project?.description}</p>
+          <p className="text-gray-600">{project?.description}</p>
           <ProgressBar progress={progressPercentage} />
           <div className="flex justify-between text-gray-400 text-xs">
             <p>{project?.start_date}</p>

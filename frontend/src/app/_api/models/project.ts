@@ -1,4 +1,4 @@
-import { CreateProject, Project } from "@/types/project";
+import { CreateProject, Project, UpdateProject } from "@/types/project";
 import api from "../axios";
 
 export const projectApi = {
@@ -15,6 +15,19 @@ export const projectApi = {
         "Content-Type": isFormData ? "multipart/form-data" : "application/json",
       },
     });
+  },
+
+  updateProject: async (projectId: string, data: UpdateProject | FormData) => {
+    const isFormData = data instanceof FormData;
+    return await api.patch(`/project/update-project/${projectId}`, data, {
+      headers: {
+        "Content-Type": isFormData ? "multipart/form-data" : "application/json",
+      },
+    });
+  },
+
+  deleteProject: async (projectId: string) => {
+    return await api.delete(`/project/delete-project/${projectId}`);
   },
 
   getProjectById: async (userId: string): Promise<Project> => {

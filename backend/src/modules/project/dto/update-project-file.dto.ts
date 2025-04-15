@@ -1,6 +1,9 @@
 import { IsDateString, IsOptional, IsString } from 'class-validator';
 
-export class UpdateProjectDto {
+export class UpdateProjectFileDto {
+  @IsString()
+  projectId: number;
+
   @IsString()
   @IsOptional()
   title?: string;
