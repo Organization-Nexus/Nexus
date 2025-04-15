@@ -12,7 +12,7 @@ export default async function Dashboard({ params }: ProjectIdProps) {
 
   return (
     <div className="flex min-h-screen justify-center">
-      <div className="w-full max-w-7xl mx-20 my-20">
+      <div className="w-full max-w-7xl max-h-[90vhx] mx-20 my-20">
         {/* Project Header */}
         <div className="bg-white px-10 py-4 rounded-lg shadow-md mb-4 mt-8">
           {/* Project Info */}

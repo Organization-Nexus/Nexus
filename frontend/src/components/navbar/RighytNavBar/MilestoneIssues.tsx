@@ -22,6 +22,8 @@ export default function MilestoneIssues({
     projectId,
     milestoneId
   );
+
+  console.log("🐰 issues", issues);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
