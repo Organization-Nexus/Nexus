@@ -31,6 +31,7 @@ export class ProjectService {
     private readonly communityService: CommunityService,
 
     private readonly milestoneService: MilestoneService,
+    private readonly IssueService: IssueService,
   ) {}
 
   async createProject(
@@ -135,5 +136,9 @@ export class ProjectService {
       (result): result is Project & { milestones: Milestone[] } =>
         result !== null,
     );
+  }
+
+  async getMyIssueList(projectUserId: number) {
+    return await this.IssueService.getMyIssueList(projectUserId);
   }
 }

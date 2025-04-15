@@ -80,6 +80,17 @@ export class MinutesService {
     return this.toMinutesResponseDto(minutes);
   }
 
+  async getMyMinutesList(projectId: number, projectUserId: number) {
+    return await this.minutesRepository.find({
+      where: {
+        project: { id: projectId },
+        author: { id: projectUserId },
+      },
+      relations: ['author.user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async updateMinutes(updateMinutesDto: UpdateMinutesDto, minutesId: number) {
     const minutes = await this.getMinutesDetail(minutesId);
 
