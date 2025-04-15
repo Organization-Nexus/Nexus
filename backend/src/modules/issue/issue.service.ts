@@ -54,6 +54,14 @@ export class IssueService {
     return issue;
   }
 
+  async getMyIssueList(projectUserId: number) {
+    return await this.issueRepository.find({
+      where: { author: { id: projectUserId } },
+      relations: ['author.user.log'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async updateIssue(updateIssueDto: UpdateIssueDto, issueId: number) {
     const issue = await this.getIssueDetail(issueId);
     const updatedIssue = Object.assign(issue, updateIssueDto);

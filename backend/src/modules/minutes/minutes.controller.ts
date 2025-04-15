@@ -63,6 +63,23 @@ export class MinutesController {
     return await this.minutesService.getMinutesList(projectId);
   }
 
+  // GET /api/projects/:projectId/minutes/my
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  async getMyMinutes(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+
+    return await this.minutesService.getMyMinutesList(projectId, projectUserId);
+  }
+
   // GET /api/projects/:projectId/minutes/:minutesId
   @Get(':minutesId')
   @UseGuards(JwtAuthGuard)

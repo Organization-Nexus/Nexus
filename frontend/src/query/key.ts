@@ -40,6 +40,7 @@ export const commentKeys = {
 
 export const minutesKeys = {
   MINUTES_LIST_KEY: ["minutesList"],
+  MY_MINUTES_LIST_KEY: (projectId: number) => ["myMinutesList", projectId],
   MINUTES_DETAIL_KEY: (projectId: number, minutesId: number) => [
     "minutesList",
     projectId,
@@ -49,6 +50,7 @@ export const minutesKeys = {
 
 export const milestoneKeys = {
   MILESTONE_LIST_KEY: ["milestone"],
+  MY_MILESTONE_LIST_KEY: (projectId: number) => ["myMilestone", projectId],
   MILESTONE_DETAIL_KEY: (projectId: number, milestoneId: number) => [
     "milestone",
     projectId,
@@ -62,6 +64,7 @@ export const issueKeys = {
     projectId,
     milestoneId,
   ],
+  MY_ISSUE_LIST_KEY: (projectId: number) => ["myIssues", projectId],
   ISSUE_DETAIL_KEY: (
     projectId: number,
     milestoneId: number,

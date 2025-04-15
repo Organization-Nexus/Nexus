@@ -69,6 +69,21 @@ export class MilestoneService {
     return this.toMilestoneResponseDto(milestone);
   }
 
+  async getMyMilestones(projectId: number, projectUserId: number) {
+    const milestones = await this.milestoneRepository.find({
+      where: {
+        project: { id: projectId },
+        author: { id: projectUserId },
+      },
+      relations: ['author.user.log', 'participants.member.user.log'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return milestones.map((milestone) =>
+      this.toMilestoneResponseDto(milestone),
+    );
+  }
+
   async updateMilestone(
     updateMilestoneDto: UpdateMilestoneDto,
     milestoneId: number,
