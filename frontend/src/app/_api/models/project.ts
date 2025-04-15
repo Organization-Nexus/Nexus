@@ -28,4 +28,10 @@ export const projectApi = {
       .get<any>(`/project/milestones/${projectIds}`)
       .then((res) => res.data);
   },
+
+  getMyIssueList: async (projectId: string) => {
+    return await api
+      .get(`/project/${projectId}/issues/my`)
+      .then((res) => res.data);
+  },
 };

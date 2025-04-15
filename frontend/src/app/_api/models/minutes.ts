@@ -19,6 +19,11 @@ export const minutesApi = {
       .then((res) => res.data);
   },
 
+  getMyMinutesList: async (projectId: number) => {
+    return await api
+      .get(`/projects/${projectId}/minutes/my/`)
+      .then((res) => res.data);
+  },
   UpdateMinutesByMinutesId: async (
     projectId: number,
     minutesId: number,

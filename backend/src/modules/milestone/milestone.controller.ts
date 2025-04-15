@@ -62,6 +62,25 @@ export class MilestoneController {
     return await this.milestoneService.getMilestoneList(projectId);
   }
 
+  // GET /api/projects/:projectId/milestones/my
+  @Get('my')
+  @UseGuards(JwtAuthGuard)
+  async getMyMilestones(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUser = await this.projectUserService.getProjectUser(
+      projectId,
+      userId,
+    );
+
+    return await this.milestoneService.getMyMilestones(
+      projectId,
+      projectUser.id,
+    );
+  }
+
   // GET /api/projects/:projectId/milestones/:milestoneId
   @Get(':milestoneId')
   @UseGuards(JwtAuthGuard)

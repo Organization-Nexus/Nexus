@@ -9,6 +9,13 @@ export const useMilestoneList = (projectId: number) => {
   });
 };
 
+export const useMyMilestoneList = (projectId: number) => {
+  return useQuery({
+    queryKey: milestoneKeys.MY_MILESTONE_LIST_KEY(projectId),
+    queryFn: () => milestoneApi.getMyMilestoneList(projectId),
+  });
+};
+
 export const useMilestoneDetail = (projectId: number, milestoneId: number) => {
   return useQuery({
     queryKey: milestoneKeys.MILESTONE_DETAIL_KEY(projectId, milestoneId),

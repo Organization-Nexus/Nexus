@@ -9,6 +9,7 @@ import { CommunityModule } from '../community/community.module';
 import { FileModule } from '../file/file.module';
 import { UserModule } from '../user/user.module';
 import { MilestoneModule } from '../milestone/milestone.module';
+import { IssueModule } from '../issue/issue.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { MilestoneModule } from '../milestone/milestone.module';
     UserModule,
     FileModule,
     ProjectUserModule,
+    IssueModule,
     MilestoneModule,
   ],
   controllers: [ProjectController],

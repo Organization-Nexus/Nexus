@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { projectApi } from "@/app/_api/models/project";
-import { milestoneKeys, projectKeys } from "../key";
+import { issueKeys, milestoneKeys, projectKeys } from "../key";
 import { Project } from "@/types/project";
 
 // 프로젝트 목록 가져오기
@@ -33,3 +33,13 @@ export const useMilestonesByProjectIds = (
     enabled,
   });
 };
+
+export function useMyIssueList(projectId: string) {
+  return useQuery({
+    queryKey: issueKeys.MY_ISSUE_LIST_KEY(Number(projectId)),
+    queryFn: () => projectApi.getMyIssueList(projectId),
+    select: (data) => {
+      return [...data].sort((a, b) => a.id - b.id);
+    },
+  });
+}

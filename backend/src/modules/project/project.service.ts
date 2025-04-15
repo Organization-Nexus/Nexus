@@ -14,6 +14,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { UserService } from '../user/user.service';
 import { MilestoneService } from '../milestone/milestone.service';
 import { Milestone } from '../milestone/entities/milestone.entity';
+import { IssueService } from '../issue/issue.service';
 
 @Injectable()
 export class ProjectService {
@@ -30,6 +31,7 @@ export class ProjectService {
     private readonly communityService: CommunityService,
 
     private readonly milestoneService: MilestoneService,
+    private readonly IssueService: IssueService,
   ) {}
 
   async createProject(
@@ -114,5 +116,9 @@ export class ProjectService {
       (result): result is Project & { milestones: Milestone[] } =>
         result !== null,
     );
+  }
+
+  async getMyIssueList(projectUserId: number) {
+    return await this.IssueService.getMyIssueList(projectUserId);
   }
 }

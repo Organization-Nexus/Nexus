@@ -6,8 +6,15 @@ import PostedNotice from "./community/PostedNotice";
 import PostedVote from "./community/PostedVote";
 import Milestone from "./projectWorkflow/Milestone";
 import Issue from "./projectWorkflow/Issue";
-import Minutes from "./minutes/Minutes";
-import { FileText, List, Flag, Newspaper, Siren, Vote } from "lucide-react";
+import PostedMinutes from "./minutes/PostedMinutes";
+import {
+  List,
+  Newspaper,
+  Siren,
+  Vote,
+  ClipboardList,
+  Milestone as MilestoneIcon,
+} from "lucide-react";
 
 const tabs = [
   {
@@ -42,7 +49,7 @@ const tabs = [
         key: "milestone",
         label: "마일스톤",
         component: Milestone,
-        icon: <Flag size={18} />,
+        icon: <MilestoneIcon size={18} />,
       },
       {
         key: "issue",
@@ -59,8 +66,8 @@ const tabs = [
       {
         key: "minutes",
         label: "회의록",
-        component: Minutes,
-        icon: <FileText size={18} />,
+        component: PostedMinutes,
+        icon: <ClipboardList size={18} />,
       },
     ],
   },
