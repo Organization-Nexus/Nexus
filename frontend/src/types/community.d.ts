@@ -106,3 +106,9 @@ export interface LikeDataResponse {
   name: string;
   profileImage: string;
 }
+
+export interface DashboardOfCommunity {
+  feed: Feed;
+  notice: Notice;
+  vote: Vote;
+}

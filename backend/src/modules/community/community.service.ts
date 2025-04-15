@@ -147,4 +147,31 @@ export class CommunityService {
     }));
     return votes;
   }
+
+  async getCommunityOfDashboardByProjectId(projectId: number) {
+    const community = await this.communityRepository.findOne({
+      where: { project: { id: projectId } },
+      relations: ['feeds', 'votes.options'],
+    });
+    if (!community) return null;
+    const latestFeed =
+      community.feeds
+        .filter((feed) => !feed.isNotice)
+        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))[0] ||
+      null;
+    const latestNotice =
+      community.feeds
+        .filter((feed) => feed.isNotice)
+        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))[0] ||
+      null;
+    const latestVote =
+      community.votes.sort(
+        (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
+      )[0] || null;
+    return {
+      feed: latestFeed,
+      notice: latestNotice,
+      vote: latestVote,
+    };
+  }
 }

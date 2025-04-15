@@ -30,6 +30,10 @@ export const communityKeys = {
   MY_FEED_LIST_KEY: (projectId: string) => ["myFeedList", projectId],
   MY_NOTICE_LIST_KEY: (projectId: string) => ["myNoticeList", projectId],
   MY_VOTE_LIST_KEY: (projectId: string) => ["myVoteList", projectId],
+  COMMUNITY_DASHBOARD_KEY: (projectId: string) => [
+    "communityDashboard",
+    projectId,
+  ],
 };
 
 export const commentKeys = {
