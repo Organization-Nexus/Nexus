@@ -5,10 +5,10 @@ import { useMilestonesByProjectIds } from "@/query/queries/project";
 import { Milestone } from "@/types/milestone";
 import { Project } from "@/types/project";
 import {
-  Calendar,
   ClipboardList,
   ChevronDown,
   ChevronRight,
+  Milestone as MilestoneIcon,
 } from "lucide-react";
 import MilestoneIssues from "./MilestoneIssues";
 import DetailMilestoneModal from "./DetailMilestoneModal";
@@ -112,7 +112,7 @@ export default function ProjectMilestones({
                           className="flex items-center justify-between cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition"
                         >
                           <div className="flex items-center gap-2 flex-1">
-                            <Calendar className="w-10 h-10 bg-green-300 text-white p-2 rounded-lg" />
+                            <MilestoneIcon className="w-10 h-10 bg-green-300 text-white p-2 rounded-lg" />
                             <div>
                               <span className="font-semibold text-gray-800 text-sm">
                                 {milestone.title}

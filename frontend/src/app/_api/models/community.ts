@@ -144,4 +144,10 @@ export const communityApi = {
       .get<Vote>(`/vote/${voteId}/${projectId}`)
       .then((res) => res.data);
   },
+
+  getCommunityOfDashboardByProjectId: async (projectId: string) => {
+    return await api
+      .get(`/community/dashboard/${projectId}`)
+      .then((res) => res.data);
+  },
 };

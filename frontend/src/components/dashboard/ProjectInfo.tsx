@@ -27,7 +27,7 @@ export default function ProjectInfo({ project }: ProjectProps) {
             </span>
           </p>
           <hr className="my-2" />
-          <p className="text-gray-600">{project?.description}</p>
+          <p className="text-gray-600 text-sm">{project?.description}</p>
           <ProgressBar progress={progressPercentage} />
           <div className="flex justify-between text-gray-400 text-xs">
             <p>{project?.start_date}</p>

@@ -71,3 +71,11 @@ export const useMyVoteList = (projectId: string) => {
     queryFn: () => communityApi.getMyVoteList(projectId),
   });
 };
+
+// 대시보드 커뮤니티
+export const useCommunityDashboard = (projectId: string) => {
+  return useQuery({
+    queryKey: communityKeys.COMMUNITY_DASHBOARD_KEY(projectId),
+    queryFn: () => communityApi.getCommunityOfDashboardByProjectId(projectId),
+  });
+};
