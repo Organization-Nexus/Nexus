@@ -125,19 +125,39 @@ export class ProjectService {
     return { ...project, milestones };
   }
 
-  async getMilestonesByProjectUserIds(
+  async getMilestonesWithIssuesByProjectUserIds(
     projectUserIds: number[],
     projectIds: number[],
-  ): Promise<(Project & { milestones: Milestone[] })[]> {
+  ): Promise<(Project & { milestones: (Milestone & {})[] })[]> {
     if (!projectUserIds.length || !projectIds.length) return [];
     const projectPromises = projectIds.map((projectId) =>
       this.getProjectWithMilestones(projectId, projectUserIds),
     );
+    const issues = await this.getMyIssuesByProjectUserIds(projectUserIds);
+    const cleanedIssues = issues.map(({ milestone, ...rest }) => ({
+      ...rest,
+      milestoneId: milestone?.id,
+    }));
     const results = await Promise.all(projectPromises);
-    return results.filter(
-      (result): result is Project & { milestones: Milestone[] } =>
-        result !== null,
-    );
+    const enrichedProjects = results
+      .filter(
+        (result): result is Project & { milestones: Milestone[] } =>
+          result !== null,
+      )
+      .map((project) => ({
+        ...project,
+        milestones: project.milestones.map((milestone) => ({
+          ...milestone,
+          issues: cleanedIssues.filter(
+            (issue) => issue.milestoneId === milestone.id,
+          ),
+        })),
+      }));
+    return enrichedProjects;
+  }
+
+  async getMyIssuesByProjectUserIds(projectUserIds: number[]) {
+    return await this.IssueService.getMyIssuesByProjectUserIds(projectUserIds);
   }
 
   async getMyIssueList(projectUserId: number) {

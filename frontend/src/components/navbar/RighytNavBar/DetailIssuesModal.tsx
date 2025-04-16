@@ -1,47 +1,24 @@
 "use client";
 
-import { useIssueDetail } from "@/query/queries/issue";
 import { format } from "date-fns";
 import { FileText, GitBranch, X } from "lucide-react";
 import Image from "next/image";
 import { Modal } from "@/components/modal/config/ModalMaps";
+import { Issue } from "@/types/issue";
 
 interface DetailIssuesModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: number;
   milestoneId: number;
-  IssueId: number;
+  issue: Issue;
 }
 
 export default function DetailIssuesModal({
   isOpen,
   onClose,
-  projectId,
-  milestoneId,
-  IssueId,
+  issue,
 }: DetailIssuesModalProps) {
-  const {
-    data: issue,
-    isLoading,
-    isError,
-  } = useIssueDetail(projectId, milestoneId, IssueId);
-
-  console.log("issue", issue);
-
-  if (isLoading)
-    return (
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div>로딩 중...</div>
-      </Modal>
-    );
-  if (isError || !issue)
-    return (
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <div>이슈를 불러오는데 실패했습니다.</div>
-      </Modal>
-    );
-
   const labelIcon: { [key: string]: string } = {
     feature: "✨",
     refactor: "🛠️",

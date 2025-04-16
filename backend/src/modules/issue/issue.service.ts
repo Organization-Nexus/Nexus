@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity';
 
 import { ProjectUser } from '../project-user/entites/project-user.entity';
@@ -63,6 +63,20 @@ export class IssueService {
       where: { author: { id: projectUserId } },
       relations: ['author.user.log'],
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getMyIssuesByProjectUserIds(projectUserIds: number[]) {
+    const today = new Date();
+    const todayDateOnly = new Date(today.toISOString().split('T')[0]);
+    return await this.issueRepository.find({
+      where: {
+        author: { id: In(projectUserIds) },
+        start_date: LessThan(todayDateOnly),
+        end_date: MoreThan(todayDateOnly),
+      },
+      relations: ['author', 'milestone'],
+      order: { end_date: 'ASC' },
     });
   }
 

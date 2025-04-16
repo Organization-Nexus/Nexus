@@ -178,7 +178,7 @@ export class ProjectController {
     const validProjectUserIds = projectUserIds.filter(
       (id): id is number => id !== null,
     );
-    return this.projectService.getMilestonesByProjectUserIds(
+    return this.projectService.getMilestonesWithIssuesByProjectUserIds(
       validProjectUserIds,
       projectIds,
     );
@@ -192,6 +192,7 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
+    console.log(userId);
     const projectUserId =
       await this.projectUserService.validateProjectMemberByUserId(
         projectId,
