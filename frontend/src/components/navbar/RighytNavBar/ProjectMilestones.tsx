@@ -61,6 +61,9 @@ export default function ProjectMilestones({
     setIsDetailOpen(false);
   };
 
+  const truncateTitle = (title: string, maxLength: number = 15) =>
+    title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
+
   if (isLoading) {
     return (
       <div className="text-gray-600 flex items-center gap-2 animate-pulse">
@@ -115,7 +118,7 @@ export default function ProjectMilestones({
                             <MilestoneIcon className="w-10 h-10 bg-green-300 text-white p-2 rounded-lg" />
                             <div>
                               <span className="font-semibold text-gray-800 text-sm">
-                                {milestone.title}
+                                {truncateTitle(milestone.title)}
                               </span>
                               <p className="text-xs text-gray-600 truncate max-w-md">
                                 {milestone.goal.length > 20
