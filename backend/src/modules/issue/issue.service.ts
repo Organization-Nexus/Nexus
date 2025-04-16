@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, MoreThan, Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity';
 
 import { ProjectUser } from '../project-user/entites/project-user.entity';
@@ -72,10 +72,10 @@ export class IssueService {
     return await this.issueRepository.find({
       where: {
         author: { id: In(projectUserIds) },
-        start_date: LessThan(todayDateOnly),
-        end_date: MoreThan(todayDateOnly),
+        start_date: LessThanOrEqual(todayDateOnly),
+        end_date: MoreThanOrEqual(todayDateOnly),
       },
-      relations: ['author', 'milestone'],
+      relations: ['author.user.log', 'milestone'],
       order: { end_date: 'ASC' },
     });
   }

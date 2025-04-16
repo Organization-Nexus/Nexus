@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, MoreThan, Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Milestone } from './entities/milestone.entity';
 import { MilestoneParticipant } from './entities/milestone-participant.entity';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
@@ -195,8 +195,8 @@ export class MilestoneService {
       where: {
         project: { id: projectId },
         participants: { member: { id: In(projectUserIds) } },
-        start_date: LessThan(todayDateOnly),
-        end_date: MoreThan(todayDateOnly),
+        start_date: LessThanOrEqual(todayDateOnly),
+        end_date: MoreThanOrEqual(todayDateOnly),
       },
       relations: ['participants', 'participants.member'],
       order: { end_date: 'ASC' },
