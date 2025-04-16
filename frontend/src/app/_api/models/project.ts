@@ -36,7 +36,7 @@ export const projectApi = {
       .then((res) => res.data);
   },
 
-  getMilestonesByProjectIds: async (projectIds: string): Promise<any> => {
+  getMilestonesByProjectIds: async (projectIds: string) => {
     return await api
       .get<any>(`/project/milestones/${projectIds}`)
       .then((res) => res.data);

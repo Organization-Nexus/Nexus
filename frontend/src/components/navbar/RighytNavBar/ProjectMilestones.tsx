@@ -20,7 +20,6 @@ export default function ProjectMilestones({
 }) {
   const projectIds = projects.map((proj) => proj.id).join(",");
   const { data: milestones, isLoading } = useMilestonesByProjectIds(projectIds);
-  console.log("👋마일스톤", milestones);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>(
     Object.fromEntries(projects.map((p) => [p.id, true]))
   );
@@ -74,9 +73,9 @@ export default function ProjectMilestones({
     <div>
       <ul className="space-y-6">
         {projects.map((proj) => {
-          const projectMilestones: Milestone[] =
+          const projectMilestones: any[] =
             milestones?.find(
-              (m: { id: number; milestones: Milestone[] }) => m.id === proj.id
+              (m: { id: number; milestones: any[] }) => m.id === proj.id
             )?.milestones || [];
           if (projectMilestones.length === 0) return null;
           const isOpen = openStates[proj.id];
@@ -132,6 +131,7 @@ export default function ProjectMilestones({
                         <MilestoneIssues
                           projectId={proj.id}
                           milestoneId={milestone.id}
+                          issues={milestone.issues}
                           isIssuesOpen={isIssuesOpen}
                           toggleIssues={() =>
                             toggleIssues(proj.id, milestone.id)
