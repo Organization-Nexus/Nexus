@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, MoreThanOrEqual, Repository } from 'typeorm';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
 import { Milestone } from './entities/milestone.entity';
 import { MilestoneParticipant } from './entities/milestone-participant.entity';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
@@ -187,15 +187,16 @@ export class MilestoneService {
 
   async getMilestonesByProjectId(
     projectId: number,
-    projectUserId: number,
+    projectUserIds: number[],
   ): Promise<Milestone[]> {
     const today = new Date();
-    console.log(projectUserId);
+    const todayDateOnly = new Date(today.toISOString().split('T')[0]);
     return this.milestoneRepository.find({
       where: {
         project: { id: projectId },
-        participants: { member: { id: In([projectUserId]) } },
-        end_date: MoreThanOrEqual(new Date(today.toISOString().split('T')[0])),
+        participants: { member: { id: In(projectUserIds) } },
+        start_date: LessThan(todayDateOnly),
+        end_date: MoreThan(todayDateOnly),
       },
       relations: ['participants', 'participants.member'],
       order: { end_date: 'ASC' },

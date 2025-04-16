@@ -15,6 +15,7 @@ import { MilestoneService } from '../milestone/milestone.service';
 import { Milestone } from '../milestone/entities/milestone.entity';
 import { UpdateProjectFileDto } from './dto/update-project-file.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { IssueService } from '../issue/issue.service';
 
 @Injectable()
 export class ProjectService {
@@ -111,7 +112,7 @@ export class ProjectService {
 
   async getProjectWithMilestones(
     projectId: number,
-    projectUserId: number,
+    projectUserIds: number[],
   ): Promise<(Project & { milestones: Milestone[] }) | null> {
     const project = await this.projectRepository.findOne({
       where: { id: projectId },
@@ -119,23 +120,44 @@ export class ProjectService {
     if (!project) return null;
     const milestones = await this.milestoneService.getMilestonesByProjectId(
       projectId,
-      projectUserId,
+      projectUserIds,
     );
     return { ...project, milestones };
   }
 
-  async getMilestonesByProjectUserIds(
-    projectUserId: number,
+  async getMilestonesWithIssuesByProjectUserIds(
+    projectUserIds: number[],
     projectIds: number[],
-  ): Promise<(Project & { milestones: Milestone[] })[]> {
+  ): Promise<(Project & { milestones: (Milestone & {})[] })[]> {
+    if (!projectUserIds.length || !projectIds.length) return [];
     const projectPromises = projectIds.map((projectId) =>
-      this.getProjectWithMilestones(projectId, projectUserId),
+      this.getProjectWithMilestones(projectId, projectUserIds),
     );
+    const issues = await this.getMyIssuesByProjectUserIds(projectUserIds);
+    const cleanedIssues = issues.map(({ milestone, ...rest }) => ({
+      ...rest,
+      milestoneId: milestone?.id,
+    }));
     const results = await Promise.all(projectPromises);
-    return results.filter(
-      (result): result is Project & { milestones: Milestone[] } =>
-        result !== null,
-    );
+    const enrichedProjects = results
+      .filter(
+        (result): result is Project & { milestones: Milestone[] } =>
+          result !== null,
+      )
+      .map((project) => ({
+        ...project,
+        milestones: project.milestones.map((milestone) => ({
+          ...milestone,
+          issues: cleanedIssues.filter(
+            (issue) => issue.milestoneId === milestone.id,
+          ),
+        })),
+      }));
+    return enrichedProjects;
+  }
+
+  async getMyIssuesByProjectUserIds(projectUserIds: number[]) {
+    return await this.IssueService.getMyIssuesByProjectUserIds(projectUserIds);
   }
 
   async getMyIssueList(projectUserId: number) {

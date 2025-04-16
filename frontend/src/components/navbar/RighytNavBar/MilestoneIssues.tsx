@@ -1,30 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useIssueList } from "@/query/queries/issue";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import DetailIssuesModal from "./DetailIssuesModal";
+import { Issue } from "@/types/issue";
 
 interface MilestoneIssuesProps {
-  projectId: number;
-  milestoneId: number;
   isIssuesOpen: boolean;
   toggleIssues: () => void;
+  projectId: number;
+  milestoneId: number;
+  issues: Issue[];
 }
 
 export default function MilestoneIssues({
-  projectId,
-  milestoneId,
   isIssuesOpen,
   toggleIssues,
+  projectId,
+  milestoneId,
+  issues,
 }: MilestoneIssuesProps) {
-  const { data: issues, isLoading: isIssuesLoading } = useIssueList(
-    projectId,
-    milestoneId
-  );
-
-  console.log("🐰 issues", issues);
-  const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const hasIssues = issues && issues.length > 0;
@@ -32,13 +28,13 @@ export default function MilestoneIssues({
   const truncateTitle = (title: string, maxLength: number = 12) =>
     title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
 
-  const openModal = (issueId: number) => {
-    setSelectedIssueId(issueId);
+  const openModal = (issue: Issue) => {
+    setSelectedIssue(issue);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setSelectedIssueId(null);
+    setSelectedIssue(null);
     setIsModalOpen(false);
   };
 
@@ -60,14 +56,12 @@ export default function MilestoneIssues({
       )}
       {isIssuesOpen && (
         <div className="ml-2 bg-gray-100 p-2 rounded-xl my-1">
-          {isIssuesLoading ? (
-            <div className="text-gray-500 text-sm">이슈 로딩 중...</div>
-          ) : hasIssues ? (
+          {hasIssues ? (
             <ul className="space-y-1">
               {issues.map((issue) => (
                 <li
                   key={issue.id}
-                  onClick={() => openModal(issue.id)}
+                  onClick={() => openModal(issue)}
                   className="flex items-center gap-2 text-sm text-gray-600 bg-white p-2 rounded-md hover:bg-green-50 transition-colors cursor-pointer"
                 >
                   <span className="font-semibold text-gray-800 flex-1 min-w-0">
@@ -87,13 +81,13 @@ export default function MilestoneIssues({
           ) : null}
         </div>
       )}
-      {selectedIssueId !== null && (
+      {selectedIssue !== null && (
         <DetailIssuesModal
           isOpen={isModalOpen}
           onClose={closeModal}
           projectId={projectId}
           milestoneId={milestoneId}
-          IssueId={selectedIssueId}
+          issue={selectedIssue}
         />
       )}
     </>
