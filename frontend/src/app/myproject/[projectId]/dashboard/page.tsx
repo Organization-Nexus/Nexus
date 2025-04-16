@@ -12,9 +12,9 @@ export default async function Dashboard({ params }: ProjectIdProps) {
 
   return (
     <div className="flex min-h-screen justify-center">
-      <div className="w-full max-w-7xl max-h-[90vhx] mx-20 my-20">
+      <div className="w-full max-w-7xl mx-20 my-auto">
         {/* Project Header */}
-        <div className="bg-white px-10 py-4 rounded-lg shadow-md mb-4 mt-8">
+        <div className="bg-white px-10 py-4 rounded-lg shadow-md mb-4 mt-6">
           {/* Project Info */}
           <ProjectInfo project={projects} />
           <hr className="my-2" />
@@ -25,7 +25,7 @@ export default async function Dashboard({ params }: ProjectIdProps) {
         </div>
 
         {/* Dashboard Content */}
-        <div className="grid grid-cols-5 grid-rows-2 gap-4 ">
+        <div className="grid grid-cols-5 grid-rows-2 gap-4 h-[50vh]">
           {/* 왼쪽 Column */}
           <div className="row-span-2 col-span-2">
             <CommunityCardSection projectId={projectId} title="커뮤니티" />
