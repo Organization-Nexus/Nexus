@@ -15,7 +15,7 @@ import { MilestoneService } from '../milestone/milestone.service';
 import { Milestone } from '../milestone/entities/milestone.entity';
 import { UpdateProjectFileDto } from './dto/update-project-file.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-
+import { IssueService } from '../issue/issue.service';
 @Injectable()
 export class ProjectService {
   constructor(

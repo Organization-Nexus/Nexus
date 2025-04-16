@@ -61,7 +61,7 @@ export class IssueService {
   async getMyIssueList(projectUserId: number) {
     return await this.issueRepository.find({
       where: { author: { id: projectUserId } },
-      relations: ['author.user.log'],
+      relations: ['author.user.log', 'milestone'],
       order: { createdAt: 'DESC' },
     });
   }

@@ -17,7 +17,7 @@ export default function DetailMilestoneModal({
   if (!milestone) return null;
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col p-4">
+      <div className="flex flex-col p-4  h-[68vh]">
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-center">
@@ -30,7 +30,7 @@ export default function DetailMilestoneModal({
               onClick={onClose}
               className="hover:bg-gray-100 p-1 rounded-md transition"
             >
-              <X size={20} className="text-gray-500" />
+              <X />
             </button>
           </div>
 
