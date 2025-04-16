@@ -25,7 +25,7 @@ export default function MilestoneIssues({
 
   const hasIssues = issues && issues.length > 0;
 
-  const truncateTitle = (title: string, maxLength: number = 12) =>
+  const truncateTitle = (title: string, maxLength: number = 20) =>
     title.length > maxLength ? `${title.slice(0, maxLength)}...` : title;
 
   const openModal = (issue: Issue) => {

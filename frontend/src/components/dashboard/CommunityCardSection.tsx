@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useCommunityDashboard } from "@/query/queries/community";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Newspaper, Siren, Vote } from "lucide-react";
 import { formatDate } from "@/utils/dateFormatter";
 import { useRouter } from "next/navigation";
+import FeedDetailModal from "../modal/myPostedList/FeedDetailModal";
+import VoteDetailModal from "../modal/myPostedList/VoteDetailModal";
+import NoticeDetailModal from "../modal/myPostedList/NoticeDetailModal";
 
 type CardSectionProps = {
   projectId: string;
@@ -21,6 +25,16 @@ export default function CommunityCardSection({
     router.push(path);
   };
 
+  const [isFeedModalOpen, setIsFeedModalOpen] = useState(false);
+  const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+  const openNoticeModal = () => setIsNoticeModalOpen(true);
+  const openFeedModal = () => setIsFeedModalOpen(true);
+  const openVoteModal = () => setIsVoteModalOpen(true);
+  const closeVoteModal = () => setIsVoteModalOpen(false);
+  const closeNoticeModal = () => setIsNoticeModalOpen(false);
+  const closeFeedModal = () => setIsFeedModalOpen(false);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md h-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -34,8 +48,14 @@ export default function CommunityCardSection({
       <div className="flex-1 flex flex-col gap-2 overflow-y-auto">
         {/* 공지사항 */}
         {notice && (
-          <section className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1">
-            <h3 className="text-sm font-bold text-indigo-500">📢 공지사항</h3>
+          <section
+            className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1 cursor-pointer hover:bg-gray-100 transition"
+            onClick={openNoticeModal}
+          >
+            <h3 className="flex items-center text-sm font-bold text-indigo-500">
+              <Siren className="mr-1 w-4 h-4" />
+              공지사항
+            </h3>
             <p className="text-base font-semibold text-gray-800">
               {notice.title}
             </p>
@@ -50,8 +70,13 @@ export default function CommunityCardSection({
 
         {/* 피드 */}
         {feed && (
-          <section className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1">
-            <h3 className="text-sm font-bold text-green-600">📝 피드</h3>
+          <section
+            className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1 cursor-pointer hover:bg-gray-100 transition"
+            onClick={openFeedModal}
+          >
+            <h3 className="flex items-center text-sm font-bold text-green-600">
+              <Newspaper className="mr-1 w-4 h-4" /> 피드
+            </h3>
             <p className="text-base font-semibold text-gray-800">
               {feed.title}
             </p>
@@ -66,8 +91,13 @@ export default function CommunityCardSection({
 
         {/* 투표 */}
         {vote && (
-          <section className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1">
-            <h3 className="text-sm font-bold text-purple-600">🗳️ 투표</h3>
+          <section
+            className="max-h-[33%] overflow-y-auto rounded border bg-gray-50 p-4 flex flex-col gap-1 cursor-pointer hover:bg-gray-100 transition"
+            onClick={openVoteModal}
+          >
+            <h3 className="flex items-center text-sm font-bold text-purple-600">
+              <Vote className="mr-1 w-4 h-4" /> 투표
+            </h3>
             <p className="text-base font-semibold text-gray-800">
               {vote.title}
             </p>
@@ -85,6 +115,33 @@ export default function CommunityCardSection({
           </section>
         )}
       </div>
+
+      {feed && (
+        <FeedDetailModal
+          isOpen={isFeedModalOpen}
+          onClose={closeFeedModal}
+          projectId={projectId}
+          feedId={feed.id}
+        />
+      )}
+
+      {vote && (
+        <VoteDetailModal
+          isOpen={isVoteModalOpen}
+          onClose={closeVoteModal}
+          projectId={projectId}
+          voteId={vote.id}
+        />
+      )}
+
+      {notice && (
+        <NoticeDetailModal
+          isOpen={isNoticeModalOpen}
+          onClose={closeNoticeModal}
+          projectId={projectId}
+          noticeId={notice.id}
+        />
+      )}
     </div>
   );
 }
