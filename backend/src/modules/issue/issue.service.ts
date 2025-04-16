@@ -8,14 +8,18 @@ import { CreateIssueDto } from './dto/create-issue.dto';
 import {
   NotFoundIssueException,
   UnauthorizedIssueException,
+  UnauthorizedIssueWriterException,
 } from './exception/issue.exception';
 import { UpdateIssueDto } from './dto/update-issue.dto';
+import { MilestoneParticipant } from '../milestone/entities/milestone-participant.entity';
 
 @Injectable()
 export class IssueService {
   constructor(
     @InjectRepository(Issue)
     private issueRepository: Repository<Issue>,
+    @InjectRepository(MilestoneParticipant)
+    private participantRepository: Repository<MilestoneParticipant>,
   ) {}
 
   async createIssue(
@@ -88,6 +92,22 @@ export class IssueService {
 
     if (!isPM && issue.author.id !== projectUserId) {
       throw new UnauthorizedIssueException(projectUserId);
+    }
+  }
+
+  async validateMilestoneParticipant(
+    milestoneId: number,
+    projectUserId: number,
+  ) {
+    const participant = await this.participantRepository.findOne({
+      where: {
+        milestone: { id: milestoneId },
+        member: { id: projectUserId },
+      },
+    });
+
+    if (!participant) {
+      throw new UnauthorizedIssueWriterException(projectUserId);
     }
   }
 

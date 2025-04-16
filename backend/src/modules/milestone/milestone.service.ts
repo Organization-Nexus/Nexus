@@ -51,7 +51,7 @@ export class MilestoneService {
   async getMilestoneList(projectId: number) {
     return await this.milestoneRepository.find({
       where: { project: { id: projectId } },
-      relations: ['author.user.log'],
+      relations: ['author.user.log', 'participants.member.user.log'],
       order: { createdAt: 'DESC' },
     });
   }
