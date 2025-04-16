@@ -20,6 +20,7 @@ export default function ProjectMilestones({
 }) {
   const projectIds = projects.map((proj) => proj.id).join(",");
   const { data: milestones, isLoading } = useMilestonesByProjectIds(projectIds);
+  console.log("👋마일스톤", milestones);
   const [openStates, setOpenStates] = useState<Record<number, boolean>>(
     Object.fromEntries(projects.map((p) => [p.id, true]))
   );
