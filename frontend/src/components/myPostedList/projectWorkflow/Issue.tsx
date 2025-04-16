@@ -13,8 +13,12 @@ export default function Issue({ projectId }: PostedIssueProps) {
   const { data: issues, isLoading, error } = useMyIssueList(projectId);
   const [selectedIssue, setSelectedIssue] = useState<IssueType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const closeModal = () => {
+    setSelectedIssue(null);
+    setIsModalOpen(false);
+  };
 
-  const handleMilestoneClick = (issue: IssueType) => {
+  const handleIssueClick = (issue: IssueType) => {
     setSelectedIssue(issue);
     setIsModalOpen(true);
   };
@@ -42,7 +46,7 @@ export default function Issue({ projectId }: PostedIssueProps) {
             <div key={issue.id}>
               <div
                 className="bg-white p-4 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-all duration-200"
-                onClick={() => handleMilestoneClick(issue)}
+                onClick={() => handleIssueClick(issue)}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <List size={18} className="text-indigo-600" />
@@ -70,14 +74,15 @@ export default function Issue({ projectId }: PostedIssueProps) {
           ))}
         </div>
       </div>
-      {/* {selectedIssue !== null && (
-        <IssueItem
-                 key={selectedIssue.id}
-                 issue={selectedIssue}
-                 isAuthor={true}
-                 onSelect={() => onSelect(selectedIssue.id)} // IssueItem 클릭 시 해당 이슈 ID 전달
-               />
-      )} */}
+      {selectedIssue !== null && (
+        <DetailIssuesModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          projectId={Number(projectId)}
+          milestoneId={selectedIssue.milestone.id}
+          IssueId={selectedIssue.id}
+        />
+      )}
     </>
   );
 }

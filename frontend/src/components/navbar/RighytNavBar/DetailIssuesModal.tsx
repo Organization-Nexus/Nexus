@@ -29,7 +29,7 @@ export default function DetailIssuesModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full h-[68vh]">
         <div className="p-2">
           <div className="flex items-center w-full justify-between">
             <div className="flex justify-start items-center w-full">
@@ -50,7 +50,7 @@ export default function DetailIssuesModal({
               onClick={onClose}
               className="hover:bg-gray-100 p-1 rounded-md transition"
             >
-              <X size={20} className="text-gray-500" />
+              <X />
             </button>
           </div>
 
