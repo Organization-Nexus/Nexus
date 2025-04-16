@@ -15,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import DetailMilestoneModal from "../navbar/RighytNavBar/DetailMilestoneModal";
 import DetailIssuesModal from "../navbar/RighytNavBar/DetailIssuesModal";
-// import Milestone from "../myPostedList/projectWorkflow/Milestone";
 import { format } from "date-fns";
 
 type CardSectionProps = {
@@ -164,7 +163,7 @@ export default function TodoCardSection({
           onClose={() => setIsIssueModalOpen(false)}
           projectId={Number(projectId)}
           milestoneId={selectedIssue.milestone.id}
-          IssueId={selectedIssue.id}
+          issue={selectedIssue}
         />
       )}
     </div>
