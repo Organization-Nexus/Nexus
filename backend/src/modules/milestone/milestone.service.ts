@@ -187,17 +187,17 @@ export class MilestoneService {
 
   async getMilestonesByProjectId(
     projectId: number,
-    projectUserId: number,
+    projectUserIds: number[],
   ): Promise<Milestone[]> {
     const today = new Date();
-    console.log(projectUserId);
     return this.milestoneRepository.find({
       where: {
         project: { id: projectId },
-        participants: { member: { id: In([projectUserId]) } },
+        author: { id: In(projectUserIds) },
+        participants: { member: { id: In(projectUserIds) } },
         end_date: MoreThanOrEqual(new Date(today.toISOString().split('T')[0])),
       },
-      relations: ['participants', 'participants.member'],
+      relations: ['author', 'participants', 'participants.member'],
       order: { end_date: 'ASC' },
     });
   }

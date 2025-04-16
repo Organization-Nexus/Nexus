@@ -163,13 +163,23 @@ export class ProjectController {
       .split(',')
       .map((id) => Number(id.trim()))
       .filter((id) => !isNaN(id));
-    const projectUserId =
-      await this.projectUserService.validateProjectMemberByUserId(
-        projectIds[0],
-        userId,
-      );
+    const projectUserIds = await Promise.all(
+      projectIds.map(async (projectId) => {
+        try {
+          return await this.projectUserService.validateProjectMemberByUserId(
+            projectId,
+            userId,
+          );
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const validProjectUserIds = projectUserIds.filter(
+      (id): id is number => id !== null,
+    );
     return this.projectService.getMilestonesByProjectUserIds(
-      projectUserId,
+      validProjectUserIds,
       projectIds,
     );
   }
@@ -182,7 +192,6 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    console.log(userId);
     const projectUserId =
       await this.projectUserService.validateProjectMemberByUserId(
         projectId,
