@@ -45,15 +45,12 @@ export default function MilestoneItem({
   const [updateMilestoneData, setUpdateMilestoneData] =
     useState<Milestone | null>(null);
   const [isCreateIssueModalOpen, setIsCreateIssueModalOpen] = useState(false);
-  console.log(milestone);
   const projectId = project.id;
   const { data: currentUser } = useProjectUserInfo(String(projectId));
   const { data: issues } = useIssueList(projectId, milestone.id);
 
   const currentUserId = currentUser?.id;
   const isMilestoneAuthor = currentUserId === milestone.author.id;
-
-  console.log("currentUserId", currentUserId);
   const handleUpdateClick = async (milestoneId: number) => {
     try {
       const detailData = await milestoneApi.getMilestoneByMilestoneId(

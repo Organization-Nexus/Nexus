@@ -12,7 +12,6 @@ import {
   Milestone,
   Lock,
   Presentation,
-  UserRoundCog,
 } from "lucide-react";
 import { PiUsersThreeBold } from "react-icons/pi";
 import { useProjectUserInfo } from "@/query/queries/project-user";
@@ -127,18 +126,6 @@ export default function LeftNavBar({ projectId }: LeftNavBarProps) {
                   }
                 >
                   - <Presentation className="mx-2 w-4 h-4" /> 프로젝트 관리
-                </button>
-                <button
-                  className={`text-left text-sm px-2 py-1 rounded hover:bg-gray-100 w-full flex items-center ${
-                    isActive(`/myproject/${projectId}/admin/members`)
-                      ? "bg-gray-100 font-semibold"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    navigateTo(`/myproject/${projectId}/admin/members`)
-                  }
-                >
-                  - <UserRoundCog className="mx-2 w-4 h-4" /> 멤버 관리
                 </button>
               </div>
             </>

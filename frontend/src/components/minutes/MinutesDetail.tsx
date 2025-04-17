@@ -101,7 +101,7 @@ export function MinutesDetail({
             <Text className="mx-1 w-4 h-4" />
             <h3 className="font-bold">주제</h3>
           </div>
-          <div className="pl-6">{minutes.topic}</div>
+          <div className="pl-6 whitespace-pre-wrap">{minutes.topic}</div>
         </div>
 
         <hr className="border-gray-200" />

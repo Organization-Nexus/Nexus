@@ -320,7 +320,7 @@ export default function CommunityTemplate({
                 {item.content}
               </div>
 
-              {item.content.length > 500 && (
+              {item.content.length > 200 && (
                 <button
                   className="text-blue-400 hover:underline text-sm my-2"
                   onClick={() => handleToggleExpand(item.id)}
@@ -360,7 +360,9 @@ export default function CommunityTemplate({
                   projectId={projectId}
                 />
               )}
-              <FilePreview files={item.community_files || []} />
+              <div className="max-w-3xl">
+                <FilePreview files={item.community_files || []} />
+              </div>
               <div className="flex items-center justify-between mt-8">
                 <div className="flex items-center space-x-4">
                   <div className="flex space-x-1">
