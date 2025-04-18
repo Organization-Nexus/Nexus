@@ -24,10 +24,7 @@ import { FileService } from '../file/file.service';
 import { Category } from 'src/types/enum/file-category.enum';
 import { VoteRequestDto } from './dto/vote-request.dto';
 import { VoteResponseService } from './services/vote-response.service';
-import {
-  AnonymousVoteException,
-  DeadlineExpiredException,
-} from './exception/vote.exception';
+import { DeadlineExpiredException } from './exception/vote.exception';
 import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -153,9 +150,6 @@ export class VoteController {
         userId,
       );
     const vote = await this.voteService.getVoteByVoteId(voteId);
-    if (vote.isAnonymous) {
-      throw new AnonymousVoteException();
-    }
     return await this.voteOptionService.getVoteOptionsByVoteId(
       voteId,
       projectUserId,
