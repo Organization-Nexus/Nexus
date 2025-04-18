@@ -137,7 +137,6 @@ export function CreateMilestoneForm({
       };
 
       createMilestoneMutation.mutate(milestoneData);
-      console.log("마일스톤 생성 성공");
       onClose();
       alert("마일스톤이 작성되었습니다.");
     } catch (error: any) {

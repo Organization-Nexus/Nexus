@@ -46,7 +46,6 @@ export class ChatGateway
     try {
       // 토큰에서 사용자 정보 추출
       const token = client.handshake.auth.token;
-      console.log('클라이언트 연결됨:', client.id, '토큰:', token);
       if (!token) {
         this.logger.warn(`토큰 없이 소켓 연결 시도: ${client.id}`);
         client.disconnect();

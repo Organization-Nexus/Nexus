@@ -192,13 +192,11 @@ export class ProjectController {
     @Req() req: UserPayload,
   ) {
     const userId = req.user.id;
-    console.log(userId);
     const projectUserId =
       await this.projectUserService.validateProjectMemberByUserId(
         projectId,
         userId,
       );
-    console.log(projectUserId);
     return await this.projectService.getMyIssueList(projectUserId);
   }
 }

@@ -98,8 +98,6 @@ export class IssueService {
     });
     // PM은 수정,삭제 가능
     const isPM = issue.milestone.author.is_sub_admin;
-
-    console.log(issue);
     if (!issue) {
       throw new NotFoundIssueException(issueId);
     }

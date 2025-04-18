@@ -41,8 +41,6 @@ export class MilestoneService {
         member: { id: memberId },
       });
     });
-    console.log(participants);
-
     await this.participantRepository.save(participants);
 
     return this.getMilestoneDetail(savedMilestone.id);

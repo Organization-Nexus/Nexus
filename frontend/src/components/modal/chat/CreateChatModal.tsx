@@ -48,7 +48,6 @@ export function CreateChatModal({ onClose, onSuccess }: CreateChatModalProps) {
       const response = await chatApi.getProjectMembers(
         Number(selectedProjectId)
       );
-      console.log("멤버 목록", response);
       return response;
     },
     enabled: !!selectedProjectId,
@@ -243,7 +242,6 @@ export function CreateChatModal({ onClose, onSuccess }: CreateChatModalProps) {
                     <div className="max-h-60 overflow-y-auto border rounded-md">
                       {projectMembers?.map((member) => {
                         // 콘솔에 멤버 객체 출력하여 구조 확인
-                        console.log("멤버 객체:", member);
                         return (
                           <div
                             key={member.id}

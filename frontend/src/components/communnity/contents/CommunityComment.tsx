@@ -71,8 +71,6 @@ export default function CommunityComment({
     commentId: number,
     commentType: "feed" | "notice" | "vote"
   ) => {
-    console.log("commentId", commentId);
-    console.log("commentType", commentType);
     deleteCommentMutation.mutate({
       commentId,
       commentType,

@@ -4,8 +4,6 @@ import Cookies from "js-cookie";
 // 환경 변수에서 소켓 서버 URL 가져오기
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_SOCKET_URL || "http://13.209.41.52:8000";
-console.log("SOCKET_URL 환경변수:", process.env.NEXT_PUBLIC_SOCKET_URL);
-console.log("최종 사용 URL:", SOCKET_URL);
 class SocketService {
   private socket: Socket | null = null;
   private messageListeners: Map<string, Function[]> = new Map();
@@ -13,12 +11,8 @@ class SocketService {
   // 소켓 연결
   connect() {
     if (!this.socket) {
-      console.log("소켓 서버에 연결 중...");
-
-      // console.log(Cookies.get("access_token"));
       const token = Cookies.get("access_token");
       if (!token) {
-        console.error("인증 토큰이 없습니다. 로그인이 필요합니다.");
         return null;
       }
       this.socket = io(SOCKET_URL, {
@@ -28,22 +22,14 @@ class SocketService {
         },
       });
 
-      this.socket.on("connect", () => {
-        console.log("소켓 연결됨");
-      });
+      this.socket.on("connect", () => {});
 
-      this.socket.on("disconnect", (reason) => {
-        console.log("소켓 연결 해제됨:", reason);
-      });
+      this.socket.on("disconnect", (reason) => {});
 
-      this.socket.on("connect_error", (error) => {
-        console.error("연결 오류:", error);
-      });
+      this.socket.on("connect_error", (error) => {});
 
       // 서버에서 보내는 연결 성공 이벤트
-      this.socket.on("connection_established", (data) => {
-        console.log("서버 연결 확인:", data);
-      });
+      this.socket.on("connection_established", (data) => {});
 
       this.socket.on("newMessage", (message) => {
         const listeners = this.messageListeners.get(message.chatRoomId) || [];
@@ -51,9 +37,7 @@ class SocketService {
       });
 
       // 테스트 메시지 수신
-      this.socket.on("testMessage", (data) => {
-        console.log("테스트 메시지 수신:", data);
-      });
+      this.socket.on("testMessage", (data) => {});
     }
 
     return this.socket;
@@ -62,14 +46,12 @@ class SocketService {
   // 테스트 메시지 전송
   sendTestMessage(message: string) {
     if (!this.socket) this.connect();
-    console.log("테스트 메시지 전송:", message);
     this.socket?.emit("testMessage", { content: message });
   }
 
   // 연결 해제
   disconnect() {
     if (this.socket) {
-      console.log("소켓 연결 해제 중");
       this.socket.disconnect();
       this.socket = null;
     }

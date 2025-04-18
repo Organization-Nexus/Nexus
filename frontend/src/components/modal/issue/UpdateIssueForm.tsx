@@ -93,7 +93,6 @@ export function UpdateIssueForm({
         issueId: initialData.id,
         data: issueData,
       });
-      console.log("이슈 수정 성공");
       onClose();
       alert("이슈가 수정되었습니다.");
     } catch (error) {
