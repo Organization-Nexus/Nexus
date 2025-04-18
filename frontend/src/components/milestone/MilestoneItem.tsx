@@ -60,7 +60,7 @@ export default function MilestoneItem({
       setUpdateMilestoneData(detailData);
       setIsUpdateModalOpen(true);
     } catch (error) {
-      .error("마일스톤 상세 정보 가져오기 실패", error);
+      console.error("마일스톤 상세 정보 가져오기 실패", error);
     }
   };
 
@@ -72,7 +72,7 @@ export default function MilestoneItem({
         alert("마일스톤이 삭제되었습니다.");
       },
       onError: (error) => {
-        .error("마일스톤 삭제 실패", error);
+        console.error("마일스톤 삭제 실패", error);
       },
     });
   };
