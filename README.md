@@ -1,6 +1,7 @@
 # Nexus
 
 **프로젝트 관리 기능을 갖춘 팀 협업 도구**  
+
 팀원들이 프로젝트 일정, 업무, 마일스톤을 효율적으로 관리할 수 있도록 돕는 올인원 플랫폼입니다.
 
 > 개발 기간: 2024년 12월 31일 ~ 2025년 04월 11일 (총 4개월)
@@ -9,11 +10,19 @@
 
 <br>
 
-## 주요 기술 스택
+## 기술 스택
 
-| 언어        | 프레임워크              | CI/CD          | 컨테이너화 | 데이터베이스 | 실시간 통신 | 스토리지 | 배포환경 |
-|-------------|--------------------------|----------------|-------------|---------------|---------------|-----------|-----------|
-| TypeScript  | Nest.js v10 / Next.js v14 | GitHub Actions | Docker      | PostgreSQL     | WebSocket     | AWS S3    | AWS EC2   |
+### 주요 환경
+
+| Language    | Framework                 | CI/CD          | Container | Database           | Realtime     | Storage | Deployment |
+|-------------|---------------------------|----------------|-----------|---------------------|--------------|---------|-------------|
+| TypeScript  | Nest.js v10 / Next.js v14 | GitHub Actions | Docker    | PostgreSQL / Redis | WebSocket    | AWS S3  | AWS EC2     |
+### 주요 라이브러리
+
+| Category     | Libraries                                                                                   |
+|--------------|---------------------------------------------------------------------------------------------|
+| Backend      | `@nestjs/typeorm` `class-validator` `@nestjs/jwt` `multer-s3` `@nestjs/websockets` `@nestjs/throttler` `nodemailer` `ioredis` |
+| Frontend     | `@tanstack/react-query` `axios` `socket.io-client` `tailwindcss` `react-hook-form` `date-fns` `js-cookie` |
 
 <br>
 
@@ -160,26 +169,26 @@
 
 ### API 명세서  
 
-> Postman을 이용하여 API 문서를 작성하였습니다.
+> Postman을 이용하여 API 문서를 작성
 
 👉 [API 문서 보기 (Postman)](https://www.postman.com/orange-sunset-704837/nexus/overview)
 
 ### 디자인 시안  
 
-> Figma 기반 디자인 시안을 참고하여 UI/UX를 구성했습니다.
+> Figma 기반 디자인 시안을 참고하여 UI/UX를 구성
 
 ![디자인 시안](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_design_preview.png)
 
 
 ### ERD (Entity Relationship Diagram)
  
-> 효율적인 데이터베이스 설계와 명확한 도메인 정의를 위해 활용되었습니다.
+> 효율적인 데이터베이스 설계와 명확한 도메인 정의를 위해 활용
 
 ![ERD](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_erd.png)
 
 
 ### 아키텍처 구성도  
 
-> 프론트엔드, 백엔드, 데이터베이스, 스토리지 등 주요 인프라 구성을 시각화했습니다.
+> 프론트엔드, 백엔드, 데이터베이스, 스토리지 등 주요 인프라 구성을 시각화
 
 ![아키텍처](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_architecture.png)
