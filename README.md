@@ -49,7 +49,7 @@
 ![myprojects](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myproject.png)
 
 
-### 프로젝트 생성
+### 프로젝트 생성 모달
 <details>
   <summary>상세 설명</summary>
 
@@ -62,7 +62,7 @@
 ![create_project](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/create_project.png)
 
 
-### 대시보드
+### 대시보드 페이지
 <details>
   <summary>상세 설명</summary>
 
@@ -74,7 +74,7 @@
 ![dashboard](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/dashboard.png)
 
 
-### 커뮤니티 (공지사항 / 피드 / 투표)
+### 커뮤니티 페이지 (공지사항 / 피드 / 투표)
 <details>
   <summary>상세 설명</summary>
 
@@ -89,7 +89,7 @@
 ![community](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/community.png)
 
 
-### 마일스톤 & 이슈
+### 마일스톤 & 이슈 페이지
 <details>
   <summary>상세 설명</summary>
 
@@ -101,7 +101,7 @@
 ![milestone_issues](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/milestone_issues.png)
 
 
-### 내가 쓴 글
+### 내가 쓴 글 페이지
 <details>
   <summary>상세 설명</summary>
 
@@ -125,7 +125,7 @@
 ![chat](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat.png)
 
 
-### 마이페이지
+### 마이페이지 모달
 <details>
   <summary>상세 설명</summary>
 
@@ -136,7 +136,7 @@
 ![mypage](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/mypage.png)
 
 
-### 프로젝트 관리
+### 프로젝트 관리 페이지
 <details>
   <summary>상세 설명</summary>
 
@@ -147,7 +147,7 @@
 ![manage_project](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/manage_project.png)
 
 
-### 이메일 인증
+### 이메일 인증 페이지
 <details>
   <summary>상세 설명</summary>
 
