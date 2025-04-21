@@ -22,7 +22,7 @@
 | Category     | Libraries                                                                                   |
 |--------------|---------------------------------------------------------------------------------------------|
 | Backend      | `@nestjs/typeorm` `class-validator` `@nestjs/jwt` `multer-s3` `@nestjs/websockets` `@nestjs/throttler` `nodemailer` `ioredis` |
-| Frontend     | `@tanstack/react-query` `axios` `socket.io-client` `tailwindcss` `react-hook-form` `date-fns` `js-cookie` |
+| Frontend     | `@tanstack/react-query` `shadcn` `axios` `socket.io-client` `tailwindcss` `react-hook-form` `date-fns` `js-cookie` |
 
 <br>
 
@@ -37,57 +37,73 @@
 
 ## 프로젝트 상세
 
-### 메인 페이지
+### 인증 ( Sign In/Up, ResetPassword, MailAuthentication )
+
+<details>
+  <summary>상세 설명</summary>
+
+  - google smtp 를 사용한 비밀번호 초기화 과정 (인증번호 전송)
+
+</details>
+
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/login.png" alt="login" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/register.png" alt="register" style="width: 49%;" />
+</div>
+
+<br>
+
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/reset_password.png" alt="login" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/auth_mail.png" alt="register" style="width: 49%;" />
+</div>
+
+### 메인 페이지 ( MyProjects / RightNavBar / CreateProject )
 <details>
   <summary>상세 설명</summary>
 
   - 오늘 날짜를 기준으로 프로젝트 상태를 '진행중', '완료됨', '예정됨'으로 구분하여 표시
-  - 우측 네브바를 통해 금일 예정 혹은 진행 중인 일정을 빠르게 확인
+  - 우측 내브바를 통해 금일 예정 혹은 진행 중인 일정을 빠르게 확인
+  - 프로젝트 생성 (시작일과 마감일에 대한 유효성 검사를 진행, 기본 이미지 선택 또는 1장의 이미지를 직접 업로드)
 
 </details>
 
-![myprojects](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myproject.png)
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myproject.png" alt="myprojects" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/create_project.png" alt="create_project" style="width: 49%;" />
+</div>
 
-
-### 프로젝트 생성 모달
+### 대시보드
 <details>
   <summary>상세 설명</summary>
 
-  - 프로젝트 이름, 설명, 기간 등을 설정 
-  - 시작일과 마감일에 대한 유효성 검사를 진행
-  - 기본 이미지 선택 또는 1장의 이미지를 직접 업로드
-
-</details>
-
-![create_project](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/create_project.png)
-
-
-### 대시보드 페이지
-<details>
-  <summary>상세 설명</summary>
-
-  - 프로젝트의 기본 정보, 참여 유저, 커뮤니티, 마일스톤, 회의록 등을 요약해 보여줌 
+  - 프로젝트의 기본 정보, 참여 유저, 커뮤니티 (최신 순), 마일스톤 (금일 기준), 회의록 등을 요약해 보여줌
   - 이메일과 역할을 입력하여 유저를 추가
 
 </details>
 
-![dashboard](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/dashboard.png)
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/dashboard.png" alt="myprojects" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/invite_user.png" alt="create_project" style="width: 49%;" />
+</div>
 
 
-### 커뮤니티 페이지 (공지사항 / 피드 / 투표)
+### 커뮤니티 페이지 ( Notice / Feed / Vote )
 <details>
   <summary>상세 설명</summary>
 
   - 공지사항, 피드, 투표 세 가지 유형의 게시글 작성이 가능 
   - 파일 및 이미지는 최대 10개까지 첨부 가능  
   - 댓글, 대댓글, 좋아요 기능을 제공
-  - 공지사항은 PM만 작성할 수 있으며, 피드는 모든 유저가 작성 가능
+  - 공지사항은 PM만 작성할 수 있으며, 피드와 투표는 모든 유저가 작성 가능
   - 투표는 익명 여부, 단일/다중 선택 여부 설정 가능하며 상태(진행중/마감됨)를 표시
 
 </details>
 
-![community](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/community.png)
-
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/community.png" alt="community" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/create_community.png" alt="create_community" style="width: 49%;" />
+</div>
 
 ### 마일스톤 & 이슈 페이지
 <details>
@@ -98,7 +114,24 @@
 
 </details>
 
-![milestone_issues](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/milestone_issues.png)
+
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/milestone_issues.png" alt="milestone_issues" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/milestoneDetail.png" alt="milestone_detail" style="width: 49%;" />
+</div>
+
+### 회의록
+<details>
+  <summary>상세 설명</summary>
+
+  - 회의록을 자유롭게 작성 및 저장
+
+</details>
+
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/meeting_.png" alt="meeting1" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/meeting.png" alt="meeting2" style="width: 49%;" />
+</div>
 
 
 ### 내가 쓴 글 페이지
@@ -110,54 +143,42 @@
 
 </details>
 
-![myPosted](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myposted.png)
-
-
-### 채팅 & 회의록
-<details>
-  <summary>상세 설명</summary>
-
-  - 실시간 채팅 기능이 제공 (어느 위치에서든 접근이 가능)
-  - 회의록을 자유롭게 작성 및 저장
-
-</details>
-
-![chat](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat.png)
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myposted.png" alt="myposted1" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/myposted_detail.png" alt="myposted2" style="width: 49%;" />
+</div>
 
 
 ### 마이페이지 모달
 <details>
   <summary>상세 설명</summary>
 
-  - 본인의 기본 정보를 조회하고 수정 가능
+  - 본인 기본 정보 조회
+  - 이름, 깃허브 주소, 주포지션, 비밀번호 수정 가능
 
 </details>
 
-![mypage](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/mypage.png)
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/mypage_.png" alt="mypage1" style="width: 49%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/mypage.png" alt="mypage2" style="width: 49%;" />
+</div>
 
-
-### 프로젝트 관리 페이지
+### 채팅
 <details>
   <summary>상세 설명</summary>
 
-  - 프로젝트의 이름, 설명, 기간 등 기본 정보를 수정 가능
+  - 개인 / 단체 채팅 기능
 
 </details>
 
-![manage_project](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/manage_project.png)
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat(1).png" alt="chat1" style="width: 24%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat(2).png" alt="chat2" style="width: 24%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat(3).png" alt="chat1" style="width: 24%;" />
+  <img src="https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/chat(4).png" alt="chat2" style="width: 24%;" />
+</div>
 
-
-### 이메일 인증 페이지
-<details>
-  <summary>상세 설명</summary>
-
-  - 비밀번호 재설정 시 이메일 인증 절차를 거침
-  - Google SMTP를 이용하여 인증 메일을 발송
-
-</details>
-
-![reset_password](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/pages/reset_password.png)
-
+<br>
 <br>
 
 
@@ -173,12 +194,11 @@
 
 👉 [API 문서 보기 (Postman)](https://www.postman.com/orange-sunset-704837/nexus/overview)
 
-### 디자인 시안  
+### 아키텍처 구성도  
 
-> Figma 기반 디자인 시안을 참고하여 UI/UX를 구성
+> 프론트엔드, 백엔드, 데이터베이스, 스토리지 등 주요 인프라 구성을 시각화
 
-![디자인 시안](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_design_preview.png)
-
+![아키텍처](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_architecture.png)
 
 ### ERD (Entity Relationship Diagram)
  
@@ -186,9 +206,9 @@
 
 ![ERD](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_erd.png)
 
+### 디자인 시안  
 
-### 아키텍처 구성도  
+> Figma 기반 디자인 시안을 참고하여 UI/UX를 구성
 
-> 프론트엔드, 백엔드, 데이터베이스, 스토리지 등 주요 인프라 구성을 시각화
+![디자인 시안](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_figma.png)
 
-![아키텍처](https://nexus-s3cloud.s3.ap-northeast-2.amazonaws.com/common/nexus_architecture.png)
