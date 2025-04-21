@@ -45,14 +45,12 @@ export default function MilestoneItem({
   const [updateMilestoneData, setUpdateMilestoneData] =
     useState<Milestone | null>(null);
   const [isCreateIssueModalOpen, setIsCreateIssueModalOpen] = useState(false);
-
   const projectId = project.id;
   const { data: currentUser } = useProjectUserInfo(String(projectId));
   const { data: issues } = useIssueList(projectId, milestone.id);
 
   const currentUserId = currentUser?.id;
   const isMilestoneAuthor = currentUserId === milestone.author.id;
-
   const handleUpdateClick = async (milestoneId: number) => {
     try {
       const detailData = await milestoneApi.getMilestoneByMilestoneId(
@@ -78,6 +76,25 @@ export default function MilestoneItem({
       },
     });
   };
+
+  const isParticipant = () => {
+    // milestone이 없는 경우 처리
+    if (!milestone) return false;
+
+    // // 마일스톤 작성자인 경우 true
+    // if (currentUserId === milestone?.author?.id) return true;
+
+    // participants 배열에서 현재 사용자가 있는지 확인
+    return milestone?.participants?.some(
+      (participant) => participant?.member?.id === currentUserId
+    );
+  };
+
+  const showEllipsisButton = () => {
+    // 마일스톤 작성자이거나 참여자인 경우에만 true 반환
+    return isMilestoneAuthor || isParticipant();
+  };
+
   {
     return (
       <div className="w-full bg-white rounded-xl shadow">
@@ -141,51 +158,56 @@ export default function MilestoneItem({
             </div>
 
             <div className="flex items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="text-custom-smallText hover:bg-gray-100 rounded-lg p-1">
-                    <Ellipsis size={18} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="min-w-[70px]">
-                  <DropdownMenuItem
-                    onClick={() => setIsCreateIssueModalOpen(true)}
-                  >
-                    <SquarePlus className="mr-2 text-custom-point" /> 이슈 등록
-                  </DropdownMenuItem>
-
-                  {isMilestoneAuthor && (
-                    <div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          // e.stopPropagation();
-                          handleUpdateClick(milestone.id);
-                        }}
-                      >
-                        <PenLine className="mr-2" /> 수정
-                      </DropdownMenuItem>
-                      <CustomAlertDialog
-                        onConfirm={() => handleDelete(milestone.id)}
-                        title="정말 삭제하시겠습니까?"
-                        confirmText={
-                          deleteMutation.isPending ? "삭제 중..." : "삭제"
-                        }
-                        cancelText="취소"
-                      >
+              {showEllipsisButton() && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-custom-smallText hover:bg-gray-100 rounded-lg p-1">
+                      <Ellipsis size={18} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-[70px]">
+                    {isParticipant() && (
+                      <>
                         <DropdownMenuItem
-                          className="text-red-600"
-                          disabled={deleteMutation.isPending}
-                          onSelect={(e) => e.preventDefault()}
+                          onClick={() => setIsCreateIssueModalOpen(true)}
                         >
-                          <Trash2 className="mr-2" />
-                          {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+                          <SquarePlus className="mr-2 text-custom-point" /> 이슈
+                          등록
                         </DropdownMenuItem>
-                      </CustomAlertDialog>
-                    </div>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                        {isMilestoneAuthor && <DropdownMenuSeparator />}
+                      </>
+                    )}
+                    {isMilestoneAuthor && (
+                      <div>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            handleUpdateClick(milestone.id);
+                          }}
+                        >
+                          <PenLine className="mr-2" /> 수정
+                        </DropdownMenuItem>
+                        <CustomAlertDialog
+                          onConfirm={() => handleDelete(milestone.id)}
+                          title="정말 삭제하시겠습니까?"
+                          confirmText={
+                            deleteMutation.isPending ? "삭제 중..." : "삭제"
+                          }
+                          cancelText="취소"
+                        >
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            disabled={deleteMutation.isPending}
+                            onSelect={(e) => e.preventDefault()}
+                          >
+                            <Trash2 className="mr-2" />
+                            {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+                          </DropdownMenuItem>
+                        </CustomAlertDialog>
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </div>

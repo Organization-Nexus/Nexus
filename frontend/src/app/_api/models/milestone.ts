@@ -24,6 +24,12 @@ export const milestoneApi = {
       .then((res) => res.data);
   },
 
+  getMyMilestoneList: async (projectId: number) => {
+    return await api
+      .get(`/projects/${projectId}/milestones/my/`)
+      .then((res) => res.data);
+  },
+
   updateMilestoneByMilestoneId: async (
     projectId: number,
     milestoneId: number,

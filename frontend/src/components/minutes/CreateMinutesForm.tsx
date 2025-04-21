@@ -138,7 +138,6 @@ export function CreateMinutesForm({
       };
 
       createMinutesMutation.mutate(minutesData);
-      console.log("회의록 생성 성공");
       onClose();
       alert("회의록이 작성되었습니다.");
     } catch (error: any) {
@@ -164,7 +163,6 @@ export function CreateMinutesForm({
               className="mx-2 p-0 border-b-0 text-lg font-semibold md:text-lg placeholder:text-[#BDBDBD]"
             />
             <hr className="border-0 border-b-2 border-custom-divider" />
-            {/* <hr className="border-custom-divider" /> */}
             {errors.title && (
               <p className="text-red-500 text-sm mt-1 ml-2">{errors.title}</p>
             )}
@@ -324,6 +322,7 @@ export function CreateMinutesForm({
               placeholder={`(예시) 1. 진행상황 공유\n(예시) 2. 차주 계획 공유`}
               className="w-full min-h-[3rem] m-2 mt-3 text-sm resize-none placeholder:text-sm placeholder:text-[#BDBDBD] focus:outline-none"
               rows={1}
+              maxLength={255}
               required
             />
             <hr className="border-custom-divider" />
@@ -345,6 +344,7 @@ export function CreateMinutesForm({
               onChange={handleChange}
               placeholder="내용을 입력하세요."
               className="w-full min-h-[5rem] m-2 mt-3 text-sm resize-none placeholder:text-base placeholder:text-[#BDBDBD] focus:outline-none"
+              maxLength={3000}
               required
             />
             <hr className="border-custom-divider" />
@@ -366,6 +366,7 @@ export function CreateMinutesForm({
               onChange={handleChange}
               placeholder="회의를 통해 결정된 사항을 작성하세요."
               className="w-full min-h-[2rem] m-2 mt-3 text-sm resize-none placeholder:text-base placeholder:text-[#BDBDBD] focus:outline-none"
+              maxLength={255}
             />
             <hr className="border-custom-divider" />
             {errors.decisions && (
@@ -389,6 +390,7 @@ export function CreateMinutesForm({
               onChange={handleChange}
               placeholder="참고 사항을 입력하세요."
               className="w-full min-h-[2rem] m-2 mt-3 text-sm resize-none placeholder:text-base placeholder:text-[#BDBDBD] focus:outline-none"
+              maxLength={255}
             />
             <hr className="border-custom-divider mb-10" />
             {errors.notes && (

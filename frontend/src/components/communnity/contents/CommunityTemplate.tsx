@@ -1,6 +1,5 @@
 "use client";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import ImageModal from "@/components/utils/ImageModal";
 import {
   CommunityTemplateProps,
@@ -52,13 +51,13 @@ export default function CommunityTemplate({
     const deadlineDate = new Date(deadline);
     const currentDate = new Date();
     return deadlineDate < currentDate ? (
-      <div className="text-gray-300 border-2 border-gray-300 px-2 py-1 rounded-md">
-        COMPLETED
-      </div>
+      <span className="inline-block px-2 py-1 text-xs font-medium text-gray-600 bg-gray-200 rounded">
+        마감됨
+      </span>
     ) : (
-      <div className="text-blue-300 border-2 border-blue-300 px-2 py-1 rounded-md">
-        IN PROGRESS
-      </div>
+      <span className="inline-block px-2 py-1 text-xs font-medium text-white bg-blue-300 rounded">
+        진행중
+      </span>
     );
   };
   const [state, setState] = useState({
@@ -236,22 +235,6 @@ export default function CommunityTemplate({
     : data;
   return (
     <div>
-      <div className="my-2">
-        <div className="flex items-center p-4 rounded-md bg-white shadow-md justify-end">
-          {type === "notice" && (
-            <>
-              <Checkbox
-                checked={state.showImportantOnly}
-                onCheckedChange={toggleImportantOnly}
-              />
-              <span className="ml-2 font-semibold">중요 항목만 보기</span>
-            </>
-          )}
-          {type === "feed" && <>필터 및 검색</>}
-          {type === "vote" && <>필터 및 검색</>}
-        </div>
-      </div>
-
       {filteredItems.length > 0 ? (
         filteredItems.map((item) => {
           const createdAt = new Date(item.createdAt);
@@ -323,8 +306,8 @@ export default function CommunityTemplate({
                 {type === "notice" &&
                   "isImportant" in item &&
                   (item.isImportant as boolean) && (
-                    <span className="text-sm text-red-300 border-2 border-red-300 px-2 py-1 rounded-md">
-                      IMPORTANT
+                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-md font-medium">
+                      중요
                     </span>
                   )}
               </div>
@@ -337,7 +320,7 @@ export default function CommunityTemplate({
                 {item.content}
               </div>
 
-              {item.content.length > 500 && (
+              {item.content.length > 200 && (
                 <button
                   className="text-blue-400 hover:underline text-sm my-2"
                   onClick={() => handleToggleExpand(item.id)}
@@ -377,7 +360,9 @@ export default function CommunityTemplate({
                   projectId={projectId}
                 />
               )}
-              <FilePreview files={item.community_files || []} />
+              <div className="max-w-3xl">
+                <FilePreview files={item.community_files || []} />
+              </div>
               <div className="flex items-center justify-between mt-8">
                 <div className="flex items-center space-x-4">
                   <div className="flex space-x-1">
@@ -420,8 +405,8 @@ export default function CommunityTemplate({
           );
         })
       ) : (
-        <p className="flex items-center justify-center mt-4 p-4 rounded-md bg-white shadow-md h-[20vh]">
-          커뮤니티를 생성해주세요 🚀
+        <p className="flex items-center justify-center text-sm text-gray-500">
+          등록된 커뮤니티가 없습니다. 커뮤니티를 생성해보세요 🚀
         </p>
       )}
       <ImageModal

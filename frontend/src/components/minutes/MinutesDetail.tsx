@@ -4,6 +4,7 @@ import { useMinutesDetail } from "@/query/queries/minutes";
 import { format } from "date-fns";
 import { X, Text, BadgeCheck } from "lucide-react";
 import Image from "next/image";
+import Loading from "../utils/Loading";
 
 interface MinutesDetailProps {
   projectId: number;
@@ -22,7 +23,11 @@ export function MinutesDetail({
     isError,
   } = useMinutesDetail(projectId, minutesId);
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="flex justify-center items-center ">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {
@@ -96,7 +101,7 @@ export function MinutesDetail({
             <Text className="mx-1 w-4 h-4" />
             <h3 className="font-bold">주제</h3>
           </div>
-          <div className="pl-6">{minutes.topic}</div>
+          <div className="pl-6 whitespace-pre-wrap">{minutes.topic}</div>
         </div>
 
         <hr className="border-gray-200" />

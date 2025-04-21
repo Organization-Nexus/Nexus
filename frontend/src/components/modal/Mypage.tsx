@@ -111,7 +111,6 @@ export default function MyPageModal({
     }
 
     try {
-      console.log("🥲 FormData: ", formData);
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       formDataToSend.append("mainPosition", formData.mainPosition);
@@ -122,10 +121,8 @@ export default function MyPageModal({
 
       if (formData.profileImage) {
         formDataToSend.append("profileImage", formData.profileImage);
-        console.log("file형식으로 전송:", formData.profileImage);
       } else if (formData.profileImageUrl) {
         formDataToSend.append("profileImageUrl", formData.profileImageUrl);
-        console.log("URL형식으로 전송:", formData.profileImageUrl);
       }
       updateUser(formDataToSend);
 

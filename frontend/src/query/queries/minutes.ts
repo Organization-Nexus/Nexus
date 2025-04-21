@@ -10,6 +10,13 @@ export const useMinutesList = (projectId: number) => {
   });
 };
 
+export const useMyMinutesList = (projectId: number) => {
+  return useQuery({
+    queryKey: minutesKeys.MY_MINUTES_LIST_KEY(projectId),
+    queryFn: () => minutesApi.getMyMinutesList(projectId),
+  });
+};
+
 export const useMinutesDetail = (projectId: number, minutesId: number) => {
   return useQuery({
     queryKey: minutesKeys.MINUTES_DETAIL_KEY(projectId, minutesId),

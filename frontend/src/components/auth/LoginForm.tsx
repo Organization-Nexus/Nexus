@@ -103,7 +103,7 @@ export default function LoginFormComponent() {
         <div className="space-y-2">
           <Input
             id="email"
-            placeholder="이메일"
+            placeholder="이메일 (Demo: steve@nexus.com)"
             className="text-lg p-6"
             value={formData.email}
             onChange={handleChange}
@@ -116,7 +116,7 @@ export default function LoginFormComponent() {
           <Input
             id="password"
             type="password"
-            placeholder="비밀번호"
+            placeholder="비밀번호 (Demo: steve)"
             className="text-lg p-6"
             value={formData.password}
             onChange={handleChange}
@@ -142,6 +142,14 @@ export default function LoginFormComponent() {
         <Button className="w-full bg-custom-point hover:bg-custom-hover text-lg py-6">
           로그인
         </Button>
+        <div className="space-y-2">
+          <p>
+            <span className="font-semibold">email:</span> steve@nexus.com
+          </p>
+          <p>
+            <span className="font-semibold">password:</span> steve
+          </p>
+        </div>
       </div>
     </form>
   );

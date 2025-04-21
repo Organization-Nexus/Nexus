@@ -124,7 +124,6 @@ export function CreateIssueForm({
       };
 
       createIssueMutation.mutate(issueData);
-      console.log("이슈 생성 성공");
       onClose();
       alert("이슈가 생성되었습니다.");
     } catch (error) {

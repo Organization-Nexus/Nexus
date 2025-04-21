@@ -1,15 +1,16 @@
 import { ReactNode } from "react";
 import "../styles/globals.css";
 import QueryProvider from "@/provider/queryClient";
-import NavigationWrapper from "@/components/NavigationWrapper";
-
+import ClientLayout from "@/components/ClientLayout";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko-KR">
-      <head />
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body className="bg-gray-100 hide-scrollbar">
         <QueryProvider>
-          <NavigationWrapper>{children}</NavigationWrapper>
+          <ClientLayout>{children}</ClientLayout>
         </QueryProvider>
       </body>
     </html>

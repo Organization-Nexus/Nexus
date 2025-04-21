@@ -14,7 +14,6 @@ import {
 import { IssueService } from './issue.service';
 import { ProjectUserService } from '../project-user/project-user.service';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
-
 import { UserPayload } from 'src/types/user-payload';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateIssueDto } from './dto/update-issue.dto';
@@ -42,6 +41,13 @@ export class IssueController {
       projectId,
       userId,
     );
+
+    // 마일스톤 참여자 검증
+    await this.issueService.validateMilestoneParticipant(
+      milestoneId,
+      projectUser.id,
+    );
+
     return await this.issueService.createIssue(
       createIssueDto,
       projectUser,

@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_SERVER_URL: "http://13.209.41.52:8000/api",
-    NEST_PUBLIC_SERVER_URL: "http://13.209.41.52:8000/api",
+    NEXT_PUBLIC_SERVER_URL:
+      process.env.NODE_ENV === "production"
+        ? "http://13.209.41.52:8000/api" // 배포 환경
+        : "http://localhost:8000/api", // 개발 환경
+    NEST_PUBLIC_SERVER_URL:
+      process.env.NODE_ENV === "production"
+        ? "http://13.209.41.52:8000/api" // 배포 환경
+        : "http://backend:8000/api", // 개발 환경
   },
   reactStrictMode: false,
   images: {

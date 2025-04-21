@@ -1,15 +1,7 @@
-import RightNavBar from "@/components/navbar/RightNavBar";
 import MyProjectHeader from "@/components/project/MyprojectHeader";
 import ProjectList from "@/components/project/ProjectList";
 import { projectApi } from "../_api/models/project";
-
-const contents = [
-  "Project Management",
-  "Task Management",
-  "Team Management",
-  "Calendar",
-  "Chat",
-];
+import RightNavBar from "@/components/navbar/RighytNavBar/RightNavBar";
 
 export default async function MyProject() {
   const project = await projectApi.getMyProjects();
@@ -22,9 +14,7 @@ export default async function MyProject() {
             <hr className="my-4" />
             <ProjectList project={project} />
           </div>
-          <div className="">
-            <RightNavBar contents={contents} />
-          </div>
+          <RightNavBar />
         </div>
       </div>
     </>

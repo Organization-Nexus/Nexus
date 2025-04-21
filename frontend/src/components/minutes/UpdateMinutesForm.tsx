@@ -43,8 +43,6 @@ export function UpdateMinutesForm({
   initialData,
   onClose,
 }: UpdateMinutesFormProps) {
-  console.log("initialData:", initialData); // 전체 데이터 확인
-
   const router = useRouter();
   const projectId = project.id;
   const projectMembers = project.projectUsers;
@@ -149,7 +147,6 @@ export function UpdateMinutesForm({
         notes: formData.notes?.trim() === "" ? null : formData.notes?.trim(),
       };
       updateMutation.mutate({ minutesId, data: updatedData });
-      console.log("회의록 수정 성공");
       onClose();
     } catch (error) {
       console.error("회의록 수정 실패:", error);

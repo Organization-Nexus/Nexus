@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -23,11 +24,10 @@ import { FileService } from '../file/file.service';
 import { Category } from 'src/types/enum/file-category.enum';
 import { VoteRequestDto } from './dto/vote-request.dto';
 import { VoteResponseService } from './services/vote-response.service';
-import {
-  AnonymousVoteException,
-  DeadlineExpiredException,
-} from './exception/vote.exception';
+import { DeadlineExpiredException } from './exception/vote.exception';
+import { ThrottlerBehindProxyGuard } from '../rate-limiting/rate-limiting.guard';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('vote')
 export class VoteController {
   constructor(
@@ -38,6 +38,29 @@ export class VoteController {
     private readonly communityService: CommunityService,
     private readonly fileService: FileService,
   ) {}
+
+  // GET /api/vote/myvotes/:projectId
+  @Get('myvotes/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getMyVoteByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    const userId = req.user.id;
+    const projectUserId =
+      await this.projectUserService.validateProjectMemberByUserId(
+        projectId,
+        userId,
+      );
+    const votes = await this.communityService.getVoteByProjectId(
+      projectId,
+      projectUserId,
+    );
+    const myVotes = votes.filter(
+      (vote) => vote.author.projectUserId === projectUserId,
+    );
+    return myVotes;
+  }
 
   // POST /api/vote/create-vote/:projectId
   @Post('create-vote/:projectId')
@@ -80,7 +103,7 @@ export class VoteController {
 
   // PATCH /api/vote/vote-response/:voteId/:projectId
   @Patch('vote-response/:voteId/:projectId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ThrottlerBehindProxyGuard)
   async voteResponse(
     @Body() voteRequestDto: VoteRequestDto,
     @Param('voteId') voteId: number,
@@ -127,9 +150,6 @@ export class VoteController {
         userId,
       );
     const vote = await this.voteService.getVoteByVoteId(voteId);
-    if (vote.isAnonymous) {
-      throw new AnonymousVoteException();
-    }
     return await this.voteOptionService.getVoteOptionsByVoteId(
       voteId,
       projectUserId,

@@ -66,4 +66,20 @@ export class CommunityController {
       projectUser.id,
     );
   }
+
+  // GET /api/community/dashboard/:projectId
+  @Get('dashboard/:projectId')
+  @UseGuards(JwtAuthGuard)
+  async getDashboardByProjectId(
+    @Param('projectId') projectId: number,
+    @Req() req: UserPayload,
+  ) {
+    await this.projectUserService.validateProjectMemberByUserId(
+      projectId,
+      req.user.id,
+    );
+    return await this.communityService.getCommunityOfDashboardByProjectId(
+      projectId,
+    );
+  }
 }

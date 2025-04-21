@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Milestone } from './entities/milestone.entity';
 import { MilestoneParticipant } from './entities/milestone-participant.entity';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
@@ -41,7 +41,6 @@ export class MilestoneService {
         member: { id: memberId },
       });
     });
-
     await this.participantRepository.save(participants);
 
     return this.getMilestoneDetail(savedMilestone.id);
@@ -50,7 +49,7 @@ export class MilestoneService {
   async getMilestoneList(projectId: number) {
     return await this.milestoneRepository.find({
       where: { project: { id: projectId } },
-      relations: ['author.user.log'],
+      relations: ['author.user.log', 'participants.member.user.log'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -66,6 +65,21 @@ export class MilestoneService {
     }
 
     return this.toMilestoneResponseDto(milestone);
+  }
+
+  async getMyMilestones(projectId: number, projectUserId: number) {
+    const milestones = await this.milestoneRepository.find({
+      where: {
+        project: { id: projectId },
+        author: { id: projectUserId },
+      },
+      relations: ['author.user.log', 'participants.member.user.log'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return milestones.map((milestone) =>
+      this.toMilestoneResponseDto(milestone),
+    );
   }
 
   async updateMilestone(
@@ -163,11 +177,27 @@ export class MilestoneService {
       where: { id: milestoneId },
       relations: ['author', 'author.user', 'participants'],
     });
-
     if (!milestone) {
       throw new NotFoundMilestoneException(milestoneId);
     }
-
     return milestone;
+  }
+
+  async getMilestonesByProjectId(
+    projectId: number,
+    projectUserIds: number[],
+  ): Promise<Milestone[]> {
+    const today = new Date();
+    const todayDateOnly = new Date(today.toISOString().split('T')[0]);
+    return this.milestoneRepository.find({
+      where: {
+        project: { id: projectId },
+        participants: { member: { id: In(projectUserIds) } },
+        start_date: LessThanOrEqual(todayDateOnly),
+        end_date: MoreThanOrEqual(todayDateOnly),
+      },
+      relations: ['participants', 'participants.member'],
+      order: { end_date: 'ASC' },
+    });
   }
 }

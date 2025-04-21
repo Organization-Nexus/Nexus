@@ -1,7 +1,7 @@
 import { TimeAgo } from "@/components/utils/TimeAgo";
 import { CornerDownRight } from "lucide-react";
 import {
-  useFeedOrNoticeList,
+  useFeedOrNoticeCommentList,
   useVoteCommentList,
 } from "@/query/queries/comment";
 import {
@@ -31,7 +31,7 @@ export default function CommunityComment({
 }) {
   const comments =
     type === "feed" || type === "notice"
-      ? useFeedOrNoticeList(itemId.toString())
+      ? useFeedOrNoticeCommentList(itemId.toString())
       : useVoteCommentList(itemId.toString());
   const createCommentMutation =
     type === "feed" || type === "notice"
@@ -71,8 +71,6 @@ export default function CommunityComment({
     commentId: number,
     commentType: "feed" | "notice" | "vote"
   ) => {
-    console.log("commentId", commentId);
-    console.log("commentType", commentType);
     deleteCommentMutation.mutate({
       commentId,
       commentType,

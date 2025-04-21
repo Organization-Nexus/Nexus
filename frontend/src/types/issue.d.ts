@@ -10,6 +10,10 @@ export interface Issue {
   label: string;
   expected_results: string;
   branch: string;
+  milestone: {
+    id: number;
+    title: string;
+  };
   author: {
     id: number;
     position: string;

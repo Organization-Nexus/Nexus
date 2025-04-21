@@ -24,6 +24,15 @@ export interface CreateProject {
   project_image: File | string;
 }
 
+// Update Project
+export interface UpdateProject {
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  project_image: File | string;
+}
+
 // Props : ProgressBar
 export interface ProgressBarProps {
   progress: number;

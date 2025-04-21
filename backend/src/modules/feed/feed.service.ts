@@ -104,4 +104,20 @@ export class FeedService {
     }
     return feed;
   }
+
+  async getFeedById(feedId: number): Promise<Feed> {
+    const feed = await this.feedRepository.findOneBy({ id: feedId });
+    if (!feed) {
+      throw new NotFoundFeedException(feedId);
+    }
+    return feed;
+  }
+
+  async getNoticeById(noticeId: number): Promise<Feed> {
+    const feed = await this.feedRepository.findOneBy({ id: noticeId });
+    if (!feed) {
+      throw new NotFoundFeedException(noticeId);
+    }
+    return feed;
+  }
 }

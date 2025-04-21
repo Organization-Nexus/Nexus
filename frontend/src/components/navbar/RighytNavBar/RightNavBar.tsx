@@ -1,14 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { RightNavBarProps } from "@/types/navbar";
 import { useUserInfo } from "@/query/queries/user";
-import MyProfile from "../modal/MyProfile";
 import { useState, useEffect } from "react";
-import MyPageModal from "../modal/Mypage";
+import { useProjectDetail, useProjectList } from "@/query/queries/project";
+import MyProfile from "@/components/modal/MyProfile";
+import MyPageModal from "@/components/modal/Mypage";
+import ProjectMilestones from "./ProjectMilestones";
 
-export default function RightNavBar({ contents }: RightNavBarProps) {
+interface RightNavBarProps {
+  projectId?: string;
+}
+
+export default function RightNavBar({ projectId }: RightNavBarProps) {
   const { data: user, isLoading } = useUserInfo();
+  const { data: project } = useProjectDetail(projectId ?? "", !!projectId);
+  const { data: projects } = useProjectList([], !projectId);
   const [isMyProfileOpen, setIsMyProfileOpen] = useState(false);
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -17,35 +24,31 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
+  const projectData = projectId && project ? [project] : projects || [];
 
-  if (isLoading) {
-    return <div>로딩중...</div>;
-  }
-
-  if (!user) {
-    return <div>사용자 정보를 불러올 수 없습니다.</div>;
-  }
+  if (!isMounted) return null;
+  if (isLoading) return <div className="p-6 text-gray-500">로딩중...</div>;
+  if (!user)
+    return (
+      <div className="p-6 text-red-500">사용자 정보를 불러올 수 없습니다.</div>
+    );
 
   return (
-    <div className="w-[400px] bg-white px-6 py-3 rounded-2xl shadow-xl h-[400px] overflow-y-auto">
+    <div className="w-[400px] bg-white px-6 py-3 rounded-2xl shadow-xl overflow-y-auto">
+      {/* 유저 정보 */}
       <div className="p-4 bg-white rounded-lg">
         <div className="flex mb-4">
-          <div className="flex gap-4 w-full h-full items-center">
+          <div className="flex gap-4 w-full items-center">
             <div className="w-12 h-12 rounded-2xl">
-              <div className="relative w-[48px] h-[48px] rounded-2xl">
-                <Image
-                  src={user.log.profileImage as string}
-                  alt="Profile Image"
-                  width={48}
-                  height={48}
-                  className="object-cover rounded-2xl max-w-[48px] max-h-[48px] min-w-[48px] min-h-[48px]"
-                  priority
-                  onClick={() => setIsMyProfileOpen(true)}
-                />
-              </div>
+              <Image
+                src={user.log.profileImage}
+                alt="Profile"
+                width={48}
+                height={48}
+                className="object-cover rounded-2xl"
+                priority
+                onClick={() => setIsMyProfileOpen(true)}
+              />
             </div>
             <div className="w-full">
               <h1 className="text-lg font-semibold">{user.name}</h1>
@@ -66,10 +69,10 @@ export default function RightNavBar({ contents }: RightNavBarProps) {
           </div>
         </div>
         <hr className="my-2" />
-        <div className="space-y-2">
-          {contents.map((content, index) => (
-            <h1 key={index}>{content}</h1>
-          ))}
+
+        {/* 프로젝트 정보 */}
+        <div>
+          <ProjectMilestones projects={projectData} />
         </div>
       </div>
 

@@ -73,7 +73,6 @@ export class UserService {
 
       // 이전 이미지 삭제
       if (previousImageUrl) {
-        console.log('이전 이미지 삭제:', previousImageUrl);
         if (previousImageUrl !== process.env.DEFAULT_PROFILE_IMAGE) {
           await this.fileService.deleteFiles([previousImageUrl]);
         }

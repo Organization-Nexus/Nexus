@@ -39,8 +39,6 @@ export function UpdateMilestoneForm({
   const projectId = project.id;
   const projectMembers = project.projectUsers;
 
-  console.log("initialData:", initialData); // 전체 데이터 확인
-
   const [formData, setFormData] = useState({
     title: initialData.title,
     content: initialData.content,
@@ -146,7 +144,6 @@ export function UpdateMilestoneForm({
         milestoneId: initialData.id,
         data: milestoneData,
       });
-      console.log("마일스톤 생성 성공");
       onClose();
       alert("마일스톤이 작성되었습니다.");
     } catch (error: any) {

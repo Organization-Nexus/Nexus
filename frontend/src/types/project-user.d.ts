@@ -19,5 +19,20 @@ export interface UserInfo {
 
 // Props : ProjectUsers
 export interface ProjectUserListProps {
-  projectUsers: ProjectUser[];
+  projectId: string;
+}
+
+// Dto : InviteUser
+export enum ProjectPosition {
+  FE = "FE",
+  BE = "BE",
+  FULL = "FULL",
+  DESIGN = "DESIGN",
+  PM = "PM",
+}
+
+export interface InviteProjectUserDto {
+  email: string;
+  position: ProjectPosition | "";
+  is_sub_admin: boolean;
 }

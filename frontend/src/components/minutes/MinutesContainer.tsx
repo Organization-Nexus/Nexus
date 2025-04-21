@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { SquarePlus } from "lucide-react";
 import { MinutesList } from "./MinutesList";
-import RightNavBar from "../navbar/RightNavBar";
 import { CreateMinutesForm } from "./CreateMinutesForm";
 import { UpdateMinutesForm } from "./UpdateMinutesForm";
 import { Project } from "@/types/project";
@@ -90,9 +89,6 @@ export function MinutesContainer({ project }: MinutesContainerProps) {
 
       {/* 오른쪽 영역: RightNavBar, CreateMinutesForm, UpdateMinutesForm */}
       <div className={`${isRightSectionVisible ? "w-3/5" : "flex-1"} relative`}>
-        <div className={isRightSectionVisible ? "hidden" : "flex justify-end"}>
-          <RightNavBar contents={contents} />
-        </div>
         {isCreating && (
           <div className="absolute top-0 left-0 w-full">
             <CreateMinutesForm

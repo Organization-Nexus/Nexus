@@ -1,52 +1,40 @@
 import { projectApi } from "@/app/_api/models/project";
-import { projectUserApi } from "@/app/_api/models/project-user";
-import CardSection from "@/components/dashboard/CardSection";
+import CommunityCardSection from "@/components/dashboard/CommunityCardSection";
+import MinutesCardSection from "@/components/dashboard/MinutesCardSection";
 import ProjectInfo from "@/components/dashboard/ProjectInfo";
 import ProjectUsers from "@/components/dashboard/ProjectUsers";
+import TodoCardSection from "@/components/dashboard/TodoCardSection";
 import { ProjectIdProps } from "@/types/project";
 
 export default async function Dashboard({ params }: ProjectIdProps) {
   const projectId = params.projectId;
   const projects = await projectApi.getProjectById(projectId);
-  const projectUsers = await projectUserApi.getProjectUsers(projectId);
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="w-full max-w-7xl mx-auto">
+    <div className="flex min-h-screen justify-center">
+      <div className="w-full max-w-7xl mx-20 my-auto">
         {/* Project Header */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="bg-white px-10 py-4 rounded-lg shadow-md mb-4 mt-6">
           {/* Project Info */}
           <ProjectInfo project={projects} />
           <hr className="my-2" />
           {/* Project Team Members */}
           <div className="flex flex-wrap justify-start gap-4">
-            <ProjectUsers projectUsers={projectUsers} />
+            <ProjectUsers projectId={projectId} />
           </div>
         </div>
 
-        {/* Dashboard Cards Section */}
-        <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Community Section */}
-            <CardSection title="Community">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
-            {/* My Tasks Section */}
-            <CardSection title="My Tasks">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
+        {/* Dashboard Content */}
+        <div className="grid grid-cols-5 grid-rows-2 gap-4 h-[50vh]">
+          {/* 왼쪽 Column */}
+          <div className="row-span-2 col-span-2">
+            <CommunityCardSection projectId={projectId} title="커뮤니티" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Calendar Section */}
-            <CardSection title="Calendar">
-              <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg ">
-                <p className="text-gray-600">Calendar coming soon...</p>
-              </div>
-            </CardSection>
-            {/* Chat Section */}
-            <CardSection title="Chat">
-              <p className="text-gray-600">Coming soon...</p>
-            </CardSection>
+
+          {/* 오른쪽 Column */}
+          <div className="space-y-4 col-span-3">
+            <TodoCardSection projectId={projectId} title="내가 담당중인 업무" />
+            <MinutesCardSection projectId={projectId} title="회의록" />
           </div>
         </div>
       </div>

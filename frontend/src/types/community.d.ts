@@ -33,6 +33,7 @@ export interface Vote extends BaseCommunity {
   isAnonymous: boolean;
   deadline: string | null;
   voteOptions: VoteOption[];
+  options: { id: number; content: string }[];
 }
 
 // Create Community Form
@@ -104,4 +105,10 @@ export interface LikeDataResponse {
   id: number;
   name: string;
   profileImage: string;
+}
+
+export interface DashboardOfCommunity {
+  feed: Feed;
+  notice: Notice;
+  vote: Vote;
 }
