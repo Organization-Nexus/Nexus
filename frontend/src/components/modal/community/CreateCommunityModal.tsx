@@ -9,7 +9,7 @@ import { CreateCommunity } from "@/types/modal";
 import { useState } from "react";
 import { isImageFile } from "../../utils/isImageFile";
 import { Modal } from "../config/ModalMaps";
-import { MapPin, Paperclip, Siren, Trash2 } from "lucide-react";
+import { Paperclip, Siren, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -330,9 +330,6 @@ export default function CreateCommunityModal({
               multiple
               onChange={handleFileChange}
             />
-
-            {/* 장소 첨부 */}
-            <MapPin size={25} />
 
             {/* 중요 사항 */}
             {type === "공지사항" && (
