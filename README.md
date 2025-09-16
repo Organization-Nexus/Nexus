@@ -6,7 +6,7 @@
 
 > 개발 기간: 2024년 12월 31일 ~ 2025년 04월 11일 (총 4개월)
 
-> 배포 링크: 👉 [Nexus 바로가기](http://ec2-13-209-41-52.ap-northeast-2.compute.amazonaws.com/login)
+> 배포 링크: 👉 [Nexus 바로가기.](http://ec2-13-209-41-52.ap-northeast-2.compute.amazonaws.com/login)
 
 <br>
 
