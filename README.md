@@ -17,6 +17,7 @@
 | Language    | Framework                 | CI/CD          | Container | Database           | Realtime     | Storage | Deployment |
 |-------------|---------------------------|----------------|-----------|---------------------|--------------|---------|-------------|
 | TypeScript  | Nest.js v10 / Next.js v14 | GitHub Actions | Docker    | PostgreSQL / Redis | WebSocket    | AWS S3  | AWS EC2     |
+
 ### 주요 라이브러리
 
 | Category     | Libraries                                                                                   |
